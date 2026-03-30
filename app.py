@@ -76,26 +76,19 @@ def get_base64_image(path):
 # লোগো দেখানোর লজিক
 try:
     # আপনার আপলোড করা logo.png ফাইলটি রিড করবে
-    logo_base64 = get_base64_image("health.png")
-    
-    st.sidebar.markdown(f"""
-        <div class="dev-card">
-            <img src="data:image/png;base64,{logo_base64}" width="100" style="margin-bottom: 15px; filter: drop-shadow(0 0 8px rgba(88,166,255,0.5)); border-radius: 10px;">
-            <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 20px; letter-spacing: 1px;">INTELLIGENT CORE</h2>
-            <p style="color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Managed by</p>
-            <h1 style="color: #ffffff; font-size: 24px; margin-top: -5px; font-weight: 700;">Wishy Chakma</h1>
-            <div style="height: 1px; background: linear-gradient(to right, transparent, #30363d, #58a6ff, #30363d, transparent); margin: 15px 0;"></div>
+  # সাইডবার ডিজাইন - লোগো ছাড়া এস্থেটিক ভার্সন
+st.sidebar.markdown("""
+    <div style="text-align: center; padding: 25px; border-radius: 20px; background: linear-gradient(145deg, #1e242c, #13171d); border: 1px solid rgba(88, 166, 255, 0.1); box-shadow: 10px 10px 20px #0b0e12, -5px -5px 15px #252b36; margin-bottom: 20px;">
+        <div style="font-size: 55px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(88, 166, 255, 0.4));">
+            💠
         </div>
+        <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 20px; letter-spacing: 1px; font-weight: 600;">INTELLIGENT CORE</h2>
+        <p style="color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Managed by</p>
+        <h1 style="color: #ffffff; font-size: 26px; margin-top: -5px; font-weight: 700;">Wishy Chakma</h1>
+        <div style="height: 1px; background: linear-gradient(to right, transparent, #30363d, #58a6ff, #30363d, transparent); margin: 20px 0;"></div>
+        <p style="color: #58a6ff; font-style: italic; font-size: 13px;">"AI for Better Healthcare"</p>
+    </div>
     """, unsafe_allow_html=True)
-except Exception as e:
-    # যদি লোগো ফাইল না পাওয়া যায়, তবে আগের আইকনটি দেখাবে
-    st.sidebar.markdown("""
-        <div class="dev-card">
-            <div style="font-size: 50px; margin-bottom: 10px;">💠</div>
-            <h1 style="color: #ffffff; font-size: 24px;">Wishy Chakma</h1>
-        </div>
-    """, unsafe_allow_html=True)
-
 # মেইন হেডার
 st.markdown('<h1 class="main-title">🩺 SkinAI Intelligent Assistant</h1>', unsafe_allow_html=True)
 st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">Advanced Image Analysis & Human-Centric AI Support</p>', unsafe_allow_html=True)
