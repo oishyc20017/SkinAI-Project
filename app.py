@@ -32,21 +32,30 @@ st.sidebar.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# 3. Smart Multilingual & Human-like Response Logic
+# ৩. হিউম্যান-লাইক স্মার্ট রেসপন্স (নতুন ও উন্নত ভার্সন)
 def get_natural_response(user_query, condition):
     q = user_query.lower()
-    # Bengali or Banglish detection
-    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "bhalo", "hobe", "ji", "ha"])
+    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "bhalo", "hobe", "ami", "amar"])
 
-    if any(word in q for word in ["doctor", "specialist", "ডাক্তার", "dekhabo"]):
-        return f"Apnar {condition}-er jonno ekjon specialist doctor dekhano sobcheye bhalo hobe. Ami ki kono help korte pari?" if not is_bengali else f"আপনার {condition}-এর জন্য একজন বিশেষজ্ঞ চর্মরোগ ডাক্তার দেখানো সবচেয়ে ভালো হবে। আমি কি আরও কোনো সাহায্য করতে পারি?"
-    elif any(word in q for word in ["medicine", "cream", "ঔষধ", "osud", "lagabo"]):
-        return f"Warning: Doctor-er poramorso chhara {condition}-e kono osud use korben na." if not is_bengali else f"সতর্কতা: ডাক্তারের পরামর্শ ছাড়া {condition}-এ কোনো ঔষধ বা ক্রিম ব্যবহার করবেন না।"
-    elif any(word in q for word in ["care", "tips", "যত্ন", "clean"]):
-        return f"Keep the area clean and avoid direct sunlight for {condition}." if not is_bengali else f"পরামর্শ: আক্রান্ত জায়গাটি পরিষ্কার রাখুন এবং রোদ থেকে দূরে থাকুন।"
+    if any(word in q for word in ["doctor", "specialist", "ডাক্তার", "dekhabo", "treatment"]):
+        if is_bengali:
+            return f"দেখুন, {condition} বিষয়টি অবহেলা করা ঠিক হবে না। আমি আপনাকে পরামর্শ দেব দ্রুত একজন চর্মরোগ বিশেষজ্ঞ (Dermatologist) দেখাতে। আপনি কি আপনার এলাকার ভালো ডাক্তারের খোঁজ চাচ্ছেন?"
+        return f"I understand your concern about {condition}. It's really important to consult a dermatologist for a professional checkup. Would you like me to help find a specialist near you?"
+
+    elif any(word in q for word in ["medicine", "cream", "ঔষধ", "osud", "lagabo", "tablet"]):
+        if is_bengali:
+            return f"আমি আপনার কষ্টটা বুঝতে পারছি, কিন্তু {condition}-এর জন্য হুট করে কোনো ঔষধ বা ক্রিম লাগানো বিপদজনক হতে পারে। ডাক্তার না দেখিয়ে কিছু ব্যবহার করবেন না প্লিজ। আপনি কি আক্রান্ত স্থানে কোনো ব্যথা অনুভব করছেন?"
+        return f"I know you're looking for relief, but applying medicine for {condition} without a prescription can be risky. Are you experiencing any pain or itching right now?"
+
+    elif any(word in q for word in ["care", "tips", "যত্ন", "clean", "ki vabe"]):
+        if is_bengali:
+            return f"অবশ্যই! {condition} থাকলে জায়গাটি সব সময় পরিষ্কার আর শুকনো রাখার চেষ্টা করুন। রোদ থেকে দূরে থাকুন আর জায়গাটা একদম ঘষবেন না। আর কিছু কি জানতে চান?"
+        return f"Of course! For {condition}, keep the area clean and dry. Avoid direct sunlight and try not to scratch it. Is there anything else you're worried about?"
+
     else:
-        return f"I see the {condition} result. How else can I assist you with this?" if not is_bengali else f"আমি আপনার {condition} রিপোর্টটি দেখছি। এই বিষয়ে আমি আপনাকে আর কীভাবে সাহায্য করতে পারি?"
-
+        if is_bengali:
+            return f"আমি আপনার {condition} রিপোর্টটি মন দিয়ে দেখেছি। ঘাবড়াবেন না, সঠিক সময়ে চিকিৎসা নিলে এটি সেরে যায়। এই বিষয়ে আপনার মনে আর কোনো প্রশ্ন থাকলে আমাকে নির্দ্বিধায় বলতে পারেন।"
+        return f"I've carefully analyzed your report for {condition}. Don't worry too much; with proper care, it's manageable. Feel free to ask me anything else on your mind."
 # 4. Loading Model from Google Drive (Using your new link)
 @st.cache_resource
 def load_my_model():
@@ -91,20 +100,24 @@ else:
         st.success(f"### Detection Result: {result}")
         st.markdown("---")
         
-        # Chatbot Interface
+     # চ্যাটবট ইন্টারফেস
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
+        # আগের মেসেজগুলো স্ক্রিনে দেখানো
         for m in st.session_state.messages:
-            with st.chat_message(m["role"]):
+            with st.chat_message(m["role"], avatar="👤" if m["role"] == "user" else "🤖"):
                 st.markdown(m["content"])
 
-        if prompt := st.chat_input("Ask about your report..."):
+        # নতুন ইনপুট নেওয়া
+        if prompt := st.chat_input("আপনার মনে কোনো প্রশ্ন থাকলে এখানে লিখুন..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
+            with st.chat_message("user", avatar="👤"):
                 st.markdown(prompt)
             
-            reply = get_natural_response(prompt, result)
-            with st.chat_message("assistant"):
-                st.markdown(reply)
+            # অ্যাসিস্ট্যান্টের উত্তর
+            with st.chat_message("assistant", avatar="🤖"):
+                with st.spinner('একটু ভাবছি...'):
+                    reply = get_natural_response(prompt, result)
+                    st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
