@@ -6,7 +6,7 @@ import os
 import gdown
 import re
 
-# ১. পেজ ডিজাইন ও মডার্ন লুক
+# ১. পেজ সেটআপ ও ডিজাইন
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
 st.markdown("""
@@ -22,7 +22,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# ২. সাইডবার
+# ২. সাইডবার (Developer: Wishy Chakma)
 st.sidebar.markdown(f"""
     <div class="developer-box">
         <h2 style="color: #58a6ff;">👨‍💻 Developer</h2>
@@ -46,15 +46,19 @@ def get_natural_response(user_query, condition):
     else:
         return f"আপনার {condition} সম্পর্কে আর কী জানতে চান?" if is_bengali else f"How else can I help you with {condition}?"
 
-# ৪. গুগল ড্রাইভ থেকে মডেল ডাউনলোডের লজিক
+# ৪. গুগল ড্রাইভ থেকে মডেল লোড (Direct Download Link)
 @st.cache_resource
 def load_my_model():
     drive_url = 'https://drive.google.com/uc?id=1Ey5AKBM5FA0wcj2_SMiJ01l0RWf2XIAL'
     model_path = 'skin_cancer_model.h5'
     
     if not os.path.exists(model_path):
-        with st.spinner('মডেল ডাউনলোড হচ্ছে... প্রথমবারের মতো একটু সময় নিতে পারে।'):
-            gdown.download(url=drive_url, output=model_path, quiet=False, fuzzy=True)
+        with st.spinner('মডেল ডাউনলোড হচ্ছে... এটি ২-৩ মিনিট সময় নিতে পারে।'):
+            try:
+                gdown.download(drive_url, model_path, quiet=False)
+            except Exception:
+                st.error("ডাউনলোড ব্যর্থ হয়েছে। ড্রাইভ লিঙ্ক চেক করুন।")
+                return None
             
     return tf.keras.models.load_model(model_path, compile=False)
 
@@ -74,7 +78,7 @@ with col1:
         st.image(img, use_container_width=True)
 
 with col2:
-    if file:
+    if file and model:
         img_res = img.resize((100, 75))
         x = np.asarray(img_res) / 255.0
         x = np.expand_dims(x, axis=0)
@@ -99,6 +103,7 @@ with col2:
                 with st.chat_message("user", avatar="👨‍💻"): st.markdown(prompt)
                 reply = get_natural_response(prompt, result)
                 with st.chat_message("assistant", avatar="🤖"): st.markdown(reply)
+                st.session_state.messages.append({"role": "assistant", "content": reply})
                 st.session_state.messages.append({"role": "assistant", "content": reply})
                 with st.chat_message("assistant", avatar="🤖"):
                     reply = get_natural_response(prompt, result)
