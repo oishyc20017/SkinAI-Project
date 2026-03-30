@@ -15,14 +15,23 @@ st.markdown("""
         color: #e0e0e0;
     }
     
-    /* ২. চ্যাট ইনপুট বক্সের লাল ভাব দূর করা (Fix for Red Border) */
+ # ২. হাই-এন্ড এস্থেটিক ডিজাইন ও লাল বর্ডার ফিক্স
+st.markdown("""
+<style>
+    /* মেইন থিম ও ব্যাকগ্রাউন্ড */
+    .stApp {
+        background: radial-gradient(circle at top right, #1a1f25, #050505);
+        color: #e0e0e0;
+    }
+    
+    /* চ্যাট ইনপুট বক্সের লাল বর্ডার এবং ফোকাস কালার ফিক্স */
     div[data-baseweb="input"] {
         border: 1px solid rgba(88, 166, 255, 0.2) !important;
         border-radius: 10px !important;
         transition: all 0.3s ease-in-out;
     }
 
-    /* ইনপুট বক্সে ক্লিক করলে নীল গ্লো হবে */
+    /* ক্লিক করলে নীল গ্লো হবে (No More Red!) */
     div[data-baseweb="input"]:focus-within {
         border-color: #58a6ff !important;
         box-shadow: 0 0 15px rgba(88, 166, 255, 0.4) !important;
@@ -34,6 +43,23 @@ st.markdown("""
         color: white !important;
         border-radius: 50% !important;
     }
+
+    /* সাইডবার ডিজাইন */
+    [data-testid="stSidebar"] {
+        background: rgba(20, 25, 35, 0.9) !important;
+        backdrop-filter: blur(10px);
+    }
+    
+    /* টাইটেল স্টাইল */
+    .main-title {
+        font-size: 40px;
+        font-weight: 800;
+        background: linear-gradient(to right, #58a6ff, #bc85ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+""", unsafe_allow_html=True)
 
     /* ৩. সাইডবার ডিজাইন */
     [data-testid="stSidebar"] {
