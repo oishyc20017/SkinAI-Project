@@ -9,41 +9,48 @@ import re
 # ১. হাই-এন্ড এস্থেটিক ডিজাইন (Glassmorphism & Glow Effect)
 st.markdown("""
     <style>
-    /* মেইন ব্যাকগ্রাউন্ড */
+    /* ১. মেইন থিম ও ব্যাকগ্রাউন্ড */
     .stApp {
         background: radial-gradient(circle at top right, #1a1f25, #050505);
         color: #e0e0e0;
-        font-family: 'Inter', sans-serif;
     }
     
-    /* সাইডবার ডিজাইন */
+    /* ২. চ্যাট ইনপুট বক্সের লাল ভাব দূর করা (Fix for Red Border) */
+    div[data-baseweb="input"] {
+        border: 1px solid rgba(88, 166, 255, 0.2) !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* ইনপুট বক্সে ক্লিক করলে নীল গ্লো হবে */
+    div[data-baseweb="input"]:focus-within {
+        border-color: #58a6ff !important;
+        box-shadow: 0 0 15px rgba(88, 166, 255, 0.4) !important;
+    }
+
+    /* লাল এন্টার বাটন নীল করা */
+    button[kind="primaryChatInput"] {
+        background-color: #58a6ff !important;
+        color: white !important;
+        border-radius: 50% !important;
+    }
+
+    /* ৩. সাইডবার ডিজাইন */
     [data-testid="stSidebar"] {
-        background: rgba(20, 25, 35, 0.8) !important;
-        backdrop-filter: blur(15px);
+        background: rgba(20, 25, 35, 0.9) !important;
+        backdrop-filter: blur(10px);
         border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
     
-    /* কার্ড এবং বক্সের ডিজাইন */
-    .dev-card {
-        padding: 30px;
-        border-radius: 20px;
-        background: linear-gradient(145deg, #1e242c, #13171d);
-        box-shadow: 10px 10px 20px #0b0e12, -5px -5px 15px #252b36;
-        text-align: center;
-        border: 1px solid rgba(88, 166, 255, 0.1);
-        margin-bottom: 20px;
+    /* ৪. চ্যাট মেসেজ স্টাইল */
+    .stChatMessage {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 15px !important;
+        margin-bottom: 12px !important;
     }
-
-    /* গ্লোয়িং টাইটেল */
-    .main-title {
-        font-size: 45px;
-        font-weight: 800;
-        background: linear-gradient(to right, #58a6ff, #bc85ff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0px 10px 20px rgba(88, 166, 255, 0.2);
-        margin-bottom: 30px;
-    }
+    </style>
+    """, unsafe_allow_html=True)
 
     /* চ্যাট মেসেজ স্টাইল */
     .stChatMessage {
