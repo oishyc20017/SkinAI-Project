@@ -6,7 +6,7 @@ import os
 import gdown
 import re
 
-# ১. হাই-এন্ড এস্থেটিক ডিজাইন (Glassmorphism & Glow Effect)
+# # ১. হাই-এন্ড এস্থেটিক ডিজাইন (Glassmorphism & Glow Effect)
 st.markdown("""
     <style>
     /* মেইন ব্যাকগ্রাউন্ড */
@@ -65,19 +65,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# ২. সাইডবার (Developer Wishy Chakma)
-import base64
-
-# ইমেজকে টেক্সটে রূপান্তর করার ফাংশন (যেন সরাসরি দেখানো যায়)
-def get_base64_image(path):
-    with open(path, "rb") as f:
-        return base64.b64encode(f.read()).decode()
-
-# লোগো দেখানোর লজিক
-try:
-    # আপনার আপলোড করা logo.png ফাইলটি রিড করবে
-  # সাইডবার ডিজাইন - লোগো ছাড়া এস্থেটিক ভার্সন
-# ২. সাইডবার (Developer Wishy Chakma)
+# # ২. সাইডবার (Developer Wishy Chakma)
 st.sidebar.markdown("""
     <div class="dev-card">
         <div style="font-size: 50px; margin-bottom: 10px;">🛡️</div>
@@ -95,34 +83,28 @@ st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">
 # ৩. হিউম্যান-লাইক স্মার্ট রেসপন্স (নতুন ও উন্নত ভার্সন)
 def get_natural_response(user_query, condition):
     q = user_query.lower()
-    
-    # বাংলা এবং বাংলিশ কিউওয়ার্ড শনাক্ত করা
-    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or \
-                 any(word in q for word in ["ki", "korbo", "osud", "bhalo", "keno", "kenbo", "eita", "hoyeche"])
+    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "bhalo", "hobe", "ami", "amar"])
 
-    # ১. রোগের কারণ বা কেন হয় (Causes)
-    if any(word in q for word in ["keno", "kenbo", "why", "reason", "cause", "kijonno"]):
+    if any(word in q for word in ["doctor", "specialist", "ডাক্তার", "dekhabo", "treatment"]):
         if is_bengali:
-            return f"দেখুন, {condition} সাধারণত বয়সের সাথে সাথে বা ত্বকের দীর্ঘদিনের অযত্নের কারণে হতে পারে। এটি বংশগতও হতে পারে। আপনার পরিবারের কি আর কারো এমন আছে?"
-        return f"Usually, {condition} develops due to age, genetics, or long-term skin exposure. Do you have any family history of this?"
+            return f"দেখুন, {condition} বিষয়টি অবহেলা করা ঠিক হবে না। আমি আপনাকে পরামর্শ দেব দ্রুত একজন চর্মরোগ বিশেষজ্ঞ (Dermatologist) দেখাতে। আপনি কি আপনার এলাকার ভালো ডাক্তারের খোঁজ চাচ্ছেন?"
+        return f"I understand your concern about {condition}. It's really important to consult a dermatologist for a professional checkup. Would you like me to help find a specialist near you?"
 
-    # ২. ডাক্তার বা বিশেষজ্ঞ (Doctor)
-    elif any(word in q for word in ["doctor", "specialist", "dekhabo", "dr"]):
+    elif any(word in q for word in ["medicine", "cream", "ঔষধ", "osud", "lagabo", "tablet"]):
         if is_bengali:
-            return f"আপনার {condition}-এর জন্য একজন বিশেষজ্ঞ চর্মরোগ ডাক্তার (Dermatologist) দেখানো সবচেয়ে নিরাপদ। দেরি না করে পরামর্শ নিন। আমি কি কোনো সাহায্য করতে পারি?"
-        return f"It is safest to consult a Dermatologist for your {condition}. Please seek professional advice. How can I assist further?"
+            return f"আমি আপনার কষ্টটা বুঝতে পারছি, কিন্তু {condition}-এর জন্য হুট করে কোনো ঔষধ বা ক্রিম লাগানো বিপদজনক হতে পারে। ডাক্তার না দেখিয়ে কিছু ব্যবহার করবেন না প্লিজ। আপনি কি আক্রান্ত স্থানে কোনো ব্যথা অনুভব করছেন?"
+        return f"I know you're looking for relief, but applying medicine for {condition} without a prescription can be risky. Are you experiencing any pain or itching right now?"
 
-    # ৩. ঔষধ বা যত্ন (Medicine/Care)
-    elif any(word in q for word in ["medicine", "cream", "osud", "care", "tips"]):
+    elif any(word in q for word in ["care", "tips", "যত্ন", "clean", "ki vabe"]):
         if is_bengali:
-            return f"{condition}-এর জন্য নিজে নিজে কোনো ঔষধ ব্যবহার করবেন না। আক্রান্ত স্থানটি রোদে সরাসরি উন্মুক্ত না রাখাই ভালো। আপনি কি সানস্ক্রিন ব্যবহার করেন?"
-        return f"Do not use any medication for {condition} without a prescription. Avoid direct sun exposure on the area. Do you use sunscreen?"
+            return f"অবশ্যই! {condition} থাকলে জায়গাটি সব সময় পরিষ্কার আর শুকনো রাখার চেষ্টা করুন। রোদ থেকে দূরে থাকুন আর জায়গাটা একদম ঘষবেন না। আর কিছু কি জানতে চান?"
+        return f"Of course! For {condition}, keep the area clean and dry. Avoid direct sunlight and try not to scratch it. Is there anything else you're worried about?"
 
-    # ৪. অন্য সব সাধারণ প্রশ্নের জন্য
     else:
         if is_bengali:
-            return f"আপনার {condition} রিপোর্টটি আমি বিশ্লেষণ করেছি। ঘাবড়ানোর কিছু নেই, তবে সঠিক পরামর্শ মেনে চলা জরুরি। আপনার মনে আর কি কোনো প্রশ্ন আছে?"
-        return f"I've analyzed your report for {condition}. Stay positive, but following professional advice is key. Any other questions?"
+            return f"আমি আপনার {condition} রিপোর্টটি মন দিয়ে দেখেছি। ঘাবড়াবেন না, সঠিক সময়ে চিকিৎসা নিলে এটি সেরে যায়। এই বিষয়ে আপনার মনে আর কোনো প্রশ্ন থাকলে আমাকে নির্দ্বিধায় বলতে পারেন।"
+        return f"I've carefully analyzed your report for {condition}. Don't worry too much; with proper care, it's manageable. Feel free to ask me anything else on your mind." if not is_bengali else f"আমি আপনার {condition} রিপোর্টটি দেখছি। এই বিষয়ে আমি আপনাকে আর কীভাবে সাহায্য করতে পারি?"
+
 # 4. Loading Model from Google Drive (Using your new link)
 @st.cache_resource
 def load_my_model():
@@ -167,7 +149,7 @@ else:
         st.success(f"### Detection Result: {result}")
         st.markdown("---")
         
-   # চ্যাটবট ইন্টারফেস
+      # চ্যাটবট ইন্টারফেস
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
