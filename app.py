@@ -76,7 +76,7 @@ def get_base64_image(path):
 # লোগো দেখানোর লজিক
 try:
     # আপনার আপলোড করা logo.png ফাইলটি রিড করবে
-    logo_base64 = get_base64_image("<a href="https://www.flaticon.com/free-icons/allergy" title="allergy icons">Allergy icons created by Vectors Tank - Flaticon</a>")
+    logo_base64 = get_base64_image("health.png")
     
     st.sidebar.markdown(f"""
         <div class="dev-card">
