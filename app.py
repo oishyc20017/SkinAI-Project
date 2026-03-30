@@ -49,7 +49,7 @@ def get_natural_response(user_query, condition):
 # ৪. গুগল ড্রাইভ থেকে মডেল ডাউনলোডের লজিক
 @st.cache_resource
 def load_my_model():
-    drive_url = 'https://drive.google.com/file/d/1Ey5AKBM5FA0wcj2_SMiJ01l0RWf2XIAL/view?usp=drive_link'
+    drive_url = 'https://drive.google.com/uc?id=1Ey5AKBM5FA0wcj2_SMiJ01l0RWf2XIAL'
     model_path = 'skin_cancer_model.h5'
     
     if not os.path.exists(model_path):
