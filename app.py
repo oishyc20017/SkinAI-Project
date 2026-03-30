@@ -66,15 +66,34 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ২. সাইডবার (Developer Wishy Chakma)
-st.sidebar.markdown("""
-    <div class="dev-card">
-        <div style="font-size: 50px; margin-bottom: 10px;">🛡️</div>
-        <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 24px;">Core System</h2>
-        <p style="color: #8b949e; font-size: 14px; letter-spacing: 1px;">DEVELOPED BY</p>
-        <h1 style="color: #ffffff; font-size: 28px; margin-top: -10px;">Wishy Chakma</h1>
-        <div style="height: 2px; background: linear-gradient(to right, transparent, #58a6ff, transparent); margin: 20px 0;"></div>
-        <p style="color: #58a6ff; font-style: italic;">"AI for Better Healthcare"</p>
-    </div>
+import base64
+
+# ইমেজকে টেক্সটে রূপান্তর করার ফাংশন (যেন সরাসরি দেখানো যায়)
+def get_base64_image(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+# লোগো দেখানোর লজিক
+try:
+    # আপনার আপলোড করা logo.png ফাইলটি রিড করবে
+    logo_base64 = get_base64_image("<a href="https://www.flaticon.com/free-icons/allergy" title="allergy icons">Allergy icons created by Vectors Tank - Flaticon</a>")
+    
+    st.sidebar.markdown(f"""
+        <div class="dev-card">
+            <img src="data:image/png;base64,{logo_base64}" width="100" style="margin-bottom: 15px; filter: drop-shadow(0 0 8px rgba(88,166,255,0.5)); border-radius: 10px;">
+            <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 20px; letter-spacing: 1px;">INTELLIGENT CORE</h2>
+            <p style="color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Managed by</p>
+            <h1 style="color: #ffffff; font-size: 24px; margin-top: -5px; font-weight: 700;">Wishy Chakma</h1>
+            <div style="height: 1px; background: linear-gradient(to right, transparent, #30363d, #58a6ff, #30363d, transparent); margin: 15px 0;"></div>
+        </div>
+    """, unsafe_allow_html=True)
+except Exception as e:
+    # যদি লোগো ফাইল না পাওয়া যায়, তবে আগের আইকনটি দেখাবে
+    st.sidebar.markdown("""
+        <div class="dev-card">
+            <div style="font-size: 50px; margin-bottom: 10px;">💠</div>
+            <h1 style="color: #ffffff; font-size: 24px;">Wishy Chakma</h1>
+        </div>
     """, unsafe_allow_html=True)
 
 # মেইন হেডার
