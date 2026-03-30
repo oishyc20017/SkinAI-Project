@@ -77,18 +77,18 @@ def get_base64_image(path):
 try:
     # আপনার আপলোড করা logo.png ফাইলটি রিড করবে
   # সাইডবার ডিজাইন - লোগো ছাড়া এস্থেটিক ভার্সন
+# ২. সাইডবার (Developer Wishy Chakma)
 st.sidebar.markdown("""
-    <div style="text-align: center; padding: 25px; border-radius: 20px; background: linear-gradient(145deg, #1e242c, #13171d); border: 1px solid rgba(88, 166, 255, 0.1); box-shadow: 10px 10px 20px #0b0e12, -5px -5px 15px #252b36; margin-bottom: 20px;">
-        <div style="font-size: 55px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(88, 166, 255, 0.4));">
-            💠
-        </div>
-        <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 20px; letter-spacing: 1px; font-weight: 600;">INTELLIGENT CORE</h2>
-        <p style="color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Managed by</p>
-        <h1 style="color: #ffffff; font-size: 26px; margin-top: -5px; font-weight: 700;">Wishy Chakma</h1>
-        <div style="height: 1px; background: linear-gradient(to right, transparent, #30363d, #58a6ff, #30363d, transparent); margin: 20px 0;"></div>
-        <p style="color: #58a6ff; font-style: italic; font-size: 13px;">"AI for Better Healthcare"</p>
+    <div class="dev-card">
+        <div style="font-size: 50px; margin-bottom: 10px;">🛡️</div>
+        <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 24px;">Core System</h2>
+        <p style="color: #8b949e; font-size: 14px; letter-spacing: 1px;">DEVELOPED BY</p>
+        <h1 style="color: #ffffff; font-size: 28px; margin-top: -10px;">Wishy Chakma</h1>
+        <div style="height: 2px; background: linear-gradient(to right, transparent, #58a6ff, transparent); margin: 20px 0;"></div>
+        <p style="color: #58a6ff; font-style: italic;">"AI for Better Healthcare"</p>
     </div>
     """, unsafe_allow_html=True)
+
 # মেইন হেডার
 st.markdown('<h1 class="main-title">🩺 SkinAI Intelligent Assistant</h1>', unsafe_allow_html=True)
 st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">Advanced Image Analysis & Human-Centric AI Support</p>', unsafe_allow_html=True)
