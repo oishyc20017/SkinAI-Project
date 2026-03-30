@@ -6,32 +6,79 @@ import os
 import gdown
 import re
 
-# 1. Page Config & Aesthetic Design
-st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
-
+# ১. হাই-এন্ড এস্থেটিক ডিজাইন (Glassmorphism & Glow Effect)
 st.markdown("""
     <style>
-    .stApp { background-color: #0e1117; color: #ffffff; }
-    .stChatMessage { border-radius: 15px; margin-bottom: 10px; border: 1px solid #30363d; background: #161b22; }
-    [data-testid="stSidebar"] { background-color: #161b22; border-right: 1px solid #30363d; }
+    /* মেইন ব্যাকগ্রাউন্ড */
+    .stApp {
+        background: radial-gradient(circle at top right, #1a1f25, #050505);
+        color: #e0e0e0;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* সাইডবার ডিজাইন */
+    [data-testid="stSidebar"] {
+        background: rgba(20, 25, 35, 0.8) !important;
+        backdrop-filter: blur(15px);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* কার্ড এবং বক্সের ডিজাইন */
     .dev-card {
-        padding: 20px; border-radius: 12px;
-        background: linear-gradient(145deg, #1e2227, #2d333b);
-        text-align: center; border: 1px solid #30363d;
+        padding: 30px;
+        border-radius: 20px;
+        background: linear-gradient(145deg, #1e242c, #13171d);
+        box-shadow: 10px 10px 20px #0b0e12, -5px -5px 15px #252b36;
+        text-align: center;
+        border: 1px solid rgba(88, 166, 255, 0.1);
+        margin-bottom: 20px;
+    }
+
+    /* গ্লোয়িং টাইটেল */
+    .main-title {
+        font-size: 45px;
+        font-weight: 800;
+        background: linear-gradient(to right, #58a6ff, #bc85ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0px 10px 20px rgba(88, 166, 255, 0.2);
+        margin-bottom: 30px;
+    }
+
+    /* চ্যাট মেসেজ স্টাইল */
+    .stChatMessage {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-radius: 15px !important;
+        padding: 15px !important;
+        margin-bottom: 12px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* আপলোড বক্স ডিজাইন */
+    .stFileUploader {
+        border: 2px dashed rgba(88, 166, 255, 0.3);
+        border-radius: 15px;
+        padding: 20px;
+        background: rgba(88, 166, 255, 0.02);
     }
     </style>
     """, unsafe_allow_html=True)
-
-# 2. Sidebar with Developer Info
-st.sidebar.markdown(f"""
+# ২. সাইডবার (Developer Wishy Chakma)
+st.sidebar.markdown("""
     <div class="dev-card">
-        <h2 style="color: #58a6ff; margin-bottom: 0;">👨‍💻 Developer</h2>
-        <hr style="border: 0.5px solid #30363d;">
-        <p style="font-size: 22px; margin-bottom: 5px;"><b>Wishy Chakma</b></p>
-        <p style="font-size: 14px; color: #8b949e;">Skin Disease Detection AI</p>
+        <div style="font-size: 50px; margin-bottom: 10px;">🛡️</div>
+        <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 24px;">Core System</h2>
+        <p style="color: #8b949e; font-size: 14px; letter-spacing: 1px;">DEVELOPED BY</p>
+        <h1 style="color: #ffffff; font-size: 28px; margin-top: -10px;">Wishy Chakma</h1>
+        <div style="height: 2px; background: linear-gradient(to right, transparent, #58a6ff, transparent); margin: 20px 0;"></div>
+        <p style="color: #58a6ff; font-style: italic;">"AI for Better Healthcare"</p>
     </div>
     """, unsafe_allow_html=True)
 
+# মেইন হেডার
+st.markdown('<h1 class="main-title">🩺 SkinAI Intelligent Assistant</h1>', unsafe_allow_html=True)
+st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">Advanced Image Analysis & Human-Centric AI Support</p>', unsafe_allow_html=True)
 # ৩. হিউম্যান-লাইক স্মার্ট রেসপন্স (নতুন ও উন্নত ভার্সন)
 def get_natural_response(user_query, condition):
     q = user_query.lower()
@@ -104,20 +151,31 @@ else:
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
-        # আগের মেসেজগুলো স্ক্রিনে দেখানো
+        # আগের মেসেজগুলো স্ক্রিনে দেখানো (Aesthetic Chat Bubbles)
         for m in st.session_state.messages:
             with st.chat_message(m["role"], avatar="👤" if m["role"] == "user" else "🤖"):
                 st.markdown(m["content"])
 
-        # নতুন ইনপুট নেওয়া
+        # নতুন প্রশ্ন ইনপুট নেওয়া
         if prompt := st.chat_input("আপনার মনে কোনো প্রশ্ন থাকলে এখানে লিখুন..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user", avatar="👤"):
                 st.markdown(prompt)
             
-            # অ্যাসিস্ট্যান্টের উত্তর
+            # অ্যাসিস্ট্যান্টের উত্তর (Thinking Animation & Glowing Response)
             with st.chat_message("assistant", avatar="🤖"):
                 with st.spinner('একটু ভাবছি...'):
-                    reply = get_natural_response(prompt, result)
+                    # ভাষা বুঝে মানুষের মতো উত্তর জেনারেট করা
+                    raw_reply = get_natural_response(prompt, result)
+                    
+                    # উত্তরের সাথে এস্থেটিক ইমোজি যোগ করা
+                    is_bengali = bool(re.search('[\u0980-\u09FF]', prompt)) or any(word in prompt.lower() for word in ["ki", "korbo"])
+                    if is_bengali:
+                        reply = f"✨ **পরামর্শ:** {raw_reply} 🌿"
+                    else:
+                        reply = f"✨ **Analysis:** {raw_reply} 🌿"
+                    
                     st.markdown(reply)
+            
+            # উত্তরটি সেভ করা যেন স্ক্রিনে থেকে যায়
             st.session_state.messages.append({"role": "assistant", "content": reply})
