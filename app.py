@@ -1,9 +1,9 @@
-
 import streamlit as st
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-import random
+import os
+import gdown
 import re
 
 # ১. পেজ ডিজাইন ও মডার্ন লুক
@@ -22,7 +22,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# ২. সাইডবার (আপনার নাম Wishy Chakma)
+# ২. সাইডবার
 st.sidebar.markdown(f"""
     <div class="developer-box">
         <h2 style="color: #58a6ff;">👨‍💻 Developer</h2>
@@ -32,49 +32,36 @@ st.sidebar.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# ৩. স্মার্ট ল্যাঙ্গুয়েজ ও প্রফেশনাল রেসপন্স ফাংশন
+# ৩. স্মার্ট ল্যাঙ্গুয়েজ রেসপন্স ফাংশন
 def get_natural_response(user_query, condition):
     q = user_query.lower()
-    
-    # ভাষা শনাক্তকরণ (বাংলা/বাংলিশ কি না চেক করা)
     is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "bhalo", "hobe", "ji", "ha"])
 
-    # ডাক্তারের বিষয়ে প্রশ্ন
     if any(word in q for word in ["doctor", "specialist", "ডাক্তার", "dekhabo", "hospital"]):
-        if is_bengali:
-            return f"আপনার {condition}-এর জন্য একজন ডার্মাটোলজিস্ট (চর্মরোগ বিশেষজ্ঞ) দেখানো সবচেয়ে ভালো হবে। আপনি কি কোনো পরামর্শ চাচ্ছেন?"
-        else:
-            return f"For your diagnosed {condition}, I recommend consulting a Dermatologist for a professional checkup."
-
-    # ঔষধ বা ক্রিম নিয়ে প্রশ্ন
+        return f"আপনার {condition}-এর জন্য একজন ডার্মাটোলজিস্ট দেখানো সবচেয়ে ভালো হবে।" if is_bengali else f"I recommend consulting a Dermatologist for your {condition}."
     elif any(word in q for word in ["medicine", "cream", "ঔষধ", "osud", "lagabo"]):
-        if is_bengali:
-            return f"⚠️ **সতর্কতা:** {condition}-এর ওপর ডাক্তারের পরামর্শ ছাড়া কোনো ক্রিম বা ঔষধ লাগাবেন না।"
-        else:
-            return f"⚠️ **Warning:** Please do not apply any medicine for {condition} without a doctor's prescription."
-
-    # যত্ন বা করণীয় (এবং সাধারণ উত্তর যেমন 'yes', 'ji', 'ji')
-    elif any(word in q for word in ["care", "tips", "যত্ন", "what to do", "yes", "ji", "ha", "ji"]):
-        if is_bengali:
-            return f"✅ **পরামর্শ:** আক্রান্ত জায়গাটি পরিষ্কার রাখুন, ঘষাঘষি করবেন না এবং সরাসরি রোদ এড়িয়ে চলুন।"
-        else:
-            return f"✅ **Advice:** Keep the area clean, avoid scratching, and stay protected from direct sunlight."
-
-    # ডিফল্ট উত্তর
+        return f"⚠️ সতর্ক: {condition}-এর ওপর ডাক্তারের পরামর্শ ছাড়া কিছু লাগাবেন না।" if is_bengali else f"⚠️ Warning: Do not apply medicine for {condition} without a prescription."
+    elif any(word in q for word in ["care", "tips", "যত্ন", "what to do"]):
+        return f"✅ পরামর্শ: আক্রান্ত জায়গাটি পরিষ্কার রাখুন এবং রোদ এড়িয়ে চলুন।" if is_bengali else f"✅ Advice: Keep the area clean and avoid direct sunlight."
     else:
-        if is_bengali:
-            return f"আপনার {condition} সম্পর্কে আমি আরও কীভাবে সাহায্য করতে পারি? আপনি যত্ন বা ডাক্তারের বিষয়ে প্রশ্ন করতে পারেন।"
-        else:
-            return f"I can help you with more info on {condition}. Would you like to know about care tips or doctor recommendations?"
+        return f"আপনার {condition} সম্পর্কে আর কী জানতে চান?" if is_bengali else f"How else can I help you with {condition}?"
 
-# ৪. মডেল লোড ও মেইন অ্যাপ ইন্টারফেস
+# ৪. গুগল ড্রাইভ থেকে মডেল ডাউনলোডের লজিক
 @st.cache_resource
 def load_my_model():
-    return tf.keras.models.load_model('skin_cancer_model.h5', compile=False)
+    drive_url = 'https://drive.google.com/file/d/1Ey5AKBM5FA0wcj2_SMiJ01l0RWf2XIAL/view?usp=drive_link'
+    model_path = 'skin_cancer_model.h5'
+    
+    if not os.path.exists(model_path):
+        with st.spinner('মডেল ডাউনলোড হচ্ছে... প্রথমবারের মতো একটু সময় নিতে পারে।'):
+            gdown.download(url=drive_url, output=model_path, quiet=False, fuzzy=True)
+            
+    return tf.keras.models.load_model(model_path, compile=False)
 
 model = load_my_model()
 classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
+# ৫. মেইন ইন্টারফেস
 st.title("🩺 SkinAI Professional Assistant")
 
 col1, col2 = st.columns([1, 1], gap="large")
@@ -100,7 +87,7 @@ with col2:
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
-        chat_container = st.container(height=400)
+        chat_container = st.container(height=350)
         with chat_container:
             for m in st.session_state.messages:
                 with st.chat_message(m["role"], avatar="👨‍💻" if m["role"] == "user" else "🤖"):
@@ -110,6 +97,9 @@ with col2:
             st.session_state.messages.append({"role": "user", "content": prompt})
             with chat_container:
                 with st.chat_message("user", avatar="👨‍💻"): st.markdown(prompt)
+                reply = get_natural_response(prompt, result)
+                with st.chat_message("assistant", avatar="🤖"): st.markdown(reply)
+                st.session_state.messages.append({"role": "assistant", "content": reply})
                 with st.chat_message("assistant", avatar="🤖"):
                     reply = get_natural_response(prompt, result)
                     st.markdown(reply)
