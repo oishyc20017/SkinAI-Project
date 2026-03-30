@@ -9,74 +9,41 @@ import re
 # ১. হাই-এন্ড এস্থেটিক ডিজাইন (Glassmorphism & Glow Effect)
 st.markdown("""
     <style>
-    /* ১. মেইন থিম ও ব্যাকগ্রাউন্ড */
+    /* মেইন ব্যাকগ্রাউন্ড */
     .stApp {
         background: radial-gradient(circle at top right, #1a1f25, #050505);
         color: #e0e0e0;
+        font-family: 'Inter', sans-serif;
     }
     
- # ২. হাই-এন্ড এস্থেটিক ডিজাইন ও লাল বর্ডার ফিক্স
-st.markdown("""
-<style>
-    /* মেইন থিম ও ব্যাকগ্রাউন্ড */
-    .stApp {
-        background: radial-gradient(circle at top right, #1a1f25, #050505);
-        color: #e0e0e0;
-    }
-    
-    /* চ্যাট ইনপুট বক্সের লাল বর্ডার এবং ফোকাস কালার ফিক্স */
-    div[data-baseweb="input"] {
-        border: 1px solid rgba(88, 166, 255, 0.2) !important;
-        border-radius: 10px !important;
-        transition: all 0.3s ease-in-out;
-    }
-
-    /* ক্লিক করলে নীল গ্লো হবে (No More Red!) */
-    div[data-baseweb="input"]:focus-within {
-        border-color: #58a6ff !important;
-        box-shadow: 0 0 15px rgba(88, 166, 255, 0.4) !important;
-    }
-
-    /* লাল এন্টার বাটন নীল করা */
-    button[kind="primaryChatInput"] {
-        background-color: #58a6ff !important;
-        color: white !important;
-        border-radius: 50% !important;
-    }
-
     /* সাইডবার ডিজাইন */
     [data-testid="stSidebar"] {
-        background: rgba(20, 25, 35, 0.9) !important;
-        backdrop-filter: blur(10px);
+        background: rgba(20, 25, 35, 0.8) !important;
+        backdrop-filter: blur(15px);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
     
-    /* টাইটেল স্টাইল */
+    /* কার্ড এবং বক্সের ডিজাইন */
+    .dev-card {
+        padding: 30px;
+        border-radius: 20px;
+        background: linear-gradient(145deg, #1e242c, #13171d);
+        box-shadow: 10px 10px 20px #0b0e12, -5px -5px 15px #252b36;
+        text-align: center;
+        border: 1px solid rgba(88, 166, 255, 0.1);
+        margin-bottom: 20px;
+    }
+
+    /* গ্লোয়িং টাইটেল */
     .main-title {
-        font-size: 40px;
+        font-size: 45px;
         font-weight: 800;
         background: linear-gradient(to right, #58a6ff, #bc85ff);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        text-shadow: 0px 10px 20px rgba(88, 166, 255, 0.2);
+        margin-bottom: 30px;
     }
-</style>
-""", unsafe_allow_html=True)
-
-    /* ৩. সাইডবার ডিজাইন */
-    [data-testid="stSidebar"] {
-        background: rgba(20, 25, 35, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    /* ৪. চ্যাট মেসেজ স্টাইল */
-    .stChatMessage {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.05) !important;
-        border-radius: 15px !important;
-        margin-bottom: 12px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
     /* চ্যাট মেসেজ স্টাইল */
     .stChatMessage {
@@ -97,6 +64,7 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
+
 # ২. সাইডবার (Developer Wishy Chakma)
 st.sidebar.markdown("""
     <div class="dev-card">
@@ -136,6 +104,7 @@ def get_natural_response(user_query, condition):
         if is_bengali:
             return f"আমি আপনার {condition} রিপোর্টটি মন দিয়ে দেখেছি। ঘাবড়াবেন না, সঠিক সময়ে চিকিৎসা নিলে এটি সেরে যায়। এই বিষয়ে আপনার মনে আর কোনো প্রশ্ন থাকলে আমাকে নির্দ্বিধায় বলতে পারেন।"
         return f"I've carefully analyzed your report for {condition}. Don't worry too much; with proper care, it's manageable. Feel free to ask me anything else on your mind."
+
 # 4. Loading Model from Google Drive (Using your new link)
 @st.cache_resource
 def load_my_model():
@@ -180,7 +149,7 @@ else:
         st.success(f"### Detection Result: {result}")
         st.markdown("---")
         
-     # চ্যাটবট ইন্টারফেস
+   # চ্যাটবট ইন্টারফেস
         if "messages" not in st.session_state:
             st.session_state.messages = []
 
