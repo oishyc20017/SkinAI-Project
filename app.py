@@ -5,7 +5,8 @@ import numpy as np
 import os
 import gdown
 import re
-
+import os
+os.environ['GDOWN_SKIP_DOWNLOAD_ERRORS'] = '1'
 # ১. পেজ সেটআপ ও ডিজাইন
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
