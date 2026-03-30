@@ -46,24 +46,28 @@ def get_natural_response(user_query, condition):
     else:
         return f"আপনার {condition} সম্পর্কে আর কী জানতে চান?" if is_bengali else f"How else can I help you with {condition}?"
 
-# ৪. গুগল ড্রাইভ থেকে মডেল লোড (Direct Download Link)
+# ৪. গুগল ড্রাইভ থেকে মডেল লোড (উন্নত পদ্ধতি)
 @st.cache_resource
 def load_my_model():
-    drive_url = 'https://drive.google.com/uc?id=1Ey5AKBM5FA0wcj2_SMiJ01l0RWf2XIAL'
+    # সরাসরি ড্রাইভের ফাইল আইডি ব্যবহার করা হয়েছে
+    file_id = '1Ey5AKBM5FA0wcj2_SMiJ01l0RWf2XIAL'
+    drive_url = f'https://drive.google.com/uc?id={file_id}'
     model_path = 'skin_cancer_model.h5'
     
     if not os.path.exists(model_path):
         with st.spinner('মডেল ডাউনলোড হচ্ছে... এটি ২-৩ মিনিট সময় নিতে পারে।'):
             try:
-                gdown.download(drive_url, model_path, quiet=False)
+                # gdown এর বিকল্প কমান্ড যা বড় ফাইলের জন্য ভালো কাজ করে
+                output = gdown.download(drive_url, model_path, quiet=False, fuzzy=True)
+                if output is None:
+                    # যদি uc লিঙ্ক কাজ না করে তবে সরাসরি ডাউনলোড ট্রাই করবে
+                    drive_url_alt = f'https://drive.google.com/open?id={file_id}&export=download'
+                    gdown.download(drive_url_alt, model_path, quiet=False)
             except Exception:
-                st.error("ডাউনলোড ব্যর্থ হয়েছে। ড্রাইভ লিঙ্ক চেক করুন।")
+                st.error("ডাউনলোড পুনরায় ব্যর্থ হয়েছে। ড্রাইভের পারমিশন 'Anyone with the link' আছে কি না চেক করুন।")
                 return None
             
     return tf.keras.models.load_model(model_path, compile=False)
-
-model = load_my_model()
-classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
 # ৫. মেইন ইন্টারফেস
 st.title("🩺 SkinAI Professional Assistant")
