@@ -83,28 +83,37 @@ st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">
 # ৩. হিউম্যান-লাইক স্মার্ট রেসপন্স (নতুন ও উন্নত ভার্সন)
 def get_natural_response(user_query, condition):
     q = user_query.lower()
-    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "bhalo", "hobe", "ami", "amar"])
+    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "bhalo", "keno", "eita"])
 
-    if any(word in q for word in ["doctor", "specialist", "ডাক্তার", "dekhabo", "treatment"]):
+    # ১. রোগের কারণ বা কেন হয় (Causes)
+    if any(word in q for word in ["keno", "why", "reason", "kijonno", "cause"]):
         if is_bengali:
-            return f"দেখুন, {condition} বিষয়টি অবহেলা করা ঠিক হবে না। আমি আপনাকে পরামর্শ দেব দ্রুত একজন চর্মরোগ বিশেষজ্ঞ (Dermatologist) দেখাতে। আপনি কি আপনার এলাকার ভালো ডাক্তারের খোঁজ চাচ্ছেন?"
-        return f"I understand your concern about {condition}. It's really important to consult a dermatologist for a professional checkup. Would you like me to help find a specialist near you?"
+            return f"দেখুন, {condition} হওয়ার পেছনে সাধারণত অতিরিক্ত সূর্যের আলো (UV Rays), বংশগত কারণ বা ত্বকের অযত্ন দায়ী থাকতে পারে। তবে সঠিক কারণ নিশ্চিত হতে বায়োপসি করা প্রয়োজন। আপনি কি রোদে বেশি সময় কাটান?"
+        return f"Usually, {condition} is caused by excessive UV exposure, genetics, or long-term skin irritation. However, a biopsy is needed for a definitive reason. Do you spend a lot of time in the sun?"
 
-    elif any(word in q for word in ["medicine", "cream", "ঔষধ", "osud", "lagabo", "tablet"]):
+    # ২. ডাক্তার বা বিশেষজ্ঞ (Doctor)
+    elif any(word in q for word in ["doctor", "specialist", "ডাক্তার", "dekhabo"]):
         if is_bengali:
-            return f"আমি আপনার কষ্টটা বুঝতে পারছি, কিন্তু {condition}-এর জন্য হুট করে কোনো ঔষধ বা ক্রিম লাগানো বিপদজনক হতে পারে। ডাক্তার না দেখিয়ে কিছু ব্যবহার করবেন না প্লিজ। আপনি কি আক্রান্ত স্থানে কোনো ব্যথা অনুভব করছেন?"
-        return f"I know you're looking for relief, but applying medicine for {condition} without a prescription can be risky. Are you experiencing any pain or itching right now?"
+            return f"আপনার {condition}-এর জন্য একজন বিশেষজ্ঞ চর্মরোগ ডাক্তার (Dermatologist) দেখানো সবচেয়ে ভালো হবে। দেরি করবেন না প্লিজ। আমি কি ডাক্তার খোঁজার তথ্য দেব?"
+        return f"I recommend consulting a Dermatologist as soon as possible for your {condition}. Shall I provide more information on how to find one?"
 
-    elif any(word in q for word in ["care", "tips", "যত্ন", "clean", "ki vabe"]):
+    # ৩. ঔষধ বা ক্রিম (Medicine)
+    elif any(word in q for word in ["medicine", "cream", "ঔষধ", "osud", "lagabo"]):
         if is_bengali:
-            return f"অবশ্যই! {condition} থাকলে জায়গাটি সব সময় পরিষ্কার আর শুকনো রাখার চেষ্টা করুন। রোদ থেকে দূরে থাকুন আর জায়গাটা একদম ঘষবেন না। আর কিছু কি জানতে চান?"
-        return f"Of course! For {condition}, keep the area clean and dry. Avoid direct sunlight and try not to scratch it. Is there anything else you're worried about?"
+            return f"আমি বুঝতে পারছি আপনি সমাধান খুঁজছেন, কিন্তু {condition}-এ ডাক্তারের পরামর্শ ছাড়া কোনো ক্রিম লাগানো উল্টো ফল দিতে পারে। কোনো কিছু লাগানোর আগে বিশেষজ্ঞের মতামত নিন। আপনার কি জায়গাটিতে চুলকানি হচ্ছে?"
+        return f"I understand you're looking for a cure, but applying anything to {condition} without a prescription can be dangerous. Have you noticed any itching or bleeding?"
 
+    # ৪. লক্ষণ বা সিম্পটম (Symptoms)
+    elif any(word in q for word in ["symptom", "lokkhon", "problem", "sign"]):
+        if is_bengali:
+            return f"{condition}-এর সাধারণ লক্ষণ হলো ত্বকের ওই জায়গায় রঙের পরিবর্তন, ক্ষত বা ফোলা ভাব। আপনার ক্ষেত্রে কি নতুন কোনো পরিবর্তন লক্ষ্য করেছেন?"
+        return f"Common signs of {condition} include changes in skin color, non-healing sores, or bumps. Have you noticed any recent changes in that area?"
+
+    # ৫. সাধারণ কুশল বিনিময় বা ডিফল্ট
     else:
         if is_bengali:
-            return f"আমি আপনার {condition} রিপোর্টটি মন দিয়ে দেখেছি। ঘাবড়াবেন না, সঠিক সময়ে চিকিৎসা নিলে এটি সেরে যায়। এই বিষয়ে আপনার মনে আর কোনো প্রশ্ন থাকলে আমাকে নির্দ্বিধায় বলতে পারেন।"
-        return f"I've carefully analyzed your report for {condition}. Don't worry too much; with proper care, it's manageable. Feel free to ask me anything else on your mind." if not is_bengali else f"আমি আপনার {condition} রিপোর্টটি দেখছি। এই বিষয়ে আমি আপনাকে আর কীভাবে সাহায্য করতে পারি?"
-
+            return f"আপনার {condition} রিপোর্টটি আমি গুরুত্ব দিয়ে দেখেছি। ঘাবড়াবেন না, সঠিক সময়ে চিকিৎসা নিলে এটি পুরোপুরি সেরে যায়। এই বিষয়ে আপনার মনে আর কোনো নির্দিষ্ট প্রশ্ন আছে?"
+        return f"I've carefully analyzed your report for {condition}. Stay positive, it's manageable with professional help. Do you have any specific concerns about this?"
 # 4. Loading Model from Google Drive (Using your new link)
 @st.cache_resource
 def load_my_model():
