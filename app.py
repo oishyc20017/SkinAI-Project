@@ -11,7 +11,7 @@ import hashlib
 from datetime import datetime
 
 # --- ১. ডাটাবেস সেটআপ ---
-conn = sqlite3.connect('skinai_v4.db', check_same_thread=False)
+conn = sqlite3.connect('skinai_ultimate.db', check_same_thread=False)
 c = conn.cursor()
 
 def init_db():
@@ -32,32 +32,45 @@ st.markdown("""
     .stApp { background-color: #0e1117; color: #ffffff; }
     [data-testid="stSidebar"] { background-color: #161b22 !important; border-right: 1px solid #30363d; }
     .main-title { font-size: 40px; font-weight: 800; color: #58a6ff; }
-    .sidebar-text { font-size: 14px; color: #8b949e; }
+    .stChatMessage { border-radius: 15px; margin-bottom: 10px; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- ৩. স্মার্ট রেসপন্স লজিক ---
+# --- ৩. অ্যাডভান্সড মাল্টি-রেসপন্স লজিক ---
 def get_natural_response(user_query, condition):
     q = user_query.lower()
-    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "keno", "mane ki"])
+    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "keno", "mane ki", "hoyeche"])
     
-    disease_info = {
-        'Actinic keratoses': {'bn': "এটি সূর্যের অতিবেগুনি রশ্মির প্রভাবে হয়। এটি কোনো জীবাণু নয়, কোষের DNA ক্ষতি।", 'en': "Caused by UV exposure. Not a germ-based infection."},
-        'Basal cell carcinoma': {'bn': "এটি অস্বাভাবিক কোষ বৃদ্ধি। রোদে পোড়া থেকে এটি হতে পারে।", 'en': "Abnormal basal cell growth, usually from sun damage."},
-        'Benign keratosis': {'bn': "এটি বয়সের সাথে হওয়া সাধারণ স্কিন গ্রোথ। ক্ষতিকর নয়।", 'en': "Non-cancerous skin growth related to aging."},
-        'Dermatofibroma': {'bn': "এটি ছোট ইনজুরি বা পোকামাকড়ের কামড় থেকে হতে পারে।", 'en': "Small, non-cancerous bumps from minor skin injury."},
-        'Melanoma': {'bn': "এটি মারাত্মক স্কিন ক্যান্সার। দ্রুত বিশেষজ্ঞ ডাক্তার দেখান।", 'en': "Serious skin cancer. See a dermatologist immediately."},
-        'Nevus': {'bn': "এটি সাধারণ তিল বা জন্মদাগ। চিন্তার কিছু নেই।", 'en': "Common moles or birthmarks. Usually harmless."},
-        'Vascular lesions': {'bn': "এটি রক্তনালীর সমস্যার কারণে হয়।", 'en': "Caused by abnormalities in blood vessels."}
+    # ডেটাবেস
+    db = {
+        'Actinic keratoses': {'cause': "সূর্যের UV রশ্মি / Sun UV Rays", 'info': "এটি প্রাক-ক্যান্সার অবস্থা।"},
+        'Basal cell carcinoma': {'cause': "DNA মিউটেশন ও রোদ / DNA mutation & sun", 'info': "সাধারণ স্কিন ক্যান্সার।"},
+        'Benign keratosis': {'cause': "বয়স বৃদ্ধি / Aging", 'info': "ক্ষতিকর নয় এমন গ্রোথ।"},
+        'Dermatofibroma': {'cause': "ছোট ইনজুরি / Minor skin injury", 'info': "শক্ত ছোট গুটি।"},
+        'Melanoma': {'cause': "তীব্র রোদ ও জেনেটিক / Intense sun & Genetics", 'info': "মারাত্মক ক্যান্সার।"},
+        'Nevus': {'cause': "মেলানোসাইট গুচ্ছ / Melanocyte clusters", 'info': "সাধারণ তিল।"},
+        'Vascular lesions': {'cause': "রক্তনালীর সমস্যা / Blood vessel issues", 'info': "লাল বা বেগুনি দাগ।"}
     }
 
-    if any(word in q for word in ["shudhu 7ta", "only 7", "3000"]):
-        return "বিশ্বে ৩০০০+ রোগ থাকলেও আমি ৭টি গুরুত্বপূর্ণ ক্যান্সার ও টিউমার নিয়ে কাজ করি।" if is_bengali else "I focus on 7 critical types out of 3,000+ conditions."
-    elif any(word in q for word in ["keno", "jibanu", "cause", "why"]):
-        info = disease_info.get(condition, {})
-        return info.get('bn' if is_bengali else 'en', "Please consult a pro.")
-    else:
-        return f"আপনার রিপোর্টে {condition} শনাক্ত হয়েছে। আরও কিছু জানতে চান?" if is_bengali else f"I found {condition}. Any more questions?"
+    responses = []
+    
+    # কন্ডিশনাল চেকিং (একাধিক উত্তর জেনারেট করবে)
+    if any(word in q for word in ["keno", "why", "cause", "hoyeche", "jibanu"]):
+        msg = f"🟢 **Cause:** {db[condition]['cause']}" if not is_bengali else f"🟢 **কারণ:** {db[condition]['cause']}"
+        responses.append(msg)
+        
+    if any(word in q for word in ["mane ki", "what is", "details", "ki"]):
+        msg = f"🔵 **About:** {db[condition]['info']}" if not is_bengali else f"🔵 **বিস্তারিত:** {db[condition]['info']}"
+        responses.append(msg)
+        
+    if any(word in q for word in ["osud", "medicine", "cream", "treatment"]):
+        msg = "⚠️ **Note:** Do not self-medicate. See a Dr." if not is_bengali else "⚠️ **সতর্কতা:** নিজে ঔষধ না লাগিয়ে ডাক্তার দেখান।"
+        responses.append(msg)
+
+    if not responses:
+        return f"I found {condition}. How can I help?" if not is_bengali else f"আপনার রিপোর্টে {condition} পাওয়া গেছে। আমি কীভাবে সাহায্য করতে পারি?"
+
+    return "\n\n".join(responses)
 
 # --- ৪. মডেল লোডিং ---
 @st.cache_resource
@@ -72,75 +85,62 @@ def load_my_model():
 model = load_my_model()
 classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# --- ৫. সাইডবার ইন্টারফেস (Gemini Style) ---
+# --- ৫. সাইডবার (Settings, Help, History, Login) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 
 with st.sidebar:
-    st.markdown("### 🛠️ Wishy's Core System")
+    st.markdown("### 🛠️ SkinAI Menu")
     
-    # How to use (Expandable)
     with st.expander("📖 How to use"):
-        st.write("1. Upload photo\n2. Get Result\n3. Save if logged in.")
+        st.write("1. Upload Photo\n2. Get Result\n3. Chat with AI\n4. Login to Save")
 
-    # Settings & Help (Expandable)
     with st.expander("⚙️ Settings"):
-        st.write("Profile Privacy")
-        st.write("Language: BN/EN")
+        st.write("Theme: Dark")
+        st.write("V6.0 Stable")
 
-    with st.expander("❓ Help & Support"):
-        st.write("Email: support@skinai.pro")
-        st.write("User Manual")
+    with st.expander("❓ Help"):
+        st.write("Contact: wishy@advocate.com")
 
     st.markdown("---")
 
-    # হিস্ট্রি (শুধুমাত্র লগইন থাকলে দেখাবে)
     if st.session_state.logged_in:
+        st.markdown(f"👤 **User:** {st.session_state.username}")
         st.markdown("### 🕒 Recent History")
         c.execute('SELECT result, timestamp FROM history WHERE username = ? ORDER BY timestamp DESC LIMIT 5', (st.session_state.username,))
-        rows = c.fetchall()
-        if rows:
-            for row in rows:
-                st.caption(f"📅 {row[1]}")
-                st.info(f"{row[0]}")
-        else:
-            st.write("No history found.")
+        for row in c.fetchall():
+            st.caption(f"{row[1]} - {row[0]}")
         
-        st.markdown("---")
-        st.write(f"Logged in as: **{st.session_state.username}**")
         if st.button("Logout"):
             st.session_state.logged_in = False
             st.rerun()
     else:
-        # লগইন অপশন (একদম নিচে)
         with st.expander("🔑 Login / Sign Up"):
-            u = st.text_input("User")
-            p = st.text_input("Pass", type='password')
-            col1, col2 = st.columns(2)
-            if col1.button("Login"):
+            u = st.text_input("Username")
+            p = st.text_input("Password", type='password')
+            if st.button("Login"):
                 c.execute('SELECT password FROM users WHERE username = ?', (u,))
                 data = c.fetchone()
                 if data and check_hashes(p, data[0]):
                     st.session_state.logged_in = True
                     st.session_state.username = u
                     st.rerun()
-            if col2.button("Register"):
+            if st.button("Register"):
                 try:
                     c.execute('INSERT INTO users VALUES (?,?)', (u, make_hashes(p)))
                     conn.commit()
                     st.success("Registered!")
-                except: st.error("User exists.")
+                except: st.error("User exists")
 
 # --- ৬. মেইন অ্যাপ ---
 st.markdown('<h1 class="main-title">🩺 SkinAI Assistant</h1>', unsafe_allow_html=True)
-st.write("Get AI-powered diagnosis for 7 major skin conditions. Searching is open for all.")
 
 if model:
-    file = st.file_uploader("Upload Image", type=["jpg", "png", "jpeg"])
+    file = st.file_uploader("Choose skin image...", type=["jpg", "png", "jpeg"])
     if file:
         img = Image.open(file).convert('RGB')
         st.image(img, width=400)
         
-        # Detection
+        # Prediction
         img_res = img.resize((100, 75))
         x = np.asarray(img_res) / 255.0
         x = np.expand_dims(x, axis=0)
@@ -148,28 +148,34 @@ if model:
         result = classes[np.argmax(pred)]
         conf = np.max(pred) * 100
         
-        st.success(f"Detection Result: **{result}** ({conf:.2f}%)")
+        st.success(f"Detection: **{result}** ({conf:.2f}%)")
         
-        # Save Button (Conditional)
         if st.session_state.logged_in:
-            if st.button("💾 Save this to History"):
-                ts = datetime.now().strftime("%Y-%m-%d %H:%M")
+            if st.button("💾 Save Result"):
+                ts = datetime.now().strftime("%d %b, %H:%M")
                 c.execute('INSERT INTO history VALUES (?,?,?,?)', (st.session_state.username, result, conf, ts))
                 conn.commit()
-                st.success("Result saved to your profile!")
+                st.success("Saved to History!")
         else:
-            st.warning("Want to save this? Please Login from the sidebar.")
+            st.info("Login from sidebar to save this report.")
 
-        # Chatbot Section
+        # চ্যাটবট
         st.markdown("---")
         if "messages" not in st.session_state: st.session_state.messages = []
         for m in st.session_state.messages:
             with st.chat_message(m["role"]): st.markdown(m["content"])
 
-        if prompt := st.chat_input("Ask about your report..."):
+        if prompt := st.chat_input("Ask: 'Why it happened and what is the medicine?'"):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"): st.markdown(prompt)
             with st.chat_message("assistant"):
                 reply = get_natural_response(prompt, result)
-                st.write(reply)
-                st.session_state.messages.append({"role": "assistant", "content": reply})
+                # টাইপিং এনিমেশন
+                placeholder = st.empty()
+                full_txt = ""
+                for char in reply:
+                    full_txt += char
+                    placeholder.markdown(full_txt + "▌")
+                    time.sleep(0.01)
+                placeholder.markdown(full_txt)
+                st.session_state.messages.append({"role": "assistant", "content": full_txt})
