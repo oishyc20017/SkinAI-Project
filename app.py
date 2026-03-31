@@ -47,28 +47,55 @@ disease_info = {
 }
 
 # --- ৪. স্মার্ট এআই ইঞ্জিন ---
+# --- ৩. স্মার্ট মাল্টি-ল্যাঙ্গুয়েজ ও মাল্টি-অ্যানসার ইঞ্জিন ---
 def get_intelligent_response(query, res):
+    # Thinking Animation
     with st.status("SkinAI is thinking...", expanded=False) as status:
         time.sleep(1.2)
         status.update(label="Analysis Done!", state="complete")
     
     q = query.lower()
-    # স্মার্ট ল্যাঙ্গুয়েজ ডিটেকশন (বাংলা/বাংলিশ/ইংলিশ)
-    is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or any(w in q for w in ["ki", "keno", "korbo", "hoyeche"])
+    
+    # ১. স্মার্ট ল্যাঙ্গুয়েজ ডিটেকশন (বাংলা অক্ষর বা বাংলিশ শব্দ চেক)
+    is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
+                any(word in q for word in ["ki", "keno", "ken", "hoyeche", "korbo", "bolun", "eta", "eita", "medicine", "osud"])
     
     ans = []
-    if res == "None": return "দয়া করে ছবি দিন।" if is_bangla else "Please upload a photo."
+    if res == "None":
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first."
+
     info = disease_info.get(res, {})
 
-    if any(w in q for w in ["ki", "what", "detail", "বর্ণনা"]):
-        ans.append(f"📘 {'**বিস্তারিত:**' if is_bangla else '**Details:**'} {info['bn' if is_bangla else 'en']}")
-    if any(w in q for w in ["keno", "why", "cause", "হলো"]):
-        ans.append(f"🧬 {'**কারণ:**' if is_bangla else '**Cause:**'} {res} মূলত UV রশ্মি বা জীনগত পরিবর্তনের ফলে হয়।")
-    if any(w in q for w in ["osud", "medicine", "solution", "ঔষধ"]):
-        ans.append(f"⚠️ {'**পরামর্শ:** বিশেষজ্ঞ ডাক্তারের পরামর্শ নিন।' if is_bangla else '**Suggestion:** Consult a doctor.'}")
+    # ২. মাল্টি-অ্যানসার লজিক (ইউজার যা যা জানতে চাবে সব পয়েন্ট আকারে আসবে)
     
-    return "\n\n".join(ans) if ans else (f"আমি **{res}** শনাক্ত করেছি।" if is_bangla else f"I detected **{res}**.")
+    # বর্ণনা (Details)
+    if any(w in q for w in ["ki", "what", "detail", "details", "বর্ণনা", "রোগ"]):
+        header = "📘 **বিস্তারিত:** " if is_bangla else "📘 **Details:** "
+        ans.append(f"{header}{info['bn' if is_bangla else 'en']}")
 
+    # কারণ (Cause)
+    if any(w in q for w in ["keno", "why", "cause", "হলো", "কারণ", "ken"]):
+        if is_bangla:
+            ans.append(f"🧬 **কারণ:** {res} মূলত সূর্যের অতিবেগুনি রশ্মি (UV) বা জীনগত পরিবর্তনের ফলে হয়।")
+        else:
+            ans.append(f"🧬 **Cause:** {res} is usually caused by prolonged UV radiation or genetic skin cell changes.")
+            
+    # সমাধান/ঔষধ (Solution/Medicine)
+    if any(w in q for w in ["osud", "medicine", "solution", "ঔষধ", "korbo", "do", "treat"]):
+        if is_bangla:
+            ans.append(f"⚠️ **পরামর্শ:** বিশেষজ্ঞ ডাক্তারের অনুমতি ছাড়া কোনো ঔষধ বা ক্রিম ব্যবহার করবেন না।")
+        else:
+            ans.append(f"⚠️ **Suggestion:** Do not use any medication without consulting a dermatologist.")
+    
+    # যদি কোনো কি-ওয়ার্ড ম্যাচ না করে
+    if not ans:
+        if is_bangla:
+            return f"আমি রিপোর্টে **{res}** শনাক্ত করেছি। আপনি কি এর বর্ণনা বা প্রতিকার সম্পর্কে জানতে চান?"
+        else:
+            return f"I detected **{res}** in your report. Would you like to know its details or treatment?"
+    
+    # একাধিক উত্তর থাকলে সেগুলো গ্যাপ দিয়ে সুন্দর করে সাজিয়ে দিবে
+    return "\n\n---\n\n".join(ans)
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
