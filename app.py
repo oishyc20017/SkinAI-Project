@@ -103,14 +103,27 @@ def load_skin_model():
 
 model = load_skin_model()
 classes = list(disease_info.keys())
+# --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট ---
+# এই ভেরিয়েবলগুলো সবার আগে থাকতে হবে (লাইন ১০৭ এর আশেপাশে)
+if 'logged_in' not in st.session_state: st.session_state.logged_in = False
+if 'messages' not in st.session_state: st.session_state.messages = []
+if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+if 'user' not in st.session_state: st.session_state.user = None
 
-# --- ৬. সাইডবার, সেশন ও হিস্ট্রি ম্যানেজমেন্ট ---
 with st.sidebar:
     st.markdown('<div class="brand-card">', unsafe_allow_html=True)
     st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
     st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
+    if st.button("➕ New Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+
+    st.markdown("---")
+    
+    # এখন এটি চেক করলে আর এরর আসবে না
+    if not st.session_state.logged_in:
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
