@@ -108,6 +108,7 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
+if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
     st.markdown('<div class="brand-card">', unsafe_allow_html=True)
