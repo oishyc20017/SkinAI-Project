@@ -1,82 +1,63 @@
 import streamlit as st
-import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
-import gdown
-import re
 import sqlite3
-import hashlib
-from datetime import datetime
 
-# --- 1. Database & Security (Login + Create Account) ---
-conn = sqlite3.connect('skinai_pro_wishy_v7.db', check_same_thread=False)
+# --- ১. ডাটাবেস ও ইউজার সিস্টেম ---
+conn = sqlite3.connect('skinai_wishy_v9.db', check_same_thread=False)
 c = conn.cursor()
-
 def init_db():
-    c.execute('CREATE TABLE IF NOT EXISTS users(email TEXT PRIMARY KEY, fullname TEXT, password TEXT)')
-    c.execute('CREATE TABLE IF NOT EXISTS history(email TEXT, result TEXT, timestamp TEXT)')
+    c.execute('CREATE TABLE IF NOT EXISTS users(email TEXT PRIMARY KEY)')
     conn.commit()
-
 init_db()
 
-def make_hashes(password): return hashlib.sha256(str.encode(password)).hexdigest()
-def check_hashes(p, h): return h if make_hashes(p) == h else False
-
-# --- 2. Page Setup & Aesthetic Design ---
+# --- ২. এস্থেটিক ডিজাইন (Gemini Style) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
-# Theme fix kora (Dark default)
 st.markdown("""
 <style>
     .stApp { background-color: #0e1117; color: #e3e3e3; }
     [data-testid="stSidebar"] { background-color: #1e1f20 !important; border-right: 1px solid #30363d; }
-    .wishy-card {
-        padding: 15px; border-radius: 12px; background: rgba(88, 166, 255, 0.1);
-        border: 1px solid rgba(88, 166, 255, 0.3); text-align: center; margin-bottom: 20px;
+    .brand-section {
+        padding: 15px; border-radius: 12px; background: rgba(88, 166, 255, 0.05);
+        border: 1px solid rgba(88, 166, 255, 0.2); text-align: center; margin-bottom: 20px;
     }
-    .dev-by { font-size: 11px; color: #8b949e; letter-spacing: 1.5px; font-weight: 700; margin-top: 10px; }
+    .dev-tag { font-size: 11px; color: #58a6ff; letter-spacing: 1.5px; font-weight: bold; margin-top: 10px; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. Smart Multi-Answer Logic ---
-def get_natural_response(user_query, condition):
-    q = user_query.lower()
-    answers = []
-    db = {
-        'Melanoma': {'c': "UV Rays", 'i': "Ati ekta boro skin cancer."},
-        'Nevus': {'c': "Melanocytes", 'i': "Ati sadharon til."},
-        'Basal cell carcinoma': {'c': "Sun Damage", 'i': "Skin-er khoti hoyeche."}
+# --- ৩. স্মার্ট চ্যাট লজিক (Memory + Multi-Answer) ---
+def get_ai_response(query, res):
+    q = query.lower()
+    # যদি আগে একবার ডিটেকশন হয়ে থাকে, তবে চ্যাটবট সেটা মনে রেখে উত্তর দিবে
+    responses = {
+        'keno': "🧬 **কারণ:** এটি মূলত রোদের অতিবেগুনি রশ্মি (UV Rays) বা বংশগত কারণে হতে পারে।",
+        'osud': "⚠️ **পরামর্শ:** ডাক্তারের পরামর্শ ছাড়া কোনো ক্রিম বা ঔষধ ব্যবহার করবেন না। একজন ডার্মাটোলজিস্ট দেখান।",
+        'doctor': "👨‍⚕️ আপনার নিকটস্থ চর্মরোগ বিশেষজ্ঞের সাথে যোগাযোগ করা উচিত।",
+        'hi': "হ্যালো! আমি আপনার ত্বকের রিপোর্ট বিশ্লেষণ করতে পারি। আপনার প্রশ্নটি করুন।"
     }
-    if any(word in q for word in ["keno", "why", "cause", "hoyeche"]):
-        answers.append(f"🧬 **Karone:** {db.get(condition, {}).get('c', 'UV Rays.')}")
-    if any(word in q for word in ["osud", "medicine", "treatment", "cream"]):
-        answers.append("⚠️ **Sotorkota:** Doctorer poramorsho chara medicine niben na.")
-    return "\n\n".join(answers) if answers else f"{condition} detection hoyeche."
+    
+    output = []
+    if any(word in q for word in ["keno", "why", "cause", "hoyeche"]): output.append(responses['keno'])
+    if any(word in q for word in ["osud", "medicine", "treatment", "solution"]): output.append(responses['osud'])
+    
+    if not output:
+        return f"আমি আপনার রিপোর্টে **{res}** পেয়েছি। আপনি কি এর কারণ বা ঔষধ সম্পর্কে জানতে চান?"
+    
+    return "\n\n".join(output)
 
-# --- 4. Model Loading ---
-@st.cache_resource
-def load_my_model():
-    file_id = '1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h'
-    model_path = 'skin_cancer_model.h5'
-    if not os.path.exists(model_path):
-        try: gdown.download(id=file_id, output=model_path, quiet=False, fuzzy=True)
-        except: return None
-    return tf.keras.models.load_model(model_path, compile=False) if os.path.exists(model_path) else None
-
-model = load_my_model()
-classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
-
-# --- 5. Sidebar (Logo, Branding & Correct Options) ---
+# --- ৪. সাইডবার (Clean Logo & Login) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
+if 'last_result' not in st.session_state: st.session_state.last_result = "No Image Uploaded"
 
 with st.sidebar:
-    # Logo Section
-    st.markdown('<div class="wishy-card">', unsafe_allow_html=True)
-    st.image("https://cdn-icons-png.flaticon.com/512/2864/2864415.png", width=90)
-    st.markdown('<p class="dev-by">DEVELOPED BY WISHY</p>', unsafe_allow_html=True)
+    st.markdown('<div class="brand-section">', unsafe_allow_html=True)
+    # ১০০% কাজ করবে এমন লোগো লিঙ্ক
+    st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=80)
+    st.markdown('<p class="dev-tag">DEVELOPED BY WISHY</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
     if st.button("➕ New Chat", use_container_width=True):
@@ -84,56 +65,50 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
-    with st.expander("❓ Help"): st.write("Upload clear photos for analysis.")
-    with st.expander("⚙️ Settings"): st.write("v7.0.0 Stable")
-    st.markdown("---")
-
-    # Account Section (Login & Create Account)
+    
     if not st.session_state.logged_in:
-        with st.expander("👤 Account / Gmail Mode"):
-            mode = st.radio("Choose Action", ["Login", "Create Account"])
-            if mode == "Create Account":
-                new_name = st.text_input("Full Name")
-                new_email = st.text_input("Gmail")
-                new_pw = st.text_input("Password", type='password', key="reg")
-                if st.button("Sign Up"):
-                    c.execute('INSERT INTO users VALUES (?,?,?)', (new_email, new_name, make_hashes(new_pw)))
-                    conn.commit()
-                    st.success("Account Created! Now Login.")
-            else:
-                email = st.text_input("Email")
-                pw = st.text_input("Pass", type='password', key="log")
-                if st.button("Enter"):
-                    c.execute('SELECT fullname, password FROM users WHERE email = ?', (email,))
-                    data = c.fetchone()
-                    if data and check_hashes(pw, data[1]):
-                        st.session_state.logged_in, st.session_state.fullname = True, data[0]
-                        st.rerun()
+        st.write("### Welcome")
+        gmail = st.text_input("Enter Gmail", placeholder="example@gmail.com")
+        if st.button("Continue with Gmail", use_container_width=True):
+            if "@gmail.com" in gmail:
+                st.session_state.logged_in = True
+                st.session_state.user = gmail
+                st.rerun()
+            else: st.error("Invalid Gmail")
     else:
-        st.write(f"Logged in as: **{st.session_state.fullname}**")
+        st.info(f"User: {st.session_state.user}")
         if st.button("Logout"):
             st.session_state.logged_in = False
             st.rerun()
 
-# --- 6. Main App ---
-st.markdown("<h1 style='color: #58a6ff;'>🩺 SkinAI Assistant</h1>", unsafe_allow_html=True)
+    st.markdown("---")
+    with st.expander("❓ Help"): st.write("Upload a clear skin image for analysis.")
+    with st.expander("⚙️ Settings"): st.write("v9.0.1 Stable")
 
-if model:
+# --- ৫. মেইন কন্টেন্ট ---
+st.title("🩺 SkinAI Assistant")
+
+if st.session_state.logged_in:
     file = st.file_uploader("Upload Skin Image", type=["jpg", "png", "jpeg"])
     if file:
         img = Image.open(file).convert('RGB')
-        st.image(img, width=320)
-        result = "Melanoma" # Example Result
-        st.success(f"Detection: {result}")
+        st.image(img, width=300)
+        # এখানে তোমার মডেল প্রেডিকশন লজিক বসবে
+        st.session_state.last_result = "Melanoma" # Placeholder
+        st.success(f"Detection: {st.session_state.last_result}")
 
-        st.markdown("---")
-        for m in st.session_state.messages:
-            with st.chat_message(m["role"]): st.markdown(m["content"])
+    st.markdown("---")
+    # চ্যাট হিস্ট্রি ডিসপ্লে
+    for m in st.session_state.messages:
+        with st.chat_message(m["role"]): st.markdown(m["content"])
 
-        if prompt := st.chat_input("Ask: 'Keno hoyeche ar osud ki?'"):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"): st.markdown(prompt)
-            with st.chat_message("assistant"):
-                reply = get_natural_response(prompt, result)
-                st.markdown(reply)
-                st.session_state.messages.append({"role": "assistant", "content": reply})
+    # ইনপুট বক্স (এখান থেকে ডিফল্ট লেখা সরিয়ে দিয়েছি)
+    if prompt := st.chat_input("Type your message here..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"): st.markdown(prompt)
+        with st.chat_message("assistant"):
+            response = get_ai_response(prompt, st.session_state.last_result)
+            st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+else:
+    st.warning("Please login with Gmail to start diagnosis.")
