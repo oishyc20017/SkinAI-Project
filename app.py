@@ -69,15 +69,65 @@ st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">
 # ৫. স্মার্ট রেসপন্স লজিক
 def get_natural_response(user_query, condition):
     q = user_query.lower()
-    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "keno"])
+    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "keno", "mane ki", "hoyeche", "jibanu"])
     
-    if any(word in q for word in ["keno", "why", "cause"]):
-        res = f"{condition} সাধারণত অতিরিক্ত রোদ বা বংশগত কারণে হয়।" if is_bengali else f"{condition} is often caused by sun exposure or genetics."
-    elif any(word in q for word in ["doctor", "specialist"]):
-        res = "একজন চর্মরোগ বিশেষজ্ঞ দেখানো ভালো হবে।" if is_bengali else "Consult a Dermatologist soon."
+    # রোগের গভীর বৈজ্ঞানিক ডাটাবেস (Causes & Pathogens)
+    disease_info = {
+        'Actinic keratoses': {
+            'bn': "এটি মূলত সূর্যের অতিবেগুনি রশ্মির (UV Rays) দীর্ঘদিনের প্রভাবে হয়। কোনো নির্দিষ্ট জীবাণু নয়, বরং চামড়ার কোষের DNA নষ্ট হওয়ার কারণে এটি ঘটে।",
+            'en': "This is caused by long-term exposure to UV radiation from the sun. It's a cellular DNA damage issue, not caused by germs."
+        },
+        'Basal cell carcinoma': {
+            'bn': "এটি ত্বকের গভীর কোষের অস্বাভাবিক বৃদ্ধি। অতিরিক্ত রোদ বা রেডিয়েশনের কারণে DNA মিউটেশন হয়ে এটি শুরু হয়। এটি সংক্রামক নয়।",
+            'en': "This is caused by DNA mutations in the basal cells of the skin, often triggered by intense sun exposure or tanning beds."
+        },
+        'Benign keratosis': {
+            'bn': "এটি বয়সের সাথে ত্বকের কেরাটিনোসাইট কোষের জমার কারণে হয়। কোনো জীবাণু বা সংক্রমণের সাথে এর সম্পর্ক নেই।",
+            'en': "This occurs due to a buildup of skin cells (keratinocytes) usually related to aging. It is not caused by any bacteria or virus."
+        },
+        'Dermatofibroma': {
+            'bn': "এটি সাধারণত কোনো ছোট আঘাত বা পোকামাকড়ের কামড়ের পর ত্বকের ওভার-রিঅ্যাকশনের ফলে তৈরি হয়। কোনো ভাইরাস বা ব্যাকটেরিয়া এর মূল কারণ নয়।",
+            'en': "This is a reaction to minor skin trauma, like an insect bite or a small cut. It is not caused by a pathogen."
+        },
+        'Melanoma': {
+            'bn': "এটি মেলানোসাইট কোষে মিউটেশনের কারণে হয়। এর প্রধান কারণ হলো তীব্র রোদে পোড়া বা জেনেটিক সমস্যা। এটি কোনো জীবাণুঘটিত রোগ নয়।",
+            'en': "Caused by genetic mutations in melanocytes (pigment cells), primarily triggered by intense UV exposure."
+        },
+        'Nevus': {
+            'bn': "এটি জন্মের সময় বা পরে ত্বকের রঞ্জক কোষ (Melanocytes) এক জায়গায় গুচ্ছ হয়ে থাকার কারণে হয়। এটি সম্পূর্ণ প্রাকৃতিক।",
+            'en': "These are clusters of pigmented cells (melanocytes). They are natural and not caused by any external infection."
+        },
+        'Vascular lesions': {
+            'bn': "এটি রক্তনালীর অস্বাভাবিক গঠন বা প্রসারণের কারণে হয়। অনেক সময় জন্মগত ত্রুটি বা হরমোনের কারণেও হতে পারে।",
+            'en': "Caused by abnormalities in blood vessel formation or dilation. Can be congenital or due to hormonal changes."
+        }
+    }
+
+    # ১. কেন হয়েছে বা কোন জীবাণু (Cause/Pathogen/Mechanism)
+    if any(word in q for word in ["keno", "jibanu", "pathogen", "virus", "bacteria", "how", "cause", "kisher jonno"]):
+        info = disease_info.get(condition, {})
+        if is_bengali:
+            return info.get('bn', f"দুঃখিত, {condition} সম্পর্কে আমার কাছে এই মুহূর্তে বিস্তারিত কারণ নেই। তবে এটি কোনো বিশেষজ্ঞ ডাক্তারকে দেখানো উচিত।")
+        return info.get('en', f"I don't have the specific cause for {condition} yet. Please consult a specialist.")
+
+    # ২. রোগটি আসলে কী (Definition)
+    elif any(word in q for word in ["mane ki", "what is", "ki", "details"]):
+        # আগের ডিকশনারি লজিক এখানেও কাজ করবে
+        if is_bengali:
+            return f"{condition} হলো ত্বকের একটি বিশেষ অবস্থা। উপরে এর কারণ ব্যাখ্যা করা হয়েছে, আরও কিছু জানতে চাইলে আমাকে জিজ্ঞেস করুন।"
+        return f"{condition} is a specific skin condition. You can ask about its causes or professional care."
+
+    # ৩. ডাক্তার/ঔষধ (General)
+    elif any(word in q for word in ["doctor", "osud", "medicine", "dr"]):
+        if is_bengali:
+            return "যেহেতু এটি একটি সেনসিটিভ বিষয়, তাই নিজে কোনো ক্রিম না লাগিয়ে সরাসরি চর্মরোগ বিশেষজ্ঞকে দেখানোই নিরাপদ।"
+        return "Self-medication is risky. Please consult a professional Dermatologist for correct treatment."
+
+    # ৪. ডিফল্ট উত্তর
     else:
-        res = f"আমি আপনার {condition} রিপোর্টটি দেখছি। আর কিছু কি জানতে চান?" if is_bengali else f"I'm analyzing your {condition} report. Any other questions?"
-    return res
+        if is_bengali:
+            return f"আপনার রিপোর্টে {condition} শনাক্ত হয়েছে। আপনি কি এর কারণ বা প্রতিকার সম্পর্কে জানতে চান?"
+        return f"I have detected {condition}. Would you like to know more about its causes or treatment?"
 
 # ৬. মডেল লোডিং
 @st.cache_resource
