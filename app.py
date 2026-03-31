@@ -10,8 +10,8 @@ import sqlite3
 import hashlib
 from datetime import datetime
 
-# --- ১. ডাটাবেস ও ডিজাইন ---
-conn = sqlite3.connect('skinai_pro_final.db', check_same_thread=False)
+# --- ১. ডাটাবেস ও সিকিউরিটি ---
+conn = sqlite3.connect('skinai_pro_logo.db', check_same_thread=False)
 c = conn.cursor()
 
 def init_db():
@@ -24,12 +24,11 @@ init_db()
 def make_hashes(password): return hashlib.sha256(str.encode(password)).hexdigest()
 def check_hashes(p, h): return h if make_hashes(p) == h else False
 
-# --- ২. পেজ সেটআপ ও এস্থেটিক ডিজাইন ---
+# --- ২. পেজ সেটআপ ও ডিজাইন ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
 if 'theme' not in st.session_state: st.session_state.theme = 'Dark'
 
-# থিম অনুযায়ী কালার প্যালেট
 if st.session_state.theme == 'Dark':
     bg, txt, sb, card = "#0e1117", "#e3e3e3", "#1e1f20", "rgba(88, 166, 255, 0.1)"
 else:
@@ -40,15 +39,10 @@ st.markdown(f"""
     .stApp {{ background-color: {bg}; color: {txt}; }}
     [data-testid="stSidebar"] {{ background-color: {sb} !important; border-right: 1px solid #30363d; }}
     
-    /* Wishy's Aesthetic Brand Card */
+    /* Wishy's Brand Card Style */
     .wishy-card {{
         padding: 15px; border-radius: 12px; background: {card};
         border: 1px solid rgba(88, 166, 255, 0.3); text-align: center; margin-bottom: 20px;
-    }}
-    .wishy-name {{
-        background: linear-gradient(45deg, #58a6ff, #bc85ff);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        font-size: 22px; font-weight: 800; margin: 0;
     }}
     .dev-by {{ font-size: 11px; color: #8b949e; letter-spacing: 1px; margin-top: 5px; font-weight: 600; }}
 </style>
@@ -88,18 +82,21 @@ def load_my_model():
 model = load_my_model()
 classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# --- ৫. সাইডবার (Gemini Layout - All Options Restored) ---
+# --- ৫. সাইডবার (Logo & Wishy Brand Restored) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 
 with st.sidebar:
-    # --- Aesthetic Wishy Card ---
-    st.markdown("""
-        <div class="wishy-card">
-            <h1 class="wishy-name">WISHY</h1>
-            <p class="dev-by">DEVELOPED BY WISHY</p>
-        </div>
-    """, unsafe_allow_html=True)
+    # --- লোগো এবং Wishy ব্যাজ ---
+    st.markdown('<div class="wishy-card">', unsafe_allow_html=True)
+    
+    # এখানে একটি সাধারণ স্কিন ডিজিজ লোগোর URL দেওয়া হলো
+    logo_url = "https://raw.githubusercontent.com/wishy-dev/skinai-pro/main/skin_disease_logo.png" # Example URL
+    # যদি এই URL কাজ না করে, আপনি একটি সাধারণ স্কিন আইকন ব্যবহার করতে পারেন:
+    # logo_url = "https://img.icons8.com/color/96/000000/skin.png" 
+    st.image(logo_url, width=96)
+    st.markdown('<p class="dev-by">DEVELOPED BY WISHY</p>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.messages = []
@@ -107,21 +104,19 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # ১. থিম অপশন
+    # অপশন পুনরুদ্ধার
     with st.expander("🌓 Appearance"):
         selected_theme = st.selectbox("Select Theme", ["Dark", "Light"], index=0 if st.session_state.theme == 'Dark' else 1)
         if selected_theme != st.session_state.theme:
             st.session_state.theme = selected_theme
             st.rerun()
 
-    # ২. হেল্প অপশন
     with st.expander("❓ Help"):
         st.write("• Upload clear skin images.")
         st.write("• Ask about causes or treatments.")
 
-    # ৩. সেটিংস অপশন
     with st.expander("⚙️ Settings"):
-        st.write("Version: 6.5.0")
+        st.write("Version: 6.5.1")
         st.write("Status: Secure")
 
     st.markdown("---")
