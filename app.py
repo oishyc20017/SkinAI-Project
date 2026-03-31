@@ -77,51 +77,52 @@ disease_details = {
     }
 }
 
-# --- ৪. স্মার্ট ল্যাঙ্গুয়েজ ইঞ্জিন (ভাষা অনুযায়ী সম্পূর্ণ উত্তর) ---
+# --- ৪. আলটিমেট হাইব্রিড ল্যাঙ্গুয়েজ ইঞ্জিন (Smart Multi-Question Support) ---
 def get_intelligent_response(query, res):
-    with st.status("Analyzing Language & Context...", expanded=False) as status:
-        time.sleep(0.8)
-        status.update(label="Response Generated!", state="complete")
+    with st.status("Analyzing your questions...", expanded=False) as status:
+        time.sleep(1.0)
+        status.update(label="Answers Ready!", state="complete")
     
     q = query.lower()
-    # ভাষা শনাক্তকরণ (বাংলা বা বাংলিশ চেক)
-    is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
-                any(word in q.split() for word in ["ki", "keno", "bolo", "hoyeche", "upai", "osud", "tips"])
-    
     if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first."
+        return "দয়া করে আগে একটি ছবি আপলোড করুন। / Please upload a photo first."
 
     data = disease_details.get(res, {})
-    
-    if is_bangla:
-        # সম্পূর্ণ বাংলা উত্তর
-        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
-        response += f"**এটি আসলে কী?**\n{data['desc']}\n\n"
-        response += f"**সম্ভাব্য কারণ:**\n{data['cause']}\n\n"
-        response += f"**ঘরোয়া টিপস:**\n{data['home']}\n\n"
-        response += f"**ডাক্তারের পরামর্শ:**\n{data['advice']}\n\n"
-        response += "---\n*আপনার কি আরও কোনো প্রশ্ন আছে?*"
-    else:
-        # সম্পূর্ণ ইংরেজি উত্তর (অনুবাদসহ)
-        en_desc = {
-            'Actinic keratoses': "Rough, scaly patch on skin caused by years of sun exposure.",
-            'Basal cell carcinoma': "A type of skin cancer that begins in the basal cells.",
-            'Benign keratosis': "Non-cancerous skin growth that happens with age.",
-            'Dermatofibroma': "Common fibrous benign skin lesion.",
-            'Melanoma': "The most serious type of skin cancer.",
-            'Nevus': "A common mole or birthmark.",
-            'Vascular lesions': "Skin marks caused by abnormal blood vessels."
-        }
-        
-        response = f"### 🩺 **AI Analysis: {res}**\n\n"
-        response += f"**What is it?**\n{en_desc.get(res, 'Information not available in English.')}\n\n"
-        response += f"**Possible Cause:**\nUsually caused by UV exposure or genetic factors.\n\n"
-        response += f"**Home Care Tips:**\nAvoid direct sun, keep the area clean, and do not pick at it.\n\n"
-        response += f"**Doctor's Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
-        response += "---\n*Do you have any more questions?*"
-    
-    return response
+    responses = []
 
+    # ১. বিস্তারিত বা "কী" নিয়ে প্রশ্ন (English & Bangla Detection)
+    if any(w in q for w in ["what", "detail", "explain", "info"]):
+        responses.append(f"📘 **Details:** {res} is a skin condition. {data['desc'].split('.')[0]} in English context.") # English part
+    if any(w in q for w in ["ki", "কী", "কি", "details", "বলো", "bolun"]):
+        responses.append(f"📘 **বিস্তারিত:** {data['desc']}") # Bangla part
+
+    # ২. কারণ নিয়ে প্রশ্ন
+    if any(w in q for w in ["why", "cause", "reason"]):
+        responses.append(f"🧬 **Cause:** Usually triggered by UV exposure or genetics.")
+    if any(w in q for w in ["keno", "কেন", "হয়েছে", "hoyeche"]):
+        responses.append(f"🧬 **কারণ:** {data['cause']}")
+
+    # ৩. ঘরোয়া টিপস নিয়ে প্রশ্ন
+    if any(w in q for w in ["home", "remedy", "treat at home"]):
+        responses.append(f"🏠 **Home Care:** Avoid sun and stay hydrated.")
+    if any(w in q for w in ["ghoroya", "ঘরোয়া", "tips", "upai", "উপায়"]):
+        responses.append(f"🏠 **ঘরোয়া টিপস:** {data['home']}")
+
+    # ৪. ডাক্তার বা ঔষধ নিয়ে প্রশ্ন
+    if any(w in q for w in ["doctor", "medicine", "cure"]):
+        responses.append(f"👨‍⚕️ **Medical:** Consult a dermatologist for professional care.")
+    if any(w in q for w in ["doctor", "ডাক্তার", "dakhtar", "osud", "ঔষধ"]):
+        responses.append(f"👨‍⚕️ **পরামর্শ:** {data['advice']}")
+
+    # যদি ইউজার শুধু "Yes" বা "Bolo" বলে (স্মার্ট কনটেক্সট)
+    if not responses and any(w in q for w in ["yes", "ha", "bolo", "okay", "আচ্ছা"]):
+        responses.append(f"Report for **{res}**:\n\n{data['desc']}\n\n{data['advice']}")
+
+    if responses:
+        return "\n\n---\n\n".join(responses)
+    else:
+        return (f"I detected **{res}**. You can ask about its 'Details', 'Causes', or 'Home Tips' in English or Bangla!" if not any('\u0980' <= char <= '\u09FF' for char in query) 
+                else f"আমি **{res}** শনাক্ত করেছি। আপনি এর বিস্তারিত, কারণ বা ঘরোয়া টিপস সম্পর্কে বাংলা বা ইংরেজিতে প্রশ্ন করতে পারেন।")
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
