@@ -42,7 +42,7 @@ disease_info = {
     'Vascular lesions': {'bn': "রক্তনালীর অস্বাভাবিকতায় লাল দাগ। সাধারণত বিপজ্জনক নয়।", 'en': "Red marks from abnormal blood vessels, usually harmless."}
 }
 
-# --- ৪. স্মার্ট রিপ্লাই ইঞ্জিন (Updated for Smart Answers) ---
+# --- ৪. স্মার্ট রিপ্লাই ইঞ্জিন (Home Remedies Added) ---
 def get_intelligent_response(query, res):
     with st.status("SkinAI is analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
@@ -50,7 +50,7 @@ def get_intelligent_response(query, res):
     
     q = query.lower()
     is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
-                any(word in q.split() for word in ["ki", "keno", "ken", "eta", "osud", "doctor", "val", "valo"])
+                any(word in q.split() for word in ["ki", "keno", "ken", "eta", "osud", "doctor", "ghoroya", "tips", "help"])
     
     if res == "None":
         return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first to get context."
@@ -58,30 +58,38 @@ def get_intelligent_response(query, res):
     info = disease_info.get(res, {})
     ans = []
 
-    # ১. বিস্তারিত জানতে চাইলে
-    if any(w in q for w in ["ki", "what", "detail", "details", "explain", "jinish"]):
-        text = f"📘 **Details:** {info['en'] if not is_bangla else info['bn']}"
+    # ১. বিস্তারিত
+    if any(w in q for w in ["ki", "what", "detail", "details", "explain"]):
+        ans.append(f"📘 **Details:** {info['bn'] if is_bangla else info['en']}")
+
+    # ২. ঘরোয়া পরামর্শ (Home Help/Remedy)
+    if any(w in q for w in ["ghoroya", "home", "remedy", "tips", "bashay", "help"]):
+        text = ("🏠 **ঘরোয়া পরামর্শ:**\n"
+                "* সরাসরি রোদ এড়িয়ে চলুন এবং বাইরে গেলে ছাতা বা সানস্ক্রিন ব্যবহার করুন।\n"
+                "* আক্রান্ত স্থানটি বারবার স্পর্শ করবেন না বা খুঁটবেন না।\n"
+                "* ত্বক হাইড্রেটেড রাখতে প্রচুর পানি পান করুন।\n"
+                "* কোনো খসখসে ভাব থাকলে নারিকেল তেল বা পেট্রোলিয়াম জেলি ব্যবহার করতে পারেন, তবে এটি নিরাময় নয়।") if is_bangla else (
+                "🏠 **Home Care Tips:**\n"
+                "* Avoid direct sunlight and use sunscreen (SPF 30+).\n"
+                "* Do not pick or scratch the affected area.\n"
+                "* Keep your skin hydrated by drinking plenty of water.\n"
+                "* You may apply pure coconut oil or petroleum jelly to soothe dryness, but this is NOT a cure.")
         ans.append(text)
 
-    # ২. ডাক্তার বা চিকিৎসা নিয়ে প্রশ্ন করলে
-    if any(w in q for w in ["doctor", "valo", "val", "dakhtar", "dekha", "hospital", "treat", "solve"]):
-        text = "👨‍⚕️ **Medical Advice:** " + ("আপনার এই সমস্যার জন্য একজন চর্মরোগ বিশেষজ্ঞ (Dermatologist) দেখানো সবচেয়ে ভালো হবে।" if is_bangla else f"For {res}, consulting a professional Dermatologist is highly recommended.")
+    # ৩. ডাক্তার বা চিকিৎসা
+    if any(w in q for w in ["doctor", "dakhtar", "treat", "solve", "valo"]):
+        text = "👨‍⚕️ **Medical Advice:** " + ("এই ধরনের ত্বকের পরিবর্তনের জন্য দ্রুত একজন ডার্মাটোলজিস্ট দেখানোই সবচেয়ে নিরাপদ।" if is_bangla else f"For {res}, a clinical examination by a Dermatologist is essential.")
         ans.append(text)
 
-    # ৩. ঔষধ নিয়ে প্রশ্ন করলে
-    if any(w in q for w in ["medicine", "osud", "cream", "ঔষধ", "ointment"]):
-        text = "⚠️ **Warning:** " + ("ডাক্তারের পরামর্শ ছাড়া কোনো মলম বা ঔষধ ব্যবহার করবেন না। এটি আপনার ত্বকের ক্ষতি করতে পারে।" if is_bangla else "Do not apply any creams or medicines without a doctor's prescription.")
-        ans.append(text)
-
-    # ৪. কারণ জানতে চাইলে
-    if any(w in q for w in ["keno", "why", "cause", "hoyeche", "reason"]):
-        text = f"🧬 **Cause:** " + (f"{res} মূলত সূর্যের অতিবেগুনি রশ্মি বা জেনেটিক কারণে হয়।" if is_bangla else f"{res} is often caused by prolonged UV exposure or genetic factors.")
+    # ৪. ঔষধ
+    if any(w in q for w in ["medicine", "osud", "cream", "ঔষধ"]):
+        text = "⚠️ **Warning:** " + ("নিজে নিজে কোনো স্টেরয়েড ক্রিম ব্যবহার করবেন না, এতে সমস্যা আরও বাড়তে পারে।" if is_bangla else "Avoid self-medicating with steroid creams as they may worsen the condition.")
         ans.append(text)
 
     if ans:
         return "\n\n---\n\n".join(ans)
     else:
-        return f"আমি আপনার রিপোর্টে **{res}** শনাক্ত করেছি। আপনি কি এর বিস্তারিত বা প্রতিকার জানতে চান?" if is_bangla else f"I detected **{res}**. Would you like to know its causes or treatment options?"
+        return f"আমি **{res}** শনাক্ত করেছি। আপনি কি এর বিস্তারিত, ঘরোয়া টিপস বা চিকিৎসা সম্পর্কে জানতে চান?" if is_bangla else f"I detected **{res}**. Would you like to know its details, home tips, or medical advice?"
 
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
