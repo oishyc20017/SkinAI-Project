@@ -104,6 +104,22 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
+   if 'logged_in' not in st.session_state: st.session_state.logged_in = False
+if 'messages' not in st.session_state: st.session_state.messages = []
+if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+if 'user' not in st.session_state: st.session_state.user = None
+
+with st.sidebar:
+    st.markdown('<div class="brand-card">', unsafe_allow_html=True)
+    st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
+    st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if st.button("➕ New Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+
+    st.markdown("---")
     
     if not st.session_state.logged_in:
         col1, col2 = st.columns(2)
@@ -113,28 +129,41 @@ with st.sidebar:
             if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
         
         st.markdown("---")
-        tab1, tab2 = st.tabs(["🔑 Login", "🆕 Create Account"])
-        
-        with tab1:
-            l_email = st.text_input("Gmail", key="l_email")
-            l_pass = st.text_input("Password", type="password", key="l_pass")
+        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
+        with t1:
+            e = st.text_input("Gmail", key="log_e")
+            p = st.text_input("Password", type="password", key="log_p")
             if st.button("Enter Login", use_container_width=True):
-                c.execute('SELECT password FROM users WHERE email=?', (l_email,))
+                c.execute('SELECT password FROM users WHERE email=?', (e,))
                 data = c.fetchone()
-                if data and check_hash(l_pass, data[0]):
-                    st.session_state.logged_in = True
-                    st.session_state.user = l_email
-                    c.execute('SELECT role, content FROM chat_history WHERE email=?', (l_email,))
-                    all_messages = c.fetchall()
-                    st.session_state.messages = [{"role": r, "content": c} for r, c in all_messages]
+                if data and check_hash(p, data[0]):
+                    st.session_state.logged_in, st.session_state.user = True, e
+                    # --- হিস্ট্রি লোড করার মেইন কোড ---
+                    c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
+                    st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
                     st.success("History Loaded!")
-                    time.sleep(0.5)
-                    st.rerun()
-                else:
-                    st.error("Invalid Login.")
-                
-        with tab2:
-            s_email = st.text_input("New Gmail", key="s_email")
+                    time.sleep(0.5); st.rerun()
+                else: st.error("Login Failed.")
+        with t2:
+            re = st.text_input("New Gmail", key="reg_e")
+            rp = st.text_input("New Pass", type="password", key="reg_p")
+            if st.button("Sign Up", use_container_width=True):
+                if "@" in re and len(rp) > 3:
+                    try:
+                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
+                        st.success("Done! Now Login.")
+                    except: st.error("Exists.")
+    else:
+        st.success(f"User: {st.session_state.user}")
+        if st.button("Logout", use_container_width=True):
+            st.session_state.logged_in = False; st.session_state.messages = []; st.rerun()
+
+    st.markdown("---")
+    # --- Help অপশন ---
+    with st.expander("❓ Help & Info"):
+        st.write("১. পরিষ্কার ছবি আপলোড করুন।")
+        st.write("২. হিস্ট্রি দেখতে লগইন করুন।")
+        st.write("৩. নতুন চ্যাট করতে New Chat চাপুন।")
             s_pass = st.text_input("New Password", type="password", key="s_pass")
             if st.button("Sign Up", use_container_width=True):
                 if "@" in s_email and len(s_pass) >= 4:
