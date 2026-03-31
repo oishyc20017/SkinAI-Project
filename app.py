@@ -104,7 +104,6 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_info.keys())
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট ---
-# এই ভেরিয়েবলগুলো সবার আগে থাকতে হবে (লাইন ১০৭ এর আশেপাশে)
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
