@@ -24,10 +24,35 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
+    /* ডেক্সটপ বা বড় স্ক্রিনের জেনারেল ডিজাইন */
     .stApp { background-color: #0e1117; color: #e3e3e3; }
     [data-testid="stSidebar"] { background-color: #1e1f20 !important; border-right: 1px solid #30363d; }
     .brand-card { padding: 20px; border-radius: 15px; background: rgba(88, 166, 255, 0.05); border: 1px solid rgba(88, 166, 255, 0.2); text-align: center; margin-bottom: 25px; }
     .wishy-tag { font-size: 11px; color: #58a6ff; letter-spacing: 2px; font-weight: 800; margin-top: 10px; text-transform: uppercase; }
+
+    /* --- শুধুমাত্র মোবাইল ফোনের জন্য (জেমিনি লুক) --- */
+    @media (max-width: 768px) {
+        [data-testid="stChatMessage"] {
+            padding: 6px 10px !important;
+            margin-bottom: 5px !important;
+            border-radius: 12px !important;
+            max-width: 88% !important; /* স্ক্রিনের একপাশে ছোট হয়ে থাকবে */
+        }
+        
+        /* ফন্ট সাইজ ছোট করা */
+        [data-testid="stChatMessage"] p, 
+        [data-testid="stChatMessage"] li, 
+        [data-testid="stChatMessage"] div {
+            font-size: 13.5px !important; 
+            line-height: 1.4 !important;
+        }
+
+        /* এআই রেসপন্সের ভেতরে টাইটেলগুলো ছোট করা */
+        [data-testid="stChatMessage"] h3 {
+            font-size: 15px !important;
+            margin-top: 4px !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
