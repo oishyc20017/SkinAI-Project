@@ -10,7 +10,7 @@ import re
 # ১. পেজ কনফিগারেশন
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
-# ২. হাই-এন্ড এস্থেটিক ডিজাইন (Glassmorphism & Glow Effect)
+# ২. হাই-এন্ড এস্থেটিক ডিজাইন
 st.markdown("""
 <style>
     .stApp {
@@ -68,73 +68,42 @@ st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">
 
 # ৫. স্মার্ট রেসপন্স লজিক
 def get_natural_response(user_query, condition):
-    # কেন মাত্র ৭টি রোগ? (The Why Question)
-    elif any(word in q for word in ["shudhu 7ta", "shudu 7", "3k", "3000", "only 7"]):
-        if is_bengali:
-            return "বিশ্বে ৩০০০-এর বেশি চর্মরোগ থাকলেও, আমি বর্তমানে সবচেয়ে গুরুত্বপূর্ণ ৭টি ক্যান্সার এবং টিউমার ক্যাটাগরি শনাক্ত করতে পারি। কারণ এগুলোর ক্ষেত্রে দ্রুত চিকিৎসা নেওয়া জীবন রক্ষাকারী হতে পারে। ভবিষ্যতে আমি আরও রোগ চিনতে শিখব!"
-        return "Although there are 3,000+ skin diseases, I focus on the 7 most critical cancer and lesion types. Identifying these early can save lives. More conditions will be added in the future!"
     q = user_query.lower()
-    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "keno", "mane ki", "hoyeche", "jibanu"])
+    is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "keno", "mane ki", "hoyeche", "jibanu", "shudhu"])
     
-    # রোগের গভীর বৈজ্ঞানিক ডাটাবেস (Causes & Pathogens)
     disease_info = {
-        'Actinic keratoses': {
-            'bn': "এটি মূলত সূর্যের অতিবেগুনি রশ্মির (UV Rays) দীর্ঘদিনের প্রভাবে হয়। কোনো নির্দিষ্ট জীবাণু নয়, বরং চামড়ার কোষের DNA নষ্ট হওয়ার কারণে এটি ঘটে।",
-            'en': "This is caused by long-term exposure to UV radiation from the sun. It's a cellular DNA damage issue, not caused by germs."
-        },
-        'Basal cell carcinoma': {
-            'bn': "এটি ত্বকের গভীর কোষের অস্বাভাবিক বৃদ্ধি। অতিরিক্ত রোদ বা রেডিয়েশনের কারণে DNA মিউটেশন হয়ে এটি শুরু হয়। এটি সংক্রামক নয়।",
-            'en': "This is caused by DNA mutations in the basal cells of the skin, often triggered by intense sun exposure or tanning beds."
-        },
-        'Benign keratosis': {
-            'bn': "এটি বয়সের সাথে ত্বকের কেরাটিনোসাইট কোষের জমার কারণে হয়। কোনো জীবাণু বা সংক্রমণের সাথে এর সম্পর্ক নেই।",
-            'en': "This occurs due to a buildup of skin cells (keratinocytes) usually related to aging. It is not caused by any bacteria or virus."
-        },
-        'Dermatofibroma': {
-            'bn': "এটি সাধারণত কোনো ছোট আঘাত বা পোকামাকড়ের কামড়ের পর ত্বকের ওভার-রিঅ্যাকশনের ফলে তৈরি হয়। কোনো ভাইরাস বা ব্যাকটেরিয়া এর মূল কারণ নয়।",
-            'en': "This is a reaction to minor skin trauma, like an insect bite or a small cut. It is not caused by a pathogen."
-        },
-        'Melanoma': {
-            'bn': "এটি মেলানোসাইট কোষে মিউটেশনের কারণে হয়। এর প্রধান কারণ হলো তীব্র রোদে পোড়া বা জেনেটিক সমস্যা। এটি কোনো জীবাণুঘটিত রোগ নয়।",
-            'en': "Caused by genetic mutations in melanocytes (pigment cells), primarily triggered by intense UV exposure."
-        },
-        'Nevus': {
-            'bn': "এটি জন্মের সময় বা পরে ত্বকের রঞ্জক কোষ (Melanocytes) এক জায়গায় গুচ্ছ হয়ে থাকার কারণে হয়। এটি সম্পূর্ণ প্রাকৃতিক।",
-            'en': "These are clusters of pigmented cells (melanocytes). They are natural and not caused by any external infection."
-        },
-        'Vascular lesions': {
-            'bn': "এটি রক্তনালীর অস্বাভাবিক গঠন বা প্রসারণের কারণে হয়। অনেক সময় জন্মগত ত্রুটি বা হরমোনের কারণেও হতে পারে।",
-            'en': "Caused by abnormalities in blood vessel formation or dilation. Can be congenital or due to hormonal changes."
-        }
+        'Actinic keratoses': {'bn': "এটি সূর্যের অতিবেগুনি রশ্মির (UV Rays) প্রভাবে হয়। এটি কোনো জীবাণু নয়, কোষের DNA ক্ষতি।", 'en': "Caused by long-term UV exposure damaging skin cell DNA. Not caused by germs."},
+        'Basal cell carcinoma': {'bn': "এটি অতিরিক্ত রোদের কারণে হওয়া কোষে অস্বাভাবিক বৃদ্ধি। এটি সংক্রামক নয়।", 'en': "Unusual growth in basal cells due to sun exposure. Not contagious."},
+        'Benign keratosis': {'bn': "এটি বয়সের সাথে কেরাটিন কোষ জমার কারণে হয়। কোনো সংক্রমণ নয়।", 'en': "Buildup of keratinocytes related to aging. Not an infection."},
+        'Dermatofibroma': {'bn': "এটি ছোট আঘাত বা পোকার কামড়ের প্রতি ত্বকের রিঅ্যাকশন।", 'en': "A reaction to minor trauma like insect bites. Not caused by a pathogen."},
+        'Melanoma': {'bn': "এটি মেলানোসাইট কোষে মিউটেশনের কারণে হয়। দ্রুত ডাক্তার দেখানো জরুরি।", 'en': "Mutations in pigment cells triggered by UV rays. Consult a doctor immediately."},
+        'Nevus': {'bn': "এটি রঞ্জক কোষের প্রাকৃতিক গুচ্ছ (তিল)। এটি কোনো সংক্রমণ নয়।", 'en': "Natural clusters of pigment cells. Not an infection."},
+        'Vascular lesions': {'bn': "এটি রক্তনালীর অস্বাভাবিক গঠনের কারণে হয়। হরমোন বা জন্মগত হতে পারে।", 'en': "Abnormal blood vessel formation. Can be hormonal or congenital."}
     }
 
-    # ১. কেন হয়েছে বা কোন জীবাণু (Cause/Pathogen/Mechanism)
-    if any(word in q for word in ["keno", "jibanu", "pathogen", "virus", "bacteria", "how", "cause", "kisher jonno"]):
+    # কন্ডিশনাল লজিক (সঠিক সিকোয়েন্সে)
+    if any(word in q for word in ["shudhu 7ta", "shudu 7", "3k", "3000", "only 7"]):
+        if is_bengali: return "বিশ্বে ৩০০০+ চর্মরোগ থাকলেও আমি সবচেয়ে গুরুত্বপূর্ণ ৭টি ক্যান্সার ও টিউমার শনাক্ত করতে পারি যা জীবন বাঁচাতে সাহায্য করবে।"
+        return "Though there are 3000+ skin diseases, I focus on the 7 most critical ones to help save lives."
+    
+    elif any(word in q for word in ["keno", "jibanu", "pathogen", "virus", "bacteria", "cause"]):
         info = disease_info.get(condition, {})
-        if is_bengali:
-            return info.get('bn', f"দুঃখিত, {condition} সম্পর্কে আমার কাছে এই মুহূর্তে বিস্তারিত কারণ নেই। তবে এটি কোনো বিশেষজ্ঞ ডাক্তারকে দেখানো উচিত।")
-        return info.get('en', f"I don't have the specific cause for {condition} yet. Please consult a specialist.")
+        if is_bengali: return info.get('bn', "বিস্তারিত কারণ নিশ্চিত হতে ডাক্তারের পরামর্শ নিন।")
+        return info.get('en', "Please consult a specialist for exact causes.")
 
-    # ২. রোগটি আসলে কী (Definition)
-    elif any(word in q for word in ["mane ki", "what is", "ki", "details"]):
-        # আগের ডিকশনারি লজিক এখানেও কাজ করবে
-        if is_bengali:
-            return f"{condition} হলো ত্বকের একটি বিশেষ অবস্থা। উপরে এর কারণ ব্যাখ্যা করা হয়েছে, আরও কিছু জানতে চাইলে আমাকে জিজ্ঞেস করুন।"
-        return f"{condition} is a specific skin condition. You can ask about its causes or professional care."
+    elif any(word in q for word in ["mane ki", "what is", "details"]):
+        if is_bengali: return f"{condition} হলো ত্বকের একটি অবস্থা। এর কারণ ও চিকিৎসা নিয়ে আপনি আরও জানতে পারেন।"
+        return f"{condition} is a skin condition. You can ask about its causes or professional care."
 
-    # ৩. ডাক্তার/ঔষধ (General)
-    elif any(word in q for word in ["doctor", "osud", "medicine", "dr"]):
-        if is_bengali:
-            return "যেহেতু এটি একটি সেনসিটিভ বিষয়, তাই নিজে কোনো ক্রিম না লাগিয়ে সরাসরি চর্মরোগ বিশেষজ্ঞকে দেখানোই নিরাপদ।"
-        return "Self-medication is risky. Please consult a professional Dermatologist for correct treatment."
+    elif any(word in q for word in ["doctor", "osud", "medicine"]):
+        if is_bengali: return "নিজে কোনো ঔষধ না লাগিয়ে দ্রুত চর্মরোগ বিশেষজ্ঞ (Dermatologist) দেখান।"
+        return "Self-medication is risky. Please consult a professional Dermatologist."
 
-    # ৪. ডিফল্ট উত্তর
     else:
-        if is_bengali:
-            return f"আপনার রিপোর্টে {condition} শনাক্ত হয়েছে। আপনি কি এর কারণ বা প্রতিকার সম্পর্কে জানতে চান?"
+        if is_bengali: return f"আপনার রিপোর্টে {condition} শনাক্ত হয়েছে। আপনি কি এর কারণ বা প্রতিকার সম্পর্কে জানতে চান?"
         return f"I have detected {condition}. Would you like to know more about its causes or treatment?"
 
-# ৬. মডেল লোডিং
+# ৬. মডেল লোডিং ও বাকি অংশ (আগের মতোই থাকবে)
 @st.cache_resource
 def load_my_model():
     file_id = '1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h'
@@ -142,45 +111,36 @@ def load_my_model():
     if not os.path.exists(model_path):
         try: gdown.download(id=file_id, output=model_path, quiet=False, fuzzy=True)
         except: return None
-    if os.path.exists(model_path):
-        return tf.keras.models.load_model(model_path, compile=False)
+    if os.path.exists(model_path): return tf.keras.models.load_model(model_path, compile=False)
     return None
 
 model = load_my_model()
 classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# ৭. মেইন ইউআই লজিক
 if model is None:
-    st.error("Model loading failed. Please check your connection.")
+    st.error("Model loading failed.")
 else:
     file = st.file_uploader("Upload Skin Image", type=["jpg", "png", "jpeg"])
     if file:
         img = Image.open(file).convert('RGB')
         st.image(img, width=400, caption="Uploaded Image")
-        
-        # Prediction
         img_res = img.resize((100, 75))
         x = np.asarray(img_res) / 255.0
         x = np.expand_dims(x, axis=0)
         pred = model.predict(x, verbose=0)
         result = classes[np.argmax(pred)]
         confidence = np.max(pred) * 100
-        
         st.success(f"Detection Result: **{result}**")
         st.info(f"AI Confidence Score: **{confidence:.2f}%**")
         st.markdown("---")
         
-        # চ্যাটবট
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
-
+        if "messages" not in st.session_state: st.session_state.messages = []
         for m in st.session_state.messages:
             with st.chat_message(m["role"]): st.markdown(m["content"])
 
         if prompt := st.chat_input("Ask about your report..."):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"): st.markdown(prompt)
-            
             with st.chat_message("assistant"):
                 msg_placeholder = st.empty()
                 full_res = ""
