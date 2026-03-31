@@ -104,11 +104,7 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_info.keys())
 
-# --- ৬. সাইডবার ও সেশন ম্যানেজমেন্ট ---
-if 'logged_in' not in st.session_state: st.session_state.logged_in = False
-if 'messages' not in st.session_state: st.session_state.messages = []
-if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-
+# --- ৬. সাইডবার, সেশন ও হিস্ট্রি ম্যানেজমেন্ট ---
 with st.sidebar:
     st.markdown('<div class="brand-card">', unsafe_allow_html=True)
     st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
@@ -122,6 +118,7 @@ with st.sidebar:
     st.markdown("---")
     
     if not st.session_state.logged_in:
+        # সোশ্যাল বাটন (প্রেজেন্টেশন মোড)
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
@@ -134,15 +131,29 @@ with st.sidebar:
         with tab1:
             l_email = st.text_input("Gmail", key="l_email")
             l_pass = st.text_input("Password", type="password", key="l_pass")
-            if st.button("Login", use_container_width=True):
+            if st.button("Enter Login", use_container_width=True):
                 c.execute('SELECT password FROM users WHERE email=?', (l_email,))
                 data = c.fetchone()
+                
                 if data and check_hash(l_pass, data[0]):
-                    st.session_state.logged_in, st.session_state.user = True, l_email
+                    # সেশন সেট করা
+                    st.session_state.logged_in = True
+                    st.session_state.user = l_email
+                    
+                    # --- ডাটাবেস থেকে হিস্ট্রি রিট্রিভ করা ---
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (l_email,))
-                    st.session_state.messages = [{"role": r[0], "content": r[1]} for r in c.fetchall()]
-                    st.rerun()
-                else: st.error("Wrong details.")
+                    all_messages = c.fetchall()
+                    
+                    # সেশন মেসেজ লিস্টে ডাটাবেসের মেসেজগুলো পুশ করা
+                    st.session_state.messages = []
+                    for role, content in all_messages:
+                        st.session_state.messages.append({"role": role, "content": content})
+                    
+                    st.success("History Loaded!")
+                    time.sleep(0.5)
+                    st.rerun() # পেজ রিফ্রেশ দিয়ে হিস্ট্রি দেখানো
+                else:
+                    st.error("Invalid Login.")
                 
         with tab2:
             s_email = st.text_input("New Gmail", key="s_email")
@@ -151,18 +162,18 @@ with st.sidebar:
                 if "@" in s_email and len(s_pass) >= 4:
                     try:
                         c.execute('INSERT INTO users VALUES (?,?)', (s_email, make_hash(s_pass))); conn.commit()
-                        st.success("Account Created! Now Login.")
-                    except: st.error("Email already registered.")
-                else: st.warning("Enter valid details (4+ chars password).")
+                        st.success("Done! Now Login.")
+                    except: st.error("User exists.")
+                else: st.warning("Enter valid details.")
     else:
-        st.success(f"User: {st.session_state.user}")
-        if st.button("Logout"): 
+        st.success(f"Logged in as: {st.session_state.user}")
+        if st.button("Logout", use_container_width=True): 
             st.session_state.logged_in = False
             st.session_state.messages = []
             st.rerun()
 
     st.markdown("---")
-    with st.expander("⚙️ Settings"): st.write("v30.0 Final Build")
+    with st.expander("⚙️ Settings"): st.write("v32.0 - History Enabled")
 
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
 st.title("🩺 SkinAI Assistant")
