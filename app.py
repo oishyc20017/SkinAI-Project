@@ -82,7 +82,7 @@ with st.sidebar.expander("📖 How to use"):
     """)
 
 st.sidebar.markdown("---")
-st.sidebar.warning("""
+st.sidebar.warning(""")
 **⚠️ Disclaimer:** This AI tool is for educational purposes only and not a substitute for professional medical advice. Always consult a Doctor.
 """)
         <div style="height: 2px; background: linear-gradient(to right, transparent, #58a6ff, transparent); margin: 20px 0;"></div>
