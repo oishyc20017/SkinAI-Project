@@ -33,17 +33,16 @@ st.markdown("""
 
 # --- ৩. রোগের ডাটাবেস (৭টি রোগ) ---
 disease_info = {
-    'Actinic keratoses': {'bn': "এটি খসখসে রোদে পোড়া দাগ। এটি ক্যান্সার হওয়ার আগের ধাপ হতে পারে।", 'en': "Rough, scaly patches caused by sun exposure. It can be precancerous."},
-    'Basal cell carcinoma': {'bn': "এটি সাধারণ স্কিন ক্যান্সার। এটি ধীরে বাড়ে কিন্তু চিকিৎসা জরুরি।", 'en': "A common skin cancer that grows slowly but needs medical treatment."},
-    'Benign keratosis': {'bn': "এটি ক্ষতিকারক নয়। বয়সের কারণে ত্বকে এমন দাগ হতে পারে।", 'en': "Non-cancerous skin growth often related to aging."},
-    'Dermatofibroma': {'bn': "এটি ত্বকের নিচে শক্ত ছোট পিণ্ড। সাধারণত ক্ষতিকর নয়।", 'en': "Small, firm skin growths that are usually harmless."},
+    'Actinic keratoses': {'bn': "এটি খসখসে রোদে পোড়া দাগ। এটি ক্যান্সার হওয়ার আগের ধাপ হতে পারে।", 'en': "Rough, scaly patches caused by sun exposure. It can be precancerous."},
+    'Basal cell carcinoma': {'bn': "এটি সাধারণ স্কিন ক্যান্সার। এটি ধীরে বাড়ে কিন্তু চিকিৎসা জরুরি।", 'en': "A common skin cancer that grows slowly but needs medical treatment."},
+    'Benign keratosis': {'bn': "এটি ক্ষতিকারক নয়। বয়সের কারণে ত্বকে এমন দাগ হতে পারে।", 'en': "Non-cancerous skin growth often related to aging."},
+    'Dermatofibroma': {'bn': "এটি ত্বকের নিচে শক্ত ছোট পিণ্ড। সাধারণত ক্ষতিকর নয়।", 'en': "Small, firm skin growths that are usually harmless."},
     'Melanoma': {'bn': "এটি মারাত্মক স্কিন ক্যান্সার। দ্রুত বিশেষজ্ঞ ডাক্তার দেখান।", 'en': "The most serious type of skin cancer. Consult a specialist immediately."},
     'Nevus': {'bn': "এটি সাধারণ তিল। আকার বা রঙ বদলালে পরীক্ষা করুন।", 'en': "A common mole. Check if it changes shape or color rapidly."},
-    'Vascular lesions': {'bn': "রক্তনালীর অস্বাভাবিকতায় লাল দাগ। সাধারণত বিপজ্জনক নয়।", 'en': "Red marks from abnormal blood vessels, usually harmless."}
+    'Vascular lesions': {'bn': "রক্তনালীর অস্বাভাবিকতায় লাল দাগ। সাধারণত বিপজ্জনক নয়।", 'en': "Red marks from abnormal blood vessels, usually harmless."}
 }
 
-# --- ৪. স্মার্ট মাল্টি-ল্যাঙ্গুয়েজ ও মাল্টি-অ্যানসার ইঞ্জিন (FIXED) ---
-# --- ৪. স্মার্ট মাল্টি-ল্যাঙ্গুয়েজ ও মাল্টি-অ্যানসার ইঞ্জিন (Ultimate Fix) ---
+# --- ৪. স্মার্ট মাল্টি-ল্যাঙ্গুয়েজ ও মাল্টি-অ্যানসার ইঞ্জিন ---
 def get_intelligent_response(query, res):
     with st.status("SkinAI is thinking...", expanded=False) as status:
         time.sleep(1.2)
@@ -51,49 +50,33 @@ def get_intelligent_response(query, res):
     
     q = query.lower()
     
-    # ১. কঠোর ল্যাঙ্গুয়েজ ডিটেকশন
-    # যদি বাংলা ক্যারেক্টার থাকে অথবা বাংলিশের একদম স্পেসিফিক শব্দ থাকে তবেই বাংলা হবে
     is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
                 any(word in q.split() for word in ["ki", "keno", "ken", "hoyeche", "korbo", "eta", "eita", "osud", "bolun"])
     
     ans = []
     if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first."
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first."
 
     info = disease_info.get(res, {})
 
-    # ২. মাল্টি-কোয়েশ্চেন লজিক (একসাথে সব উত্তর দিবে)
-    
-    # বর্ণনা (Details)
     if any(w in q for w in ["ki", "what", "detail", "details", "বর্ণনা", "রোগ"]):
-        if is_bangla:
-            ans.append(f"📘 **বিস্তারিত:** {info['bn']}")
-        else:
-            ans.append(f"📘 **Details:** {info['en']}")
+        if is_bangla: ans.append(f"📘 **বিস্তারিত:** {info['bn']}")
+        else: ans.append(f"📘 **Details:** {info['en']}")
 
-    # কারণ (Cause)
     if any(w in q for w in ["keno", "why", "cause", "হলো", "কারণ", "ken"]):
-        if is_bangla:
-            ans.append(f"🧬 **কারণ:** {res} মূলত সূর্যের অতিবেগুনি রশ্মি (UV) বা জীনগত পরিবর্তনের ফলে হয়।")
-        else:
-            ans.append(f"🧬 **Cause:** {res} is usually caused by prolonged UV radiation or genetic skin cell changes.")
+        if is_bangla: ans.append(f"🧬 **কারণ:** {res} মূলত সূর্যের অতিবেগুনি রশ্মি (UV) বা জীনগত পরিবর্তনের ফলে হয়।")
+        else: ans.append(f"🧬 **Cause:** {res} is usually caused by prolonged UV radiation or genetic skin cell changes.")
             
-    # সমাধান/ঔষধ (Medicine)
     if any(w in q for w in ["osud", "medicine", "solution", "ঔষধ", "treat", "doctor", "treatment"]):
-        if is_bangla:
-            ans.append(f"⚠️ **পরামর্শ:** বিশেষজ্ঞ ডাক্তারের অনুমতি ছাড়া কোনো ঔষধ বা ক্রিম ব্যবহার করবেন না।")
-        else:
-            ans.append(f"⚠️ **Suggestion:** Do not use any medication or treatment without consulting a dermatologist.")
+        if is_bangla: ans.append(f"⚠️ **পরামর্শ:** বিশেষজ্ঞ ডাক্তারের অনুমতি ছাড়া কোনো ঔষধ বা ক্রিম ব্যবহার করবেন না।")
+        else: ans.append(f"⚠️ **Suggestion:** Do not use any medication or treatment without consulting a dermatologist.")
     
-    # ৩. ফাইনাল রেজাল্ট ডেলিভারি
     if ans:
         return "\n\n---\n\n".join(ans)
     else:
-        # কোনো কি-ওয়ার্ড না মিললে ডিফল্ট রিপ্লাই
-        if is_bangla:
-            return f"আমি রিপোর্টে **{res}** শনাক্ত করেছি। আপনি কি এর বিস্তারিত বা প্রতিকার জানতে চান?"
-        else:
-            return f"I detected **{res}** in your report. Would you like to know its details or treatment?"
+        if is_bangla: return f"আমি রিপোর্টে **{res}** শনাক্ত করেছি। আপনি কি এর বিস্তারিত বা প্রতিকার জানতে চান?"
+        else: return f"I detected **{res}** in your report. Would you like to know its details or treatment?"
+
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
@@ -103,6 +86,7 @@ def load_skin_model():
 
 model = load_skin_model()
 classes = list(disease_info.keys())
+
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
@@ -122,15 +106,6 @@ with st.sidebar:
     st.markdown("---")
     
     if not st.session_state.logged_in:
-    if not st.session_state.logged_in:
-    if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
-
-    st.markdown("---")
-    
-    if not st.session_state.logged_in:
-        # সোশ্যাল বাটন (প্রেজেন্টেশন মোড)
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
@@ -146,24 +121,15 @@ with st.sidebar:
             if st.button("Enter Login", use_container_width=True):
                 c.execute('SELECT password FROM users WHERE email=?', (l_email,))
                 data = c.fetchone()
-                
                 if data and check_hash(l_pass, data[0]):
-                    # সেশন সেট করা
                     st.session_state.logged_in = True
                     st.session_state.user = l_email
-                    
-                    # --- ডাটাবেস থেকে হিস্ট্রি রিট্রিভ করা ---
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (l_email,))
                     all_messages = c.fetchall()
-                    
-                    # সেশন মেসেজ লিস্টে ডাটাবেসের মেসেজগুলো পুশ করা
-                    st.session_state.messages = []
-                    for role, content in all_messages:
-                        st.session_state.messages.append({"role": role, "content": content})
-                    
+                    st.session_state.messages = [{"role": r, "content": c} for r, c in all_messages]
                     st.success("History Loaded!")
                     time.sleep(0.5)
-                    st.rerun() # পেজ রিফ্রেশ দিয়ে হিস্ট্রি দেখানো
+                    st.rerun()
                 else:
                     st.error("Invalid Login.")
                 
