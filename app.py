@@ -108,27 +108,31 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_info.keys())
 
-# --- ৬. সাইডবার (Account & Create Account Clearly) ---
+# --- ৬. সাইডবার (সঠিক ইনডেন্টেশন সহ) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-# --- সোশ্যাল বাটন সেকশন (Presentation Mode) ---
+
+with st.sidebar:
+    st.markdown('<div class="brand-card">', unsafe_allow_html=True)
+    st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
+    st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if st.button("➕ New Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+
     st.markdown("---")
+    
     if not st.session_state.logged_in:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🔵 Facebook", use_container_width=True):
-                st.info("Social login will be available in the next pro version!")
+                st.info("Coming Soon!")
         with col2:
             if st.button("🔴 Gmail", use_container_width=True):
-                st.info("Direct Google Auth is coming soon!")
-                st.markdown('<meta http-equiv="refresh" content="0;URL=\'https://accounts.google.com\'">', unsafe_allow_html=True)
-        
-        st.markdown("---")
-        
-        # লগইন এবং ক্রিয়েট অ্যাকাউন্ট ট্যাব
-        tab1, tab2 = st.tabs(["🔑 Login", "🆕 Create Account"])
-        
+                st.info("Coming Soon!")
         with tab1:
             l_email = st.text_input("Gmail", key="login_email")
             l_pass = st.text_input("Password", type="password", key="login_pass")
