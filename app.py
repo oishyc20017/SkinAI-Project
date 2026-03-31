@@ -20,7 +20,7 @@ init_db()
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
 
-# --- ২. ডিজাইন ---
+# --- ২. ডিজাইন ও এস্থেটিকস ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
@@ -31,62 +31,96 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- ৩. রোগের ডাটাবেস ---
-disease_info = {
-    'Actinic keratoses': {'bn': "এটি খসখসে রোদে পোড়া দাগ। এটি ক্যান্সার হওয়ার আগের ধাপ হতে পারে।", 'en': "Rough, scaly patches caused by sun exposure. It can be precancerous."},
-    'Basal cell carcinoma': {'bn': "এটি সাধারণ স্কিন ক্যান্সার। এটি ধীরে বাড়ে কিন্তু চিকিৎসা জরুরি।", 'en': "A common skin cancer that grows slowly but needs medical treatment."},
-    'Benign keratosis': {'bn': "এটি ক্ষতিকারক নয়। বয়সের কারণে ত্বকে এমন দাগ হতে পারে।", 'en': "Non-cancerous skin growth often related to aging."},
-    'Dermatofibroma': {'bn': "এটি ত্বকের নিচে শক্ত ছোট পিণ্ড। সাধারণত ক্ষতিকর নয়।", 'en': "Small, firm skin growths that are usually harmless."},
-    'Melanoma': {'bn': "এটি মারাত্মক স্কিন ক্যান্সার। দ্রুত বিশেষজ্ঞ ডাক্তার দেখান।", 'en': "The most serious type of skin cancer. Consult a specialist immediately."},
-    'Nevus': {'bn': "এটি সাধারণ তিল। আকার বা রঙ বদলালে পরীক্ষা করুন।", 'en': "A common mole. Check if it changes shape or color rapidly."},
-    'Vascular lesions': {'bn': "রক্তনালীর অস্বাভাবিকতায় লাল দাগ। সাধারণত বিপজ্জনক নয়।", 'en': "Red marks from abnormal blood vessels, usually harmless."}
+# --- ৩. রোগের বিস্তারিত ডাটাবেস (সাতটি রোগ) ---
+disease_details = {
+    'Actinic keratoses': {
+        'desc': "এটি রোদে পোড়া খসখসে দাগ। এটি অবহেলা করলে ভবিষ্যতে ক্যান্সার হতে পারে।",
+        'cause': "দীর্ঘদিন সূর্যের অতিবেগুনি রশ্মির (UV) সংস্পর্শে থাকা।",
+        'home': "রোদে বের হওয়া কমিয়ে দিন, সানস্ক্রিন ব্যবহার করুন এবং আক্রান্ত স্থান ময়েশ্চারাইজড রাখুন।",
+        'advice': "একজন চর্মরোগ বিশেষজ্ঞকে দেখিয়ে নিশ্চিত হোন যে এটি ক্যান্সারের দিকে যাচ্ছে কি না।"
+    },
+    'Basal cell carcinoma': {
+        'desc': "এটি একটি সাধারণ স্কিন ক্যান্সার। এটি সাধারণত শরীরের খোলা অংশে দেখা দেয়।",
+        'cause': "সূর্যের আলো বা ট্যানিং বেড থেকে আসা UV রশ্মি।",
+        'home': "বাসায় এর কোনো প্রতিকার নেই, তবে ত্বক পরিষ্কার রাখুন এবং চিকিৎসকের পরামর্শ নিন।",
+        'advice': "বায়োপসি বা ছোট সার্জারির প্রয়োজন হতে পারে। দ্রুত ডাক্তার দেখান।"
+    },
+    'Benign keratosis': {
+        'desc': "এটি ক্ষতিকর নয়। সাধারণত বয়সের সাথে সাথে ত্বকে তিল বা আঁচিলের মতো কালো দাগ পড়ে।",
+        'cause': "বয়স বৃদ্ধি এবং কিছুটা জীনগত কারণ।",
+        'home': "নারিকেল তেল বা ময়েশ্চারাইজার লাগাতে পারেন যদি চুলকানি হয়।",
+        'advice': "সাধারণত চিকিৎসার দরকার নেই, তবে দাগটি দ্রুত বড় হলে ডাক্তার দেখান।"
+    },
+    'Dermatofibroma': {
+        'desc': "ত্বকের নিচে ছোট শক্ত গুটির মতো। এটি ম্যালিগন্যান্ট বা ক্ষতিকর নয়।",
+        'cause': "পোকার কামড় বা ছোট কোনো আঘাতের প্রতিক্রিয়া।",
+        'home': "খুঁটবেন না। এটি নিজে থেকেই শক্ত হয়ে থাকে।",
+        'advice': "যদি ব্যথা হয় বা অস্বস্তি লাগে তবে ডাক্তার দেখিয়ে অপসারণ করতে পারেন।"
+    },
+    'Melanoma': {
+        'desc': "সবচেয়ে মারাত্মক স্কিন ক্যান্সার। এটি দ্রুত শরীরের অন্য অংশে ছড়িয়ে পড়ে।",
+        'cause': "জেনেটিক মিউটেশন এবং তীব্র রোদে পোড়া।",
+        'home': "ঘরোয়া কোনো চিকিৎসা নেই। সময় নষ্ট করা বিপজ্জনক।",
+        'advice': "জরুরি ভিত্তিতে একজন অনকোলজিস্ট বা ডার্মাটোলজিস্ট দেখান।"
+    },
+    'Nevus': {
+        'desc': "এটি আমাদের পরিচিত সাধারণ তিল। এটি নিয়ে চিন্তার কিছু নেই।",
+        'cause': "ত্বকের মেলানিন কোষগুলো এক জায়গায় জমা হওয়া।",
+        'home': "সূর্যের রোদ থেকে বাঁচলে নতুন তিল পড়া কমে।",
+        'advice': "যদি তিলের আকার বা রঙ হঠাৎ বদলে যায়, তবেই ডাক্তার দেখান।"
+    },
+    'Vascular lesions': {
+        'desc': "রক্তনালীর অস্বাভাবিকতার কারণে লাল বা বেগুনি দাগ।",
+        'cause': "জন্মগত কারণ বা রক্তনালীর প্রসারণ।",
+        'home': "বরফ দিতে পারেন যদি সামান্য ফোলা থাকে, তবে এটি স্থায়ী সমাধান নয়।",
+        'advice': "লেজার ট্রিটমেন্টের মাধ্যমে এটি পুরোপুরি দূর করা সম্ভব।"
+    }
 }
 
-# --- ৪. স্মার্ট রিপ্লাই ইঞ্জিন (Smart Context Added) ---
+# --- ৪. স্মার্ট উত্তর ইঞ্জিন (AI Like Brain) ---
 def get_intelligent_response(query, res):
-    with st.status("Analyzing...", expanded=False) as status:
+    with st.status("Analyzing with AI Brain...", expanded=False) as status:
         time.sleep(1.0)
-        status.update(label="Analysis Done!", state="complete")
+        status.update(label="Response Generated!", state="complete")
     
     q = query.lower()
     is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
-                any(word in q.split() for word in ["ki", "keno", "ken", "eta", "bolo", "hoyeche", "yes", "ha"])
+                any(word in q.split() for word in ["ki", "keno", "ha", "bolo", "hoyeche", "tips", "bashay", "yes", "osud"])
     
     if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first."
+        return "দয়া করে আগে একটি ছবি আপলোড করুন যাতে আমি বিস্তারিত বলতে পারি।" if is_bangla else "Please upload a photo first so I can analyze the context."
 
-    info = disease_info.get(res, {})
-    ans = []
-
-    # স্মার্ট লজিক: ইউজার যদি বিস্তারিত বা "yes/বলো" টাইপ কিছু বলে
-    if any(w in q for w in ["ki", "what", "detail", "yes", "ha", "bolo", "bolun", "explain"]):
-        ans.append(f"📘 **Details:** {info['bn'] if is_bangla else info['en']}")
-
-    # ঘরোয়া টিপস
-    if any(w in q for w in ["ghoroya", "home", "remedy", "tips", "upai", "bashay"]):
-        text = ("🏠 **ঘরোয়া পরামর্শ:** রোদ থেকে দূরে থাকুন, আক্রান্ত স্থান খুঁটবেন না এবং পর্যাপ্ত পানি পান করুন।") if is_bangla else ("🏠 **Home Tips:** Avoid UV exposure and keep the area clean.")
-        ans.append(text)
-
-    # ডাক্তার/চিকিৎসা
-    if any(w in q for w in ["doctor", "dakhtar", "treat", "valo", "medicine", "osud"]):
-        text = ("👨‍⚕️ **পরামর্শ:** ডাক্তারের পরামর্শ ছাড়া কোনো ঔষধ ব্যবহার করবেন না। একজন চর্মরোগ বিশেষজ্ঞ দেখান।") if is_bangla else ("👨‍⚕️ **Advice:** Consult a Dermatologist before using any medicine.")
-        ans.append(text)
-
-    if ans:
-        return "\n\n---\n\n".join(ans)
+    data = disease_details.get(res, {})
+    
+    # স্মার্টলি সব তথ্য গুছিয়ে বলা
+    response = ""
+    if is_bangla:
+        response = f"### 🩺 **রিপোর্ট বিশ্লেষণ: {res}**\n\n"
+        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
+        response += f"**২. কারণ কী?**\n{data['cause']}\n\n"
+        response += f"**৩. ঘরোয়া টিপস:**\n{data['home']}\n\n"
+        response += f"**৪. বিশেষজ্ঞ পরামর্শ:**\n{data['advice']}\n\n"
+        response += "---\n*আপনি কি আরও কিছু জানতে চান? ঔষধ বা অন্য কোনো লক্ষণ সম্পর্কে প্রশ্ন করতে পারেন।*"
     else:
-        return f"আমি আপনার রিপোর্টে **{res}** শনাক্ত করেছি। আপনি কি এর বিস্তারিত বা ঘরোয়া টিপস জানতে চান?" if is_bangla else f"I detected **{res}**. Would you like its details or home tips?"
+        response = f"### 🩺 **AI Analysis: {res}**\n\n"
+        response += f"**What is it?**\n{data['desc']}\n\n"
+        response += f"**Possible Cause:**\n{data['cause']}\n\n"
+        response += f"**Home Care Tips:**\n{data['home']}\n\n"
+        response += f"**Doctor's Advice:**\n{data['advice']}\n\n"
+        response += "---\n*Do you have more questions? Feel free to ask about medicines or symptoms.*"
+    
+    return response
 
-# --- ৫. মডেল লোড ---
+# --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
     if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
     return tf.keras.models.load_model(path, compile=False)
 model = load_skin_model()
-classes = list(disease_info.keys())
+classes = list(disease_details.keys())
 
-# --- ৬. সেশন ও সাইডবার ---
+# --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (Buttons & History Fixed) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
@@ -104,34 +138,54 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
+    
     if not st.session_state.logged_in:
+        # --- তোমার চাওয়া Facebook ও Gmail বাটন ---
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
+        with col2:
+            if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
+        
+        st.markdown("---")
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
-            e = st.text_input("Gmail", key="l_e")
+            e = st.text_input("Gmail Address", key="l_e")
             p = st.text_input("Password", type="password", key="l_p")
-            if st.button("Login", use_container_width=True):
+            if st.button("Log In", use_container_width=True):
                 c.execute('SELECT password FROM users WHERE email=?', (e,))
                 data = c.fetchone()
                 if data and check_hash(p, data[0]):
                     st.session_state.logged_in, st.session_state.user = True, e
+                    # ডাটাবেস থেকে পুরনো হিস্ট্রি নিয়ে আসা
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
                     st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
-                    st.success("History Loaded!"); time.sleep(0.5); st.rerun()
+                    st.success("Welcome back! History Loaded.")
+                    time.sleep(0.5); st.rerun()
+                else: st.error("Invalid Login Details.")
         with t2:
             re = st.text_input("New Gmail", key="r_e")
-            rp = st.text_input("New Pass", type="password", key="r_p")
-            if st.button("Sign Up", use_container_width=True):
+            rp = st.text_input("New Password", type="password", key="r_p")
+            if st.button("Create Account", use_container_width=True):
                 if "@" in re and len(rp) > 3:
                     try:
                         c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
-                        st.success("Done! Login now.")
-                    except: st.error("Exists.")
+                        st.success("Account Created! Now Login.")
+                    except: st.error("User already exists.")
+                else: st.warning("Enter valid details.")
     else:
-        st.success(f"User: {st.session_state.user}")
+        st.success(f"Logged in as: {st.session_state.user}")
         if st.button("Logout", use_container_width=True):
-            st.session_state.logged_in = False; st.session_state.messages = []; st.rerun()
+            st.session_state.logged_in = False
+            st.session_state.messages = []
+            st.rerun()
 
-# --- ৭. মেইন ইন্টারফেস ---
+    st.markdown("---")
+    with st.expander("❓ Help & Information"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
+        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
+        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
+# --- ৭. মেইন চ্যাট ইন্টারফেস ---
 st.title("🩺 SkinAI Assistant")
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
@@ -142,13 +196,13 @@ if file:
     x = np.asarray(img_res) / 255.0; x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
-    st.success(f"Detection: **{st.session_state.last_res}**")
+    st.success(f"Detected: **{st.session_state.last_res}**")
 
 st.markdown("---")
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): st.markdown(m["content"])
 
-if prompt := st.chat_input("Ask anything..."):
+if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     if st.session_state.logged_in:
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
