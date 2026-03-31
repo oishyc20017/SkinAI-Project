@@ -73,6 +73,18 @@ st.sidebar.markdown("""
         <h2 style="color: #58a6ff; margin-bottom: 0; font-size: 24px;">Core System</h2>
         <p style="color: #8b949e; font-size: 14px; letter-spacing: 1px;">DEVELOPED BY</p>
         <h1 style="color: #ffffff; font-size: 28px; margin-top: -10px;">Wishy Chakma</h1>
+        # সাইডবারের নিচে গাইড এবং সতর্কবার্তা
+with st.sidebar.expander("📖 How to use"):
+    st.write("""
+    1. Upload a clear photo of the skin area.
+    2. Wait for AI analysis.
+    3. Ask questions about the result in the chatbox.
+    """)
+
+st.sidebar.markdown("---")
+st.sidebar.warning("""
+**⚠️ Disclaimer:** This AI tool is for educational purposes only and not a substitute for professional medical advice. Always consult a Doctor.
+""")
         <div style="height: 2px; background: linear-gradient(to right, transparent, #58a6ff, transparent); margin: 20px 0;"></div>
         <p style="color: #58a6ff; font-style: italic;">"AI for Better Healthcare"</p>
     </div>
