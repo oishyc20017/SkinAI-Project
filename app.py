@@ -10,8 +10,8 @@ import sqlite3
 import hashlib
 from datetime import datetime
 
-# --- ১. ডাটাবেস ও সিকিউরিটি ---
-conn = sqlite3.connect('skinai_pro_logo.db', check_same_thread=False)
+# --- ১. ডাটাবেস ও সিকিউরিটি (আপনার জিমেইল লগইন সিস্টেম) ---
+conn = sqlite3.connect('skinai_pro_wishy_final.db', check_same_thread=False)
 c = conn.cursor()
 
 def init_db():
@@ -24,7 +24,7 @@ init_db()
 def make_hashes(password): return hashlib.sha256(str.encode(password)).hexdigest()
 def check_hashes(p, h): return h if make_hashes(p) == h else False
 
-# --- ২. পেজ সেটআপ ও ডিজাইন ---
+# --- ২. পেজ সেটআপ ও এস্থেটিক ডিজাইন (Gemini Dark) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
 if 'theme' not in st.session_state: st.session_state.theme = 'Dark'
@@ -38,17 +38,15 @@ st.markdown(f"""
 <style>
     .stApp {{ background-color: {bg}; color: {txt}; }}
     [data-testid="stSidebar"] {{ background-color: {sb} !important; border-right: 1px solid #30363d; }}
-    
-    /* Wishy's Brand Card Style */
     .wishy-card {{
         padding: 15px; border-radius: 12px; background: {card};
         border: 1px solid rgba(88, 166, 255, 0.3); text-align: center; margin-bottom: 20px;
     }}
-    .dev-by {{ font-size: 11px; color: #8b949e; letter-spacing: 1px; margin-top: 5px; font-weight: 600; }}
+    .dev-by {{ font-size: 11px; color: #8b949e; letter-spacing: 1.5px; font-weight: 700; margin-top: 10px; }}
 </style>
 """, unsafe_allow_html=True)
 
-# --- ৩. স্মার্ট মাল্টি-অ্যানসার লজিক ---
+# --- ৩. স্মার্ট মাল্টি-অ্যানসার লজিক (আপনার সেই বিশেষ ফিচার) ---
 def get_natural_response(user_query, condition):
     q = user_query.lower()
     answers = []
@@ -60,16 +58,22 @@ def get_natural_response(user_query, condition):
         'Basal cell carcinoma': {'c': "Sun Damage", 'i': "সাধারণ স্কিন ক্যান্সার।"}
     }
 
+    # একাধিক উত্তর চেক করা (সবগুলো এক মেসেজে দিবে)
     if any(word in q for word in ["keno", "why", "cause", "hoyeche"]):
-        answers.append(f"🧬 **কারণ:** {db.get(condition, {}).get('c', 'রোদের অতিবেগুনি রশ্মি।')}")
+        answers.append(f"🧬 **কারণ:** {db.get(condition, {{}}).get('c', 'রোদের অতিবেগুনি রশ্মি।')}")
     
-    if any(word in q for word in ["osud", "medicine", "treatment", "cream"]):
-        answers.append("⚠️ **সতর্কতা:** ডাক্তারের পরামর্শ ছাড়া কোনো ঔষধ ব্যবহার করবেন না।")
+    if any(word in q for word in ["osud", "medicine", "treatment", "cream", "solution"]):
+        answers.append("⚠️ **সতর্কতা:** ডাক্তারের পরামর্শ ছাড়া কোনো ঔষধ ব্যবহার করবেন না। একজন ডার্মাটোলজিস্ট দেখান।")
     
-    if not answers: return f"আমি {condition} শনাক্ত করেছি। আরও জানতে প্রশ্ন করুন।"
+    if any(word in q for word in ["ki", "what is", "mane ki", "details"]):
+        answers.append(f"📘 **বিস্তারিত:** {db.get(condition, {{}}).get('i', 'এটি একটি সাধারণ চর্মরোগ।')}")
+
+    if not answers:
+        return f"আমি {condition} শনাক্ত করেছি। আরও বিস্তারিত বা প্রতিকার জানতে প্রশ্ন করুন।"
+
     return "\n\n".join(answers)
 
-# --- ৪. মডেল লোডিং ---
+# --- ৪. আপনার অরিজিনাল মডেল লোডিং (Cache সহ) ---
 @st.cache_resource
 def load_my_model():
     file_id = '1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h'
@@ -82,19 +86,14 @@ def load_my_model():
 model = load_my_model()
 classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# --- ৫. সাইডবার (Logo & Wishy Brand Restored) ---
+# --- ৫. সাইডবার (Logo, Developed by Wishy & All Options) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 
 with st.sidebar:
-    # --- লোগো এবং Wishy ব্যাজ ---
+    # --- লোগো এবং ব্র্যান্ডিং ---
     st.markdown('<div class="wishy-card">', unsafe_allow_html=True)
-    
-    # এখানে একটি সাধারণ স্কিন ডিজিজ লোগোর URL দেওয়া হলো
-    logo_url = "https://raw.githubusercontent.com/wishy-dev/skinai-pro/main/skin_disease_logo.png" # Example URL
-    # যদি এই URL কাজ না করে, আপনি একটি সাধারণ স্কিন আইকন ব্যবহার করতে পারেন:
-    # logo_url = "https://img.icons8.com/color/96/000000/skin.png" 
-    st.image(logo_url, width=96)
+    st.image("https://cdn-icons-png.flaticon.com/512/2864/2864415.png", width=90)
     st.markdown('<p class="dev-by">DEVELOPED BY WISHY</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
@@ -104,60 +103,76 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # অপশন পুনরুদ্ধার
+    # ৩টি ড্রপডাউন অপশন (যা আপনি চেয়েছিলেন)
     with st.expander("🌓 Appearance"):
-        selected_theme = st.selectbox("Select Theme", ["Dark", "Light"], index=0 if st.session_state.theme == 'Dark' else 1)
-        if selected_theme != st.session_state.theme:
-            st.session_state.theme = selected_theme
+        sel_theme = st.selectbox("Select Theme", ["Dark", "Light"], index=0 if st.session_state.theme == 'Dark' else 1)
+        if sel_theme != st.session_state.theme:
+            st.session_state.theme = sel_theme
             st.rerun()
 
     with st.expander("❓ Help"):
-        st.write("• Upload clear skin images.")
-        st.write("• Ask about causes or treatments.")
+        st.write("• ক্লিয়ার ছবি আপলোড করুন।")
+        st.write("• কেন হয়েছে বা ঔষধ কি—তা জিজ্ঞেস করুন।")
 
     with st.expander("⚙️ Settings"):
-        st.write("Version: 6.5.1")
-        st.write("Status: Secure")
+        st.write("Build: v6.5.3 (Stable)")
+        st.write("Database: Connected")
 
     st.markdown("---")
 
-    # লগইন সেকশন
+    # লগইন ও সাইন-আপ সেকশন
     if not st.session_state.logged_in:
         with st.expander("👤 Login / Sign Up"):
-            em = st.text_input("Gmail")
-            pw = st.text_input("Password", type='password')
-            if st.button("Enter"):
-                st.session_state.logged_in, st.session_state.fullname, st.session_state.email = True, "Wishy", em
-                st.rerun()
+            mode = st.radio("Choose", ["Login", "Sign Up"])
+            if mode == "Sign Up":
+                fn = st.text_input("Full Name")
+                em = st.text_input("Gmail")
+                pw = st.text_input("Pass", type='password', key="s1")
+                if st.button("Create Account"):
+                    c.execute('INSERT INTO users VALUES (?,?,?)', (em, fn, make_hashes(pw)))
+                    conn.commit()
+                    st.success("Done!")
+            else:
+                em = st.text_input("Email")
+                pw = st.text_input("Pass", type='password', key="l1")
+                if st.button("Enter"):
+                    c.execute('SELECT fullname, password FROM users WHERE email = ?', (em,))
+                    data = c.fetchone()
+                    if data and check_hashes(pw, data[1]):
+                        st.session_state.logged_in, st.session_state.email, st.session_state.fullname = True, em, data[0]
+                        st.rerun()
     else:
-        st.write(f"Logged in: **{st.session_state.fullname}**")
-        if st.button("Logout"):
+        st.write(f"Hi, **{st.session_state.fullname}**")
+        if st.button("Logout", use_container_width=True):
             st.session_state.logged_in = False
             st.rerun()
 
-# --- ৬. মেইন অ্যাপ ---
+# --- ৬. মেইন অ্যাপ ইন্টারফেস ---
 st.markdown("<h1 style='color: #58a6ff;'>🩺 SkinAI Assistant</h1>", unsafe_allow_html=True)
 
 if model:
-    file = st.file_uploader("Upload Skin Image", type=["jpg", "png", "jpeg"])
+    file = st.file_uploader("আপনার ত্বকের ছবি এখানে দিন...", type=["jpg", "png", "jpeg"])
     if file:
         img = Image.open(file).convert('RGB')
         st.image(img, width=320)
         
-        # Detection
+        # Detection (মডেল প্রেডিকশন)
         img_res = img.resize((100, 75))
         x = np.asarray(img_res) / 255.0
         x = np.expand_dims(x, axis=0)
         pred = model.predict(x, verbose=0)
         result = classes[np.argmax(pred)]
         conf = np.max(pred) * 100
-        st.success(f"Result: **{result}** ({conf:.1f}%)")
+        
+        st.success(f"রিপোর্ট: **{result}** ({conf:.1f}%)")
 
         st.markdown("---")
+        # চ্যাট হিস্ট্রি
         for m in st.session_state.messages:
             with st.chat_message(m["role"]): st.markdown(m["content"])
 
-        if prompt := st.chat_input("Ask: 'Keno hoyeche ar osud ki?'"):
+        # স্মার্ট চ্যাট ইনপুট
+        if prompt := st.chat_input("Ask: 'এটি কেন হয়েছে আর ঔষধ কি?'"):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"): st.markdown(prompt)
             with st.chat_message("assistant"):
