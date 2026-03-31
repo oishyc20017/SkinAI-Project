@@ -108,7 +108,6 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
-if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
     st.markdown('<div class="brand-card">', unsafe_allow_html=True)
@@ -122,7 +121,7 @@ with st.sidebar:
 
     st.markdown("---")
     
-    # এখন এটি চেক করলে আর এরর আসবে না
+    if not st.session_state.logged_in:
     if not st.session_state.logged_in:
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.messages = []
