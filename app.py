@@ -20,7 +20,7 @@ init_db()
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
 
-# --- ২. ডিজাইন ও এস্থেটিকস ---
+# --- ২. ডিজাইন ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
@@ -42,56 +42,42 @@ disease_info = {
     'Vascular lesions': {'bn': "রক্তনালীর অস্বাভাবিকতায় লাল দাগ। সাধারণত বিপজ্জনক নয়।", 'en': "Red marks from abnormal blood vessels, usually harmless."}
 }
 
-# --- ৪. স্মার্ট রিপ্লাই ইঞ্জিন (Home Remedies Added) ---
+# --- ৪. স্মার্ট রিপ্লাই ইঞ্জিন (Smart Context Added) ---
 def get_intelligent_response(query, res):
-    with st.status("SkinAI is analyzing your question...", expanded=False) as status:
+    with st.status("Analyzing...", expanded=False) as status:
         time.sleep(1.0)
         status.update(label="Analysis Done!", state="complete")
     
     q = query.lower()
     is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
-                any(word in q.split() for word in ["ki", "keno", "ken", "eta", "osud", "doctor", "ghoroya", "tips", "help"])
+                any(word in q.split() for word in ["ki", "keno", "ken", "eta", "bolo", "hoyeche", "yes", "ha"])
     
     if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first to get context."
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bangla else "Please upload a photo first."
 
     info = disease_info.get(res, {})
     ans = []
 
-    # ১. বিস্তারিত
-    if any(w in q for w in ["ki", "what", "detail", "details", "explain"]):
+    # স্মার্ট লজিক: ইউজার যদি বিস্তারিত বা "yes/বলো" টাইপ কিছু বলে
+    if any(w in q for w in ["ki", "what", "detail", "yes", "ha", "bolo", "bolun", "explain"]):
         ans.append(f"📘 **Details:** {info['bn'] if is_bangla else info['en']}")
 
-    # ২. ঘরোয়া পরামর্শ (Home Help/Remedy)
-    if any(w in q for w in ["ghoroya", "home", "remedy", "tips", "bashay", "help"]):
-        text = ("🏠 **ঘরোয়া পরামর্শ:**\n"
-                "* সরাসরি রোদ এড়িয়ে চলুন এবং বাইরে গেলে ছাতা বা সানস্ক্রিন ব্যবহার করুন।\n"
-                "* আক্রান্ত স্থানটি বারবার স্পর্শ করবেন না বা খুঁটবেন না।\n"
-                "* ত্বক হাইড্রেটেড রাখতে প্রচুর পানি পান করুন।\n"
-                "* কোনো খসখসে ভাব থাকলে নারিকেল তেল বা পেট্রোলিয়াম জেলি ব্যবহার করতে পারেন, তবে এটি নিরাময় নয়।") if is_bangla else (
-                "🏠 **Home Care Tips:**\n"
-                "* Avoid direct sunlight and use sunscreen (SPF 30+).\n"
-                "* Do not pick or scratch the affected area.\n"
-                "* Keep your skin hydrated by drinking plenty of water.\n"
-                "* You may apply pure coconut oil or petroleum jelly to soothe dryness, but this is NOT a cure.")
+    # ঘরোয়া টিপস
+    if any(w in q for w in ["ghoroya", "home", "remedy", "tips", "upai", "bashay"]):
+        text = ("🏠 **ঘরোয়া পরামর্শ:** রোদ থেকে দূরে থাকুন, আক্রান্ত স্থান খুঁটবেন না এবং পর্যাপ্ত পানি পান করুন।") if is_bangla else ("🏠 **Home Tips:** Avoid UV exposure and keep the area clean.")
         ans.append(text)
 
-    # ৩. ডাক্তার বা চিকিৎসা
-    if any(w in q for w in ["doctor", "dakhtar", "treat", "solve", "valo"]):
-        text = "👨‍⚕️ **Medical Advice:** " + ("এই ধরনের ত্বকের পরিবর্তনের জন্য দ্রুত একজন ডার্মাটোলজিস্ট দেখানোই সবচেয়ে নিরাপদ।" if is_bangla else f"For {res}, a clinical examination by a Dermatologist is essential.")
-        ans.append(text)
-
-    # ৪. ঔষধ
-    if any(w in q for w in ["medicine", "osud", "cream", "ঔষধ"]):
-        text = "⚠️ **Warning:** " + ("নিজে নিজে কোনো স্টেরয়েড ক্রিম ব্যবহার করবেন না, এতে সমস্যা আরও বাড়তে পারে।" if is_bangla else "Avoid self-medicating with steroid creams as they may worsen the condition.")
+    # ডাক্তার/চিকিৎসা
+    if any(w in q for w in ["doctor", "dakhtar", "treat", "valo", "medicine", "osud"]):
+        text = ("👨‍⚕️ **পরামর্শ:** ডাক্তারের পরামর্শ ছাড়া কোনো ঔষধ ব্যবহার করবেন না। একজন চর্মরোগ বিশেষজ্ঞ দেখান।") if is_bangla else ("👨‍⚕️ **Advice:** Consult a Dermatologist before using any medicine.")
         ans.append(text)
 
     if ans:
         return "\n\n---\n\n".join(ans)
     else:
-        return f"আমি **{res}** শনাক্ত করেছি। আপনি কি এর বিস্তারিত, ঘরোয়া টিপস বা চিকিৎসা সম্পর্কে জানতে চান?" if is_bangla else f"I detected **{res}**. Would you like to know its details, home tips, or medical advice?"
+        return f"আমি আপনার রিপোর্টে **{res}** শনাক্ত করেছি। আপনি কি এর বিস্তারিত বা ঘরোয়া টিপস জানতে চান?" if is_bangla else f"I detected **{res}**. Would you like its details or home tips?"
 
-# --- ৫. মডেল লোডিং ---
+# --- ৫. মডেল লোড ---
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
@@ -100,7 +86,7 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_info.keys())
 
-# --- ৬. সেশন ও সাইডবার (Cleaned for duplication) ---
+# --- ৬. সেশন ও সাইডবার ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
@@ -118,13 +104,12 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
-    
     if not st.session_state.logged_in:
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
-            e = st.text_input("Gmail", key="log_e")
-            p = st.text_input("Password", type="password", key="log_p")
-            if st.button("Enter Login", use_container_width=True):
+            e = st.text_input("Gmail", key="l_e")
+            p = st.text_input("Password", type="password", key="l_p")
+            if st.button("Login", use_container_width=True):
                 c.execute('SELECT password FROM users WHERE email=?', (e,))
                 data = c.fetchone()
                 if data and check_hash(p, data[0]):
@@ -132,27 +117,21 @@ with st.sidebar:
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
                     st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
                     st.success("History Loaded!"); time.sleep(0.5); st.rerun()
-                else: st.error("Invalid credentials.")
         with t2:
-            re = st.text_input("New Gmail", key="reg_e")
-            rp = st.text_input("New Password", type="password", key="reg_p")
+            re = st.text_input("New Gmail", key="r_e")
+            rp = st.text_input("New Pass", type="password", key="r_p")
             if st.button("Sign Up", use_container_width=True):
                 if "@" in re and len(rp) > 3:
                     try:
                         c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
-                        st.success("Registered! Please Login.")
-                    except: st.error("User already exists.")
+                        st.success("Done! Login now.")
+                    except: st.error("Exists.")
     else:
-        st.success(f"Logged in: {st.session_state.user}")
+        st.success(f"User: {st.session_state.user}")
         if st.button("Logout", use_container_width=True):
             st.session_state.logged_in = False; st.session_state.messages = []; st.rerun()
 
-    st.markdown("---")
-    with st.expander("❓ Help & Info"):
-        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
-        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
-
-# --- ৭. মেইন চ্যাট ইন্টারফেস ---
+# --- ৭. মেইন ইন্টারফেস ---
 st.title("🩺 SkinAI Assistant")
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
@@ -163,7 +142,7 @@ if file:
     x = np.asarray(img_res) / 255.0; x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
-    st.success(f"Detection Result: **{st.session_state.last_res}**")
+    st.success(f"Detection: **{st.session_state.last_res}**")
 
 st.markdown("---")
 for m in st.session_state.messages:
