@@ -68,6 +68,11 @@ st.markdown('<p style="color: #8b949e; margin-top: -20px; margin-bottom: 40px;">
 
 # ৫. স্মার্ট রেসপন্স লজিক
 def get_natural_response(user_query, condition):
+    # কেন মাত্র ৭টি রোগ? (The Why Question)
+    elif any(word in q for word in ["shudhu 7ta", "shudu 7", "3k", "3000", "only 7"]):
+        if is_bengali:
+            return "বিশ্বে ৩০০০-এর বেশি চর্মরোগ থাকলেও, আমি বর্তমানে সবচেয়ে গুরুত্বপূর্ণ ৭টি ক্যান্সার এবং টিউমার ক্যাটাগরি শনাক্ত করতে পারি। কারণ এগুলোর ক্ষেত্রে দ্রুত চিকিৎসা নেওয়া জীবন রক্ষাকারী হতে পারে। ভবিষ্যতে আমি আরও রোগ চিনতে শিখব!"
+        return "Although there are 3,000+ skin diseases, I focus on the 7 most critical cancer and lesion types. Identifying these early can save lives. More conditions will be added in the future!"
     q = user_query.lower()
     is_bengali = bool(re.search('[\u0980-\u09FF]', q)) or any(word in q for word in ["ki", "korbo", "osud", "keno", "mane ki", "hoyeche", "jibanu"])
     
