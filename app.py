@@ -112,8 +112,9 @@ classes = list(disease_info.keys())
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-    # --- সাইডবার (সোশ্যাল বাটন ও লগইন আপডেট) ---
-# সোশ্যাল বাটন সেকশন (শুধু এই অংশটুকু রিপ্লেস করো)
+# --- সোশ্যাল বাটন সেকশন (Presentation Mode) ---
+    st.markdown("---")
+    if not st.session_state.logged_in:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🔵 Facebook", use_container_width=True):
@@ -121,15 +122,6 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
         with col2:
             if st.button("🔴 Gmail", use_container_width=True):
                 st.info("Direct Google Auth is coming soon!")
-    if not st.session_state.logged_in:
-        # সোশ্যাল বাটনগুলোতে এখন ক্লিকেবল লিংক বা অ্যাকশন যোগ করা হয়েছে
-        # এখানে তোমার নিজের গুগল বা ফেসবুক লিংক বসাতে পারো
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("🔵 Facebook", use_container_width=True):
-                st.markdown('<meta http-equiv="refresh" content="0;URL=\'https://www.facebook.com/login\'">', unsafe_allow_html=True)
-        with col2:
-            if st.button("🔴 Gmail", use_container_width=True):
                 st.markdown('<meta http-equiv="refresh" content="0;URL=\'https://accounts.google.com\'">', unsafe_allow_html=True)
         
         st.markdown("---")
