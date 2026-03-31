@@ -229,7 +229,29 @@ if file:
     x = np.asarray(img_res) / 255.0; x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
-    st.success(f"Detected: **{st.session_state.last_res}**")
+    # --- গর্জিয়াস রেজাল্ট ডিজাইন শুরু ---
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 6px solid #58a6ff;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        margin: 25px 0;
+        text-align: center;
+    ">
+        <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">
+            AI Diagnostic Analysis
+        </p>
+        <h1 style="color: #ffffff; margin: 15px 0; font-family: 'Segoe UI', sans-serif; font-size: 28px; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+            🔍 {st.session_state.last_res}
+        </h1>
+        <div style="display: inline-block; padding: 6px 18px; background: rgba(88, 166, 255, 0.15); border: 1px solid rgba(88, 166, 255, 0.3); border-radius: 30px;">
+            <span style="color: #58a6ff; font-size: 14px; font-weight: 500;">✨ Professional Grade Detection</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
 for m in st.session_state.messages:
