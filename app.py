@@ -112,7 +112,7 @@ classes = list(disease_info.keys())
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-
+    # --- সাইডবার (সোশ্যাল বাটন ও লগইন আপডেট) ---
 with st.sidebar:
     st.markdown('<div class="brand-card">', unsafe_allow_html=True)
     st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
@@ -124,18 +124,27 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
+    
     if not st.session_state.logged_in:
-        # ৫: সোশ্যাল বাটন
-        st.markdown('<div class="social-btn">🔵 Continue with Facebook</div>', unsafe_allow_html=True)
-        st.markdown('<div class="social-btn">🔴 Continue with Gmail</div>', unsafe_allow_html=True)
+        # সোশ্যাল বাটনগুলোতে এখন ক্লিকেবল লিংক বা অ্যাকশন যোগ করা হয়েছে
+        # এখানে তোমার নিজের গুগল বা ফেসবুক লিংক বসাতে পারো
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔵 Facebook", use_container_width=True):
+                st.markdown('<meta http-equiv="refresh" content="0;URL=\'https://www.facebook.com/login\'">', unsafe_allow_html=True)
+        with col2:
+            if st.button("🔴 Gmail", use_container_width=True):
+                st.markdown('<meta http-equiv="refresh" content="0;URL=\'https://accounts.google.com\'">', unsafe_allow_html=True)
         
-        # ৪: লগইন এবং ক্রিয়েট অ্যাকাউন্ট
+        st.markdown("---")
+        
+        # লগইন এবং ক্রিয়েট অ্যাকাউন্ট ট্যাব
         tab1, tab2 = st.tabs(["🔑 Login", "🆕 Create Account"])
         
         with tab1:
-            l_email = st.text_input("Gmail", key="l_email")
-            l_pass = st.text_input("Password", type="password", key="l_pass")
-            if st.button("Login", use_container_width=True):
+            l_email = st.text_input("Gmail", key="login_email")
+            l_pass = st.text_input("Password", type="password", key="login_pass")
+            if st.button("Enter Login", use_container_width=True):
                 c.execute('SELECT password FROM users WHERE email=?', (l_email,))
                 data = c.fetchone()
                 if data and check_hash(l_pass, data[0]):
@@ -143,25 +152,22 @@ with st.sidebar:
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (l_email,))
                     st.session_state.messages = [{"role": r[0], "content": r[1]} for r in c.fetchall()]
                     st.rerun()
-                else: st.error("Wrong details.")
-                
-        with tab2:
-            s_email = st.text_input("Gmail Address", key="s_email")
-            s_pass = st.text_input("Set Password", type="password", key="s_pass")
-            if st.button("Sign Up", use_container_width=True):
-                if "@" in s_email and len(s_pass) > 3:
-                    try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (s_email, make_hash(s_pass))); conn.commit()
-                        st.success("Account Created! Please Login.")
-                    except: st.error("Email already registered.")
-                else: st.warning("Enter valid details.")
-    else:
-        st.info(f"User: {st.session_state.user}")
-        if st.button("Logout"): st.session_state.logged_in = False; st.session_state.messages = []; st.rerun()
+                else:
+                    st.error("Invalid Email or Password")
 
-    st.markdown("---")
-    with st.expander("⚙️ Settings"): st.write("v26.0 Stable")
-    with st.expander("❓ Help"): st.write("Upload photo for skin diagnosis.")
+        with tab2:
+            s_email = st.text_input("New Gmail", key="signup_email")
+            s_pass = st.text_input("New Password", type="password", key="signup_pass")
+            if st.button("Confirm Sign Up", use_container_width=True):
+                if "@" in s_email and len(s_pass) >= 4:
+                    try:
+                        c.execute('INSERT INTO users VALUES (?,?)', (s_email, make_hash(s_pass)))
+                        conn.commit()
+                        st.success("Account Created! Now Login.")
+                    except:
+                        st.error("User already exists!")
+                else:
+                    st.warning("Please enter a valid Gmail & 4+ digit password.")
 
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
 st.title("🩺 SkinAI Assistant")
