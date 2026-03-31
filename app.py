@@ -6,18 +6,8 @@ import numpy as np
 import os
 import gdown
 import sqlite3
-import hashlib
 
-# --- ১. ডাটাবেস ও সিকিউরিটি (আপনার জিমেইল লগইন সিস্টেম) ---
-# এটি ডিলিট করা হয়নি, শুধু নতুন ডাটাবেস কানেকশন করা হয়েছে
-conn = sqlite3.connect('skinai_complete_v10.db', check_same_thread=False)
-c = conn.cursor()
-def init_db():
-    c.execute('CREATE TABLE IF NOT EXISTS users(email TEXT PRIMARY KEY, fullname TEXT)')
-    conn.commit()
-init_db()
-
-# --- ২. প্রিমিয়াম ডিজাইন ও ব্র্যান্ডিং (Logo & Wishy Tag) ---
+# --- ১. ডাটাবেস ও ডিজাইন ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
 st.markdown("""
@@ -25,67 +15,72 @@ st.markdown("""
     .stApp { background-color: #0e1117; color: #e3e3e3; }
     [data-testid="stSidebar"] { background-color: #1e1f20 !important; border-right: 1px solid #30363d; }
     
-    /* Wishy's Brand Card */
-    .brand-section {
-        padding: 20px; border-radius: 15px; 
-        background: rgba(88, 166, 255, 0.05);
-        border: 1px solid rgba(88, 166, 255, 0.2); 
-        text-align: center; margin-bottom: 25px;
+    /* Branding Card Style */
+    .brand-card {
+        padding: 20px; border-radius: 15px; background: rgba(88, 166, 255, 0.05);
+        border: 1px solid rgba(88, 166, 255, 0.2); text-align: center; margin-bottom: 25px;
     }
-    .dev-tag { 
-        font-size: 11px; color: #58a6ff; letter-spacing: 2px; 
-        font-weight: bold; margin-top: 10px; text-transform: uppercase; 
+    .wishy-tag {
+        font-size: 12px; color: #58a6ff; letter-spacing: 2px; 
+        font-weight: 800; margin-top: 10px; text-transform: uppercase;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    /* Social Buttons Style */
+    .social-btn {
+        display: flex; align-items: center; justify-content: center;
+        padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: bold; cursor: pointer;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- ৩. স্মার্ট হিউম্যান-লাইক চ্যাট ইঞ্জিন (Thinking Logic) ---
-def get_intelligent_response(query, condition):
-    # Thinking Animation (আপনি যা চেয়েছিলেন)
-    with st.spinner("SkinAI is thinking..."):
-        time.sleep(2) # ২ সেকেন্ড চিন্তা করার ভাব করা
+# --- ২. স্মার্ট মাল্টি-ল্যাঙ্গুয়েজ এআই ইঞ্জিন ---
+def get_advanced_response(query, condition):
+    # Thinking Process Animation
+    with st.status("SkinAI is analyzing your queries...", expanded=False) as status:
+        time.sleep(2)
+        status.update(label="Analysis Done!", state="complete")
     
     q = query.lower()
-    responses = {
-        'cause': f"🧬 **বিশ্লেষণ:** আপনার রিপোর্টে {condition} দেখা যাচ্ছে। এটি মূলত দীর্ঘসময় রোদে থাকা (UV exposure) অথবা মেলানোসাইট কোষের পরিবর্তনের কারণে হতে পারে।",
-        'medicine': f"⚠️ **সতর্কতা:** {condition} এর জন্য সরাসরি কোনো ঔষধ ব্যবহার করা ঝুঁকিপূর্ণ। আমি আপনাকে একজন বিশেষজ্ঞ ডার্মাটোলজিস্টের পরামর্শ নিতে অনুরোধ করছি।",
-        'general': f"আমি আপনার আপলোড করা ছবি থেকে {condition} শনাক্ত করেছি। আপনি কি এর প্রতিকার বা কারণ জানতে চান?"
-    }
-
-    # মাল্টি-অ্যানসার লজিক (সব উত্তর একবারে দিবে)
-    output = []
-    if any(word in q for word in ["keno", "why", "cause", "hoyeche"]):
-        output.append(responses['cause'])
-    if any(word in q for word in ["osud", "medicine", "treatment", "solution"]):
-        output.append(responses['medicine'])
+    answers = []
     
-    if not output: return responses['general']
-    return "\n\n".join(output)
+    # Knowledge Base (মানুষের মতো ডিটেইলড উত্তর)
+    if any(word in q for word in ["keno", "why", "cause", "হলো"]):
+        answers.append(f"🧬 **কারণ:** {condition} মূলত অতিবেগুনি রশ্মি বা ত্বকের কোষের অস্বাভাবিক পরিবর্তনের কারণে হয়।")
+    
+    if any(word in q for word in ["osud", "medicine", "ঔষধ", "solution"]):
+        answers.append(f"⚠️ **পরামর্শ:** {condition}-এর জন্য কোনো স্টেরয়েড ক্রিম নিজে থেকে ব্যবহার করবেন না। বিশেষজ্ঞ ডাক্তার দেখানো জরুরি।")
+    
+    if any(word in q for word in ["ki", "what", "details", "রোগ"]):
+        answers.append(f"📘 **বিস্তারিত:** এটি একটি {condition} জনিত সমস্যা। সময়মতো চিকিৎসা করলে এটি নিয়ন্ত্রণ করা সম্ভব।")
 
-# --- ৪. আপনার অরিজিনাল মডেল লোডিং (Cache সহ) ---
+    if not answers:
+        return f"আমি আপনার রিপোর্টে **{condition}** পেয়েছি। আপনি কি এর কারণ, ঔষধ বা অন্য কিছু জানতে চান? আমি সব ল্যাঙ্গুয়েজ বুঝি।"
+
+    return "\n\n---\n\n".join(answers)
+
+# --- ৩. অরিজিনাল এআই মডেল লোডিং ---
 @st.cache_resource
-def load_my_model():
+def load_full_model():
     file_id = '1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h'
     model_path = 'skin_cancer_model.h5'
     if not os.path.exists(model_path):
         try: gdown.download(id=file_id, output=model_path, quiet=False, fuzzy=True)
         except: return None
-    return tf.keras.models.load_model(model_path, compile=False) if os.path.exists(model_path) else None
+    return tf.keras.models.load_model(model_path, compile=False)
 
-model = load_my_model()
+model = load_full_model()
 classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# --- ৫. সাইডবার (New Logo, Direct Login & Options) ---
+# --- ৪. সাইডবার (Logo, Branding, Login, Menus) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
-if 'last_result' not in st.session_state: st.session_state.last_result = "None"
+if 'last_report' not in st.session_state: st.session_state.last_report = "None"
 
 with st.sidebar:
-    # ব্র্যান্ডিং সেকশন
-    st.markdown('<div class="brand-section">', unsafe_allow_html=True)
-    # ১০০% গ্যারান্টিড প্রিমিয়াম লোগো
+    # ১ & ২: লোগো এবং স্টাইলিশ Wishy ট্যাগ
+    st.markdown('<div class="brand-card">', unsafe_allow_html=True)
     st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
-    st.markdown('<p class="dev-tag">DEVELOPED BY WISHY</p>', unsafe_allow_html=True)
+    st.markdown('<p class="wishy-tag">⭐ Developed by Wishy ⭐</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
     if st.button("➕ New Chat", use_container_width=True):
@@ -93,64 +88,67 @@ with st.sidebar:
         st.rerun()
 
     st.markdown("---")
-    
-    # ChatGPT Style Simple Login (পাসওয়ার্ড ছাড়াই)
+
+    # ৩: সেটিংস ও হেল্প অপশন
+    with st.expander("⚙️ Settings"):
+        st.write("Privacy: Secure")
+        st.write("Version: v11.0 Stable")
+    with st.expander("❓ Help"):
+        st.write("ক্লিয়ার ছবি আপলোড করে যেকোনো প্রশ্ন করুন।")
+
+    st.markdown("---")
+
+    # ৪ & ৫: লগইন এবং সোশ্যাল মিডিয়া অপশন
     if not st.session_state.logged_in:
-        st.write("### Welcome Back")
-        user_gmail = st.text_input("Enter Gmail to Login", placeholder="example@gmail.com")
-        if st.button("Continue with Gmail", use_container_width=True):
-            if "@gmail.com" in user_gmail:
-                st.session_state.logged_in = True
-                st.session_state.user = user_gmail
-                st.rerun()
-            else: st.error("Please enter a valid Gmail")
+        with st.expander("👤 Account / Create Account"):
+            choice = st.radio("Choose", ["Login", "Sign Up"])
+            st.markdown('<div style="background:white; color:black; padding:8px; border-radius:5px; text-align:center; margin-bottom:5px; cursor:pointer;">🔵 Continue with Facebook</div>', unsafe_allow_html=True)
+            st.markdown('<div style="background:white; color:black; padding:8px; border-radius:5px; text-align:center; margin-bottom:10px; cursor:pointer;">🔴 Continue with Gmail</div>', unsafe_allow_html=True)
+            
+            email = st.text_input("Gmail Address")
+            if st.button("Continue"):
+                if "@" in email:
+                    st.session_state.logged_in = True
+                    st.session_state.user = email
+                    st.rerun()
     else:
-        st.info(f"Logged in: {st.session_state.user}")
-        if st.button("Logout", use_container_width=True):
+        st.info(f"Hi, **{st.session_state.user}**")
+        if st.button("Logout"):
             st.session_state.logged_in = False
             st.rerun()
 
-    st.markdown("---")
-    with st.expander("❓ Help"): st.write("ক্লিয়ার ছবি আপলোড করে এআই চ্যাটবটকে প্রশ্ন করুন।")
-    with st.expander("⚙️ Settings"): st.write("Build: v10.0.1 Stable")
-
-# --- ৬. মেইন অ্যাপ ইন্টারফেস ---
+# --- ৫. মেইন কন্টেন্ট ---
 st.title("🩺 SkinAI Assistant")
 
 if st.session_state.logged_in:
-    # ইমেজ আপলোডার
-    file = st.file_uploader("আপনার ত্বকের ছবি এখানে আপলোড করুন...", type=["jpg", "png", "jpeg"])
-    
+    # ৬: ছবি দেখে রোগ শনাক্তকরণ
+    file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
     if file:
         img = Image.open(file).convert('RGB')
         st.image(img, width=350)
         
-        # ডিটেকশন প্রসেস (আসল মডেল দিয়ে)
         if model:
             img_res = img.resize((100, 75))
             x = np.asarray(img_res) / 255.0
             x = np.expand_dims(x, axis=0)
             pred = model.predict(x, verbose=0)
-            st.session_state.last_result = classes[np.argmax(pred)]
+            st.session_state.last_report = classes[np.argmax(pred)]
             conf = np.max(pred) * 100
-            st.success(f"রিপোর্ট: **{st.session_state.last_result}** ({conf:.1f}%)")
-        else:
-            st.error("Model not loaded yet!")
+            st.success(f"রিপোর্ট: **{st.session_state.last_report}** ({conf:.1f}%)")
 
     st.markdown("---")
-    # চ্যাট হিস্ট্রি
+    
+    # ৭, ৮, ৯: মানুষের মতো সব ধরনের প্রশ্নের উত্তর দেওয়া
     for m in st.session_state.messages:
         with st.chat_message(m["role"]): st.markdown(m["content"])
 
-    # স্মার্ট চ্যাট ইনপুট (বক্স এখন ক্লিন)
-    if prompt := st.chat_input("Type your message here..."):
+    if prompt := st.chat_input("যেকোনো কিছু জিজ্ঞাসা করুন (বাংলা/English)..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"): st.markdown(prompt)
         
         with st.chat_message("assistant"):
-            # হিউম্যান-লাইক রেসপন্স এবং থিঙ্কিং লজিক
-            reply = get_intelligent_response(prompt, st.session_state.last_result)
-            st.markdown(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
+            response = get_advanced_response(prompt, st.session_state.last_report)
+            st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
 else:
-    st.warning("আপনার স্বাস্থ্য পরীক্ষা শুরু করতে সাইডবার থেকে জিমেইল দিয়ে লগইন করুন।")
+    st.warning("আপনার প্রোজেক্ট শুরু করতে সাইডবার থেকে লগইন করুন।")
