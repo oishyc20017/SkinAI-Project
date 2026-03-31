@@ -77,52 +77,41 @@ disease_details = {
     }
 }
 
-# --- ৪. আলটিমেট হাইব্রিড ল্যাঙ্গুয়েজ ইঞ্জিন (Smart Multi-Question Support) ---
+# --- ৪. আলটিমেট স্মার্ট এআই ইঞ্জিন (Full Details in User's Language) ---
 def get_intelligent_response(query, res):
-    with st.status("Analyzing your questions...", expanded=False) as status:
+    with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
-        status.update(label="Answers Ready!", state="complete")
+        status.update(label="Analysis Complete!", state="complete")
     
     q = query.lower()
     if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন। / Please upload a photo first."
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if any('\u0980' <= char <= '\u09FF' for char in query) or "ki" in q else "Please upload a photo first."
 
     data = disease_details.get(res, {})
-    responses = []
+    
+    # ভাষা শনাক্তকরণ (বাংলা/বাংলিশ কি না চেক করা)
+    is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
+                any(word in q.split() for word in ["ki", "keno", "ken", "bolo", "hoyeche", "tips", "bashay", "osud", "doctor", "upai"])
 
-    # ১. বিস্তারিত বা "কী" নিয়ে প্রশ্ন (English & Bangla Detection)
-    if any(w in q for w in ["what", "detail", "explain", "info"]):
-        responses.append(f"📘 **Details:** {res} is a skin condition. {data['desc'].split('.')[0]} in English context.") # English part
-    if any(w in q for w in ["ki", "কী", "কি", "details", "বলো", "bolun"]):
-        responses.append(f"📘 **বিস্তারিত:** {data['desc']}") # Bangla part
-
-    # ২. কারণ নিয়ে প্রশ্ন
-    if any(w in q for w in ["why", "cause", "reason"]):
-        responses.append(f"🧬 **Cause:** Usually triggered by UV exposure or genetics.")
-    if any(w in q for w in ["keno", "কেন", "হয়েছে", "hoyeche"]):
-        responses.append(f"🧬 **কারণ:** {data['cause']}")
-
-    # ৩. ঘরোয়া টিপস নিয়ে প্রশ্ন
-    if any(w in q for w in ["home", "remedy", "treat at home"]):
-        responses.append(f"🏠 **Home Care:** Avoid sun and stay hydrated.")
-    if any(w in q for w in ["ghoroya", "ঘরোয়া", "tips", "upai", "উপায়"]):
-        responses.append(f"🏠 **ঘরোয়া টিপস:** {data['home']}")
-
-    # ৪. ডাক্তার বা ঔষধ নিয়ে প্রশ্ন
-    if any(w in q for w in ["doctor", "medicine", "cure"]):
-        responses.append(f"👨‍⚕️ **Medical:** Consult a dermatologist for professional care.")
-    if any(w in q for w in ["doctor", "ডাক্তার", "dakhtar", "osud", "ঔষধ"]):
-        responses.append(f"👨‍⚕️ **পরামর্শ:** {data['advice']}")
-
-    # যদি ইউজার শুধু "Yes" বা "Bolo" বলে (স্মার্ট কনটেক্সট)
-    if not responses and any(w in q for w in ["yes", "ha", "bolo", "okay", "আচ্ছা"]):
-        responses.append(f"Report for **{res}**:\n\n{data['desc']}\n\n{data['advice']}")
-
-    if responses:
-        return "\n\n---\n\n".join(responses)
+    # যদি ইউজার যেকোনো প্রশ্ন করে (বিস্তারিত, কারণ বা ঘরোয়া টিপস), আমরা পুরো রিপোর্ট দেব
+    if is_bangla:
+        response = f"### 🩺 **রিপোর্ট বিশ্লেষণ: {res}**\n\n"
+        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
+        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
+        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
+        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
+        response += "---\n*আপনার কি আরও কোনো নির্দিষ্ট বিষয়ে জানার আছে?*"
     else:
-        return (f"I detected **{res}**. You can ask about its 'Details', 'Causes', or 'Home Tips' in English or Bangla!" if not any('\u0980' <= char <= '\u09FF' for char in query) 
-                else f"আমি **{res}** শনাক্ত করেছি। আপনি এর বিস্তারিত, কারণ বা ঘরোয়া টিপস সম্পর্কে বাংলা বা ইংরেজিতে প্রশ্ন করতে পারেন।")
+        # ইংরেজি ডাটাবেস থেকে তথ্য
+        en_desc = "This condition is often characterized by changes in skin texture or color. "
+        response = f"### 🩺 **AI Analysis: {res}**\n\n"
+        response += f"**1. What is it?**\n{en_desc} It's specifically identified as {res}.\n\n"
+        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
+        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
+        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination and biopsy if needed.\n\n"
+        response += "---\n*Do you have any more questions about this?*"
+    
+    return response
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
