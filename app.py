@@ -97,14 +97,8 @@ with st.sidebar:
     st.markdown('<div class="brand-card">', unsafe_allow_html=True)
     st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
     st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
-
-    st.markdown("---")
-   if 'logged_in' not in st.session_state: st.session_state.logged_in = False
+   # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট ---
+if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
@@ -138,7 +132,7 @@ with st.sidebar:
                 data = c.fetchone()
                 if data and check_hash(p, data[0]):
                     st.session_state.logged_in, st.session_state.user = True, e
-                    # --- হিস্ট্রি লোড করার মেইন কোড ---
+                    # হিস্ট্রি লোড
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
                     st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
                     st.success("History Loaded!")
@@ -159,28 +153,13 @@ with st.sidebar:
             st.session_state.logged_in = False; st.session_state.messages = []; st.rerun()
 
     st.markdown("---")
-    # --- Help অপশন ---
     with st.expander("❓ Help & Info"):
         st.write("১. পরিষ্কার ছবি আপলোড করুন।")
         st.write("২. হিস্ট্রি দেখতে লগইন করুন।")
         st.write("৩. নতুন চ্যাট করতে New Chat চাপুন।")
-            s_pass = st.text_input("New Password", type="password", key="s_pass")
-            if st.button("Sign Up", use_container_width=True):
-                if "@" in s_email and len(s_pass) >= 4:
-                    try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (s_email, make_hash(s_pass))); conn.commit()
-                        st.success("Done! Now Login.")
-                    except: st.error("User exists.")
-                else: st.warning("Enter valid details.")
-    else:
-        st.success(f"Logged in as: {st.session_state.user}")
-        if st.button("Logout", use_container_width=True): 
-            st.session_state.logged_in = False
-            st.session_state.messages = []
-            st.rerun()
-
-    st.markdown("---")
-    with st.expander("⚙️ Settings"): st.write("v32.0 - History Enabled")
+    
+    with st.expander("⚙️ Settings"): 
+        st.write("v32.0 - History Enabled")
 
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
 st.title("🩺 SkinAI Assistant")
@@ -199,7 +178,7 @@ st.markdown("---")
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): st.markdown(m["content"])
 
-if prompt := st.chat_input("যেকোনো কিছু জিজ্ঞাসা করুন / Ask anything..."):
+if prompt := st.chat_input("Ask anything..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     if st.session_state.logged_in:
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
