@@ -77,38 +77,45 @@ disease_details = {
     }
 }
 
-# --- ৪. আলটিমেট স্মার্ট এআই ইঞ্জিন (Full Details in User's Language) ---
+# --- ৪. আলটিমেট স্মার্ট ল্যাঙ্গুয়েজ ইঞ্জিন (Language Precision Fix) ---
 def get_intelligent_response(query, res):
+    # এআই প্রসেসিং এনিমেশন
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
         status.update(label="Analysis Complete!", state="complete")
     
     q = query.lower()
+    
+    # যদি ইউজার ছবি আপলোড না করেই প্রশ্ন করে
     if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if any('\u0980' <= char <= '\u09FF' for char in query) or "ki" in q else "Please upload a photo first."
+        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or "ki" in q
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
 
+    # রোগের ডাটাবেস থেকে তথ্য নেওয়া
     data = disease_details.get(res, {})
     
-    # ভাষা শনাক্তকরণ (বাংলা/বাংলিশ কি না চেক করা)
-    is_bangla = any('\u0980' <= char <= '\u09FF' for char in query) or \
-                any(word in q.split() for word in ["ki", "keno", "ken", "bolo", "hoyeche", "tips", "bashay", "osud", "doctor", "upai"])
-
-    # যদি ইউজার যেকোনো প্রশ্ন করে (বিস্তারিত, কারণ বা ঘরোয়া টিপস), আমরা পুরো রিপোর্ট দেব
-    if is_bangla:
-        response = f"### 🩺 **রিপোর্ট বিশ্লেষণ: {res}**\n\n"
+    # বাংলা এবং বাংলিশ কী-ওয়ার্ডের লিস্ট (Precision logic)
+    bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar", "help", "ha", "yes", "বলো", "কি"]
+    
+    # স্মার্ট ভাষা শনাক্তকরণ (বাংলা হরফ অথবা বাংলিশ শব্দ আছে কি না চেক করা)
+    is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
+    is_banglish = any(word in q for word in bangla_hints)
+    
+    # যদি বাংলা/বাংলিশ হয়, তবে পুরো ১-৪ ফরম্যাট বাংলায় আসবে
+    if is_bangla_script or is_banglish:
+        response = f"### 🩺 **AI Analysis: {res}**\n\n"
         response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
         response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
         response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
         response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
-        response += "---\n*আপনার কি আরও কোনো নির্দিষ্ট বিষয়ে জানার আছে?*"
+        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
     else:
-        # ইংরেজি ডাটাবেস থেকে তথ্য
-        en_desc = "This condition is often characterized by changes in skin texture or color. "
+        # পিউর ইংরেজি উত্তর (১-৪ ফরম্যাটে)
         response = f"### 🩺 **AI Analysis: {res}**\n\n"
-        response += f"**1. What is it?**\n{en_desc} It's specifically identified as {res}.\n\n"
+        response += f"**1. What is it?**\nIt is identified as {res}. {data['desc'] if 'desc' in data else 'Information pending.'}\n\n"
         response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
-        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
-        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination and biopsy if needed.\n\n"
+        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use SPF sunscreen, and keep the skin hydrated.\n\n"
+        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional examination and clinical check.\n\n"
         response += "---\n*Do you have any more questions about this?*"
     
     return response
