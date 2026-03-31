@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
@@ -155,7 +156,9 @@ else:
         pred = model.predict(x, verbose=0)
         result = classes[np.argmax(pred)]
         
-        st.success(f"### Detection Result: {result}")
+       confidence = np.max(pred) * 100
+st.success(f"Detection Result: **{result}**")
+st.info(f"AI Confidence Score: **{confidence:.2f}%**")
         st.markdown("---")
         
       # চ্যাটবট ইন্টারফেস
@@ -168,7 +171,24 @@ else:
                 st.markdown(m["content"])
 
         # নতুন প্রশ্ন ইনপুট নেওয়া
-        if prompt := st.chat_input("আপনার মনে কোনো প্রশ্ন থাকলে এখানে লিখুন..."):
+       if prompt := st.chat_input("Ask about your report..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"): 
+        st.markdown(prompt)
+    
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
+        reply = get_natural_response(prompt, result)
+        
+        # টাইপিং এনিমেশন ইফেক্ট
+        for char in reply:
+            full_response += char
+            message_placeholder.markdown(full_response + "▌")
+            time.sleep(0.01) # স্পিড কন্ট্রোল
+        message_placeholder.markdown(full_response)
+        
+    st.session_state.messages.append({"role": "assistant", "content": reply})
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user", avatar="👤"):
                 st.markdown(prompt)
