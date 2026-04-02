@@ -301,32 +301,20 @@ if file:
         </div>
     </div>
     """, unsafe_allow_html=True)
-    
-   st.markdown("---")
-# ১. পুরনো মেসেজগুলো দেখানোর জন্য
-for m in st.session_state.messages:
-    with st.chat_message(m["role"]):
-        if m["role"] == "assistant":
-            st.markdown(f'<div class="chat-bubble">{m["content"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(m["content"])
+  # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
-# ২. নতুন প্রশ্ন এবং Gemini Style উত্তরের জন্য
+st.markdown("---")
+for m in st.session_state.messages:
+    with st.chat_message(m["role"]): st.markdown(m["content"])
+
 if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    
+    if st.session_state.logged_in:
+        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
+    with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
-        with st.status("🔍 Analyzing skin data...", expanded=False) as status:
-            time.sleep(1.0)
-            reply = get_intelligent_response(prompt, st.session_state.last_res)
-            status.update(label="✅ Analysis Complete", state="complete")
-        
-        st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
+        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        st.markdown(reply)
         st.session_state.messages.append({"role": "assistant", "content": reply})
-        
-        # ৩. লগইন থাকলে ডাটাবেসে সেভ করা
-        if st.session_state.get('logged_in'):
-            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
-            conn.commit()
+        if st.session_state.logged_in:
+            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
