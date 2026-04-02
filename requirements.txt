@@ -3,3 +3,5 @@ tensorflow-cpu
 Pillow
 numpy<2.0.0
 gdown
+streamlit-lottie
+requests
