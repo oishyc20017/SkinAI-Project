@@ -303,7 +303,7 @@ if file:
     """, unsafe_allow_html=True)
     # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 st.markdown("---")
-    # ১. পুরনো মেসেজগুলো দেখানোর জন্য (Clean Gemini Look)
+    # ১. পুরনো মেসেজগুলো দেখানোর জন্য
     for m in st.session_state.messages:
         with st.chat_message(m["role"]):
             if m["role"] == "assistant":
@@ -318,18 +318,16 @@ st.markdown("---")
             st.markdown(prompt)
         
         with st.chat_message("assistant"):
-            # Gemini/ChatGPT Style Status
+            # Gemini Style Status
             with st.status("🔍 SkinAI is thinking...", expanded=True) as status:
                 time.sleep(1.2)
-                status.update(label="⌛ Analyzing details...", state="running")
                 reply = get_intelligent_response(prompt, st.session_state.last_res)
-                time.sleep(0.5)
                 status.update(label="✅ Analysis Complete!", state="complete", expanded=False)
             
-            # প্রফেশনাল চ্যাট বাবল আউটপুট (একবারই আসবে)
+            # ক্লিন আউটপুট
             st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
             
-            # সেশন এবং ডাটাবেসে সেভ করা
+            # সেভ করা
             st.session_state.messages.append({"role": "assistant", "content": reply})
             if st.session_state.logged_in:
                 c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
