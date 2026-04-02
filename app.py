@@ -24,7 +24,7 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
-    /* ১. তোমার সেই সুন্দর রেইনবো টাইটেল */
+    /* ১. তোমার সেই সুন্দর টাইটেলগুলো (অপরিবর্তিত) */
     .rainbow-text {
         background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
         -webkit-background-clip: text;
@@ -36,8 +36,6 @@ st.markdown("""
         text-align: center;
         display: block;
     }
-
-    /* ২. উইশি ট্যাগ */
     .wishy-tag {
         font-family: 'Courier New', Courier, monospace;
         font-weight: 700;
@@ -51,42 +49,43 @@ st.markdown("""
         display: block;
     }
 
-    /* ৩. জেমিনি লুক: লাল বর্ডার এবং ইনপুট বক্স ফিক্স */
-    [data-testid="stChatInput"] {
-        border: 1px solid #3c4043 !important; /* একদম চিকন জেমিনি বর্ডার */
-        border-radius: 28px !important; /* গোল ইনপুট বক্স */
-        background-color: #1e1f20 !important;
-        padding-left: 15px;
-    }
-
-    /* ইনপুটের সেই লাল বর্ডার ফোকাস সল্ভ করা */
-    [data-testid="stChatInput"] textarea {
-        color: #e3e3e3 !important;
-    }
-
-    /* ৪. চ্যাট মেসেজ থেকে সব কালার বর্ডার সরানো */
+    /* ২. জেমিনি লুক: ডিফল্ট বর্ডার এবং কালার পুরোপুরি ভ্যানিশ করা */
     [data-testid="stChatMessage"] {
         background-color: transparent !important;
-        border: none !important; /* কোনো লাল বা কমলা দাগ থাকবে না */
+        border: none !important;
         box-shadow: none !important;
     }
+    
+    /* চ্যাট মেসেজের ভেতরের ডিফল্ট বক্স রিমুভ */
+    [data-testid="stChatMessage"] > div {
+        background-color: transparent !important;
+        border: none !important;
+    }
 
-    /* ৫. জেমিনি স্টাইল চ্যাট বাবল (সবচেয়ে গুরুত্বপূর্ণ) */
+    /* ৩. জেমিনি স্টাইল চ্যাট বাবল (স্মুথ লুক) */
     .chat-bubble {
         background-color: #1e1f20; /* জেমিনি ডার্ক গ্রে */
+        border: 1px solid #3c4043;
         border-radius: 20px;
         padding: 16px 20px;
-        border: 1px solid #3c4043;
         color: #e3e3e3;
         line-height: 1.6;
         margin-top: 5px;
+        display: inline-block;
+        max-width: 90%;
     }
 
-    /* ৬. স্ট্যাটাস বক্স (Analyzing...) ক্লিন করা */
-    div[data-testid="stStatusWidget"] {
+    /* ৪. ইনপুট বক্স জেমিনি স্টাইল (গোল এবং ক্লিন) */
+    [data-testid="stChatInput"] {
+        border-radius: 30px !important;
         background-color: #1e1f20 !important;
         border: 1px solid #3c4043 !important;
-        border-radius: 10px !important;
+    }
+
+    /* ইনপুটের সেই লাল/কমলা বর্ডার ফোকাস সল্ভ করা */
+    [data-testid="stChatInput"] div {
+        border: none !important;
+        box-shadow: none !important;
     }
 
     @keyframes rainbow {
