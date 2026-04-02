@@ -37,17 +37,17 @@ st.markdown("""
         display: block;
     }
     .wishy-tag {
-        font-family: 'Courier New', Courier, monospace;
-        font-weight: 700;
-        font-size: 14px;
-        background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        display: block;
-    }
+    font-family: 'Dancing Script', cursive, sans-serif; /* কার্সিভ ফন্ট */
+    font-weight: 600;
+    font-size: 18px;
+    background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    display: block;
+    letter-spacing: 1px;
+    margin-top: -5px;
+}
 
     /* ২. জেমিনি লুক: ডিফল্ট বর্ডার এবং কালার পুরোপুরি ভ্যানিশ করা */
     [data-testid="stChatMessage"] {
