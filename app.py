@@ -295,24 +295,20 @@ with col2:
         if my_lottie_data:
             st_lottie(my_lottie_data, height=200, key="skin_scanner_anim")
     except:
-        # --- লোগো এবং টাইটেলকে ছোট করে উপরে গুছিয়ে রাখা ---
+        pass
+
+# --- লোগো এবং টাইটেলকে ছোট করে উপরে গুছিয়ে রাখা ---
 st.markdown(
     """
-    <div style="text-align: center; margin-top: -70px; margin-bottom: 0px;">
+    <div style="text-align: center; margin-top: -80px; margin-bottom: 0px;">
         <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="60">
-        <h2 class="rainbow-text" style="margin: 0; font-size: 20px; line-height: 1.2;">SkinAI Assistant</h2>
-        <p style="margin: 0; font-size: 10px; color: #888;">Developed by Wishy</p>
+        <h2 class="rainbow-text" style="margin: 0; font-size: 20px;">SkinAI Assistant</h2>
+        <p style="margin: 0; font-size: 10px; color: gray;">Developed by Wishy</p>
     </div>
     <hr style="margin-top: 5px; margin-bottom: 10px; border: 0.1px solid #444; opacity: 0.2;">
     """,
     unsafe_allow_html=True
 )
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
-
-if file:
-    img = Image.open(file).convert('RGB')
-    st.image(img, width=320)
-    img_res = img.resize((100, 75))
     x = np.asarray(img_res) / 255.0; x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
