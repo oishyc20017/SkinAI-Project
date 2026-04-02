@@ -302,7 +302,7 @@ with col2:
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     # 🩺 স্টেথোস্কোপ লোগো দেখানো (তুমি এটিই চেয়েছিলে)
-    st.image("https://cdn-icons-png.flaticon.com/512/9361/9361048.png", width=120)
+    st.image("https://cdn-icons-png.flaticon.com/512/10332/10332309.png", width=120)
 
 # --- ২. টাইটেল (একবারই থাকবে) ---
 st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
