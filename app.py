@@ -303,7 +303,7 @@ lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961
 if lottie_skin_ai:
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        st_lottie(lottie_skin_ai, height=200, key="skin_anim")ে
+        st_lottie(lottie_skin_ai, height=200, key="skin_anim")
 st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
 st.markdown(f'<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
 st.markdown('<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
