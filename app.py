@@ -194,12 +194,14 @@ if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
+# এই কোডটুকু তোমার সাইডবারে লোগো সেকশনে বসাও:
 with st.sidebar:
-    # --- লোগো সেন্টার এবং ডিজাইন ---
-    col1, col2, col3 = st.columns([1, 2, 1]) # লোগো মাঝখানে আনার জন্য তিনটি কলাম
+    # --- লোগো সেন্টার এবং ডিজাইন (Lotus Style) ---
+    col1, col2, col3 = st.columns([1, 2, 1]) 
     with col2:
-        # এখানে তোমার পছন্দের নতুন লোগো (Gemini/AI Style) বসানো হয়েছে
-        st.image("https://cdn-icons-png.flaticon.com/512/11105/11105151.png", width=120)
+        # অ্যাস্থেটিক লোটাস ফুল লোগো
+        st.image("https://cdn-icons-png.flaticon.com/512/10332/10332309.png", width=120)
+    st.markdown("---")
 
     st.markdown("---")
 
