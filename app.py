@@ -297,10 +297,10 @@ with col2:
     except:
         pass
 
-# --- ১. লোগো এবং টাইটেলকে ছোট করে উপরে গুছিয়ে রাখা ---
+# --- লোগো এবং টাইটেল (একদম মাঝখানে এবং ছোট) ---
 st.markdown(
     """
-    <div style="text-align: center; margin-top: -80px; margin-bottom: 0px;">
+    <div style="text-align: center; margin-top: -80px;">
         <div style="display: flex; justify-content: center;">
             <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="70">
         </div>
@@ -312,16 +312,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- ২. ইমেজ প্রসেসিং (এটি যেন বাম পাশ ঘেঁষে থাকে) ---
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
+
+# --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
 if file:
-    import numpy as np  # এই লাইনটি এরর বন্ধ করবে
+    import numpy as np
     img_res = Image.open(file).convert('RGB').resize((100, 75))
     x = np.asarray(img_res) / 255.0
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
-    # --- ৩. রেজাল্ট ডিজাইন ---
     st.markdown(f"""
     <div style="background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #58a6ff; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin: 25px 0; text-align: center;">
         <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">AI Diagnostic Analysis</p>
