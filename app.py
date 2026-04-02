@@ -298,22 +298,15 @@ with col2:
         pass
 
 # --- ২. টাইটেল (একবারই থাকবে) ---
+# --- ১. অ্যানিমেশন এবং লোগো সেকশন ---
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    # 🩺 স্টেথোস্কোপ লোগো দেখানো (তুমি এটিই চেয়েছিলে)
+    st.image("https://cdn-icons-png.flaticon.com/512/9361/9361048.png", width=120)
+
+# --- ২. টাইটেল (একবারই থাকবে) ---
 st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
 st.markdown(f'<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
-# এর নিচেই তোমার আগের টাইটেল কোড থাকব
-# --- অ্যানিমেশন লোড এবং দেখানো একসাথেই ---
-
-def load_lottieurl(url):
-    try:
-        r = requests.get(url)
-        return r.json() if r.status_code == 200 else None
-    except: return None
-
-lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
-st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
-st.markdown(f'<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
-st.markdown('<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
-st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 if file:
