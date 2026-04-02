@@ -37,15 +37,16 @@ st.markdown("""
         display: block;
     }
     .wishy-tag {
-    font-family: 'Syncopate', sans-serif; /* স্পেস-টেক ফন্ট */
-    font-weight: 700;
-    font-size: 11px;
-    color: #58a6ff;
+    font-family: 'Dancing Script', cursive, sans-serif; /* কার্সিভ ফন্ট */
+    font-weight: 600;
+    font-size: 18px;
+    background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-align: center;
-    letter-spacing: 5px; /* অক্ষরগুলোর মাঝে বেশি গ্যাপ */
-    text-transform: uppercase;
     display: block;
-    opacity: 0.8;
+    letter-spacing: 1px;
+    margin-top: -5px;
 }
 
     /* ২. জেমিনি লুক: ডিফল্ট বর্ডার এবং কালার পুরোপুরি ভ্যানিশ করা */
