@@ -299,14 +299,17 @@ with col2:
 
 # --- লোগো এবং টাইটেল (একদম মাঝখানে এবং ছোট) ---
 # --- লোগো এবং স্টাইলিশ টাইটেল ---
+# --- লোগো এবং বড় টাইটেল (একদম মাঝখানে) ---
 st.markdown(
     """
     <div style="text-align: center; margin-top: -80px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: center;">
-            <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="70">
+            <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="80">
         </div>
-        <h2 class="rainbow-text" style="margin: 5px 0 0 0; font-size: 22px;">SkinAI Assistant</h2>
-        <p class="wishy-tag" style="margin: 0; font-size: 14px; font-weight: bold; letter-spacing: 1px;">
+        <h1 class="rainbow-text" style="margin: 10px 0 0 0; font-size: 45px; font-weight: 800; line-height: 1.1;">
+            SkinAI Assistant
+        </h1>
+        <p class="wishy-tag" style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold;">
             Developed by Wishy
         </p>
     </div>
