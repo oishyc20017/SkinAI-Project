@@ -311,24 +311,22 @@ st.markdown("---")
             else:
                 st.markdown(m["content"])
 
-    # ২. নতুন প্রশ্ন এবং উত্তরের জন্য
+    # ২. নতুন প্রশ্ন এবং Gemini Style উত্তরের জন্য
     if prompt := st.chat_input("Ask me anything about your skin..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
         
         with st.chat_message("assistant"):
-            # Gemini Style Status
-            with st.status("🔍 SkinAI is thinking...", expanded=True) as status:
-                time.sleep(1.2)
+            with st.status("🔍 Analyzing skin data...", expanded=False) as status:
+                time.sleep(1.0)
                 reply = get_intelligent_response(prompt, st.session_state.last_res)
-                status.update(label="✅ Analysis Complete!", state="complete", expanded=False)
+                status.update(label="✅ Analysis Complete", state="complete")
             
-            # ক্লিন আউটপুট
             st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
-            
-            # সেভ করা
             st.session_state.messages.append({"role": "assistant", "content": reply})
-            if st.session_state.logged_in:
+            
+            # ৩. লগইন থাকলে ডাটাবেসে সেভ করা
+            if st.session_state.get('logged_in'):
                 c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
                 conn.commit()
