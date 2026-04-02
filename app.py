@@ -24,42 +24,7 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
-/* Gemini Style Clean & Professional Chat */
-    .chat-bubble {
-        background-color: rgba(255, 255, 255, 0.05); /* হালকা স্বচ্ছ ব্যাকগ্রাউন্ড */
-        padding: 16px 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1); /* একদম চিকন বর্ডার */
-        color: #e8eaed;
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        line-height: 1.6;
-        margin-bottom: 15px;
-        box-shadow: none;
-    }
-
-    /* ইউজারের প্রশ্নের জন্য বোল্ড লুক */
-    .user-query {
-        font-weight: 500;
-        color: #ffffff;
-        margin-bottom: 8px;
-    }
-/* উইশির জন্য স্পেশাল স্টাইল */
-    .wishy-tag {
-        font-family: 'Courier New', Courier, monospace; /* এটি স্টাইলিশ টাইপরাইটার ফন্ট */
-        font-weight: 700;
-        font-size: 14px;
-        background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); /* গোলাপি এবং লালচে মিক্স কালার */
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        margin-top: -10px;
-        margin-bottom: 30px;
-        display: block;
-        text-shadow: 2px 2px 10px rgba(245, 87, 108, 0.3); /* হালকা গ্লোয়িং ইফেক্ট */
-    }
-/* রেইনবো টেক্সট এনিমেশন */
+    /* ১. তোমার আগের রেইনবো টাইটেল (এটাতে হাত দেইনি) */
     .rainbow-text {
         background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
         -webkit-background-clip: text;
@@ -69,43 +34,43 @@ st.markdown("""
         font-weight: 800;
         font-size: 38px;
         text-align: center;
-        margin-bottom: 5px;
         display: block;
+    }
+
+    /* ২. তোমার আগের উইশি ট্যাগ (এটাও আগের মতোই আছে) */
+    .wishy-tag {
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 700;
+        font-size: 14px;
+        background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    /* ৩. জেমিনি লুক: লাল/কমলা বর্ডার সরানোর ম্যাজিক লাইন */
+    [data-testid="stChatMessage"] {
+        background-color: #1a1a1a !important; /* হালকা ডার্ক গ্রে ব্যাকগ্রাউন্ড */
+        border: none !important; /* লাল বা কমলা বর্ডার পুরোপুরি ভ্যানিশ */
+        border-radius: 15px !important;
+        padding: 15px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* ৪. ইউজারের মেসেজের বর্ডারও রিমুভ করা */
+    [data-testid="stChatMessage"][data-testid="stChatMessageUser"] {
+        background-color: #262626 !important;
+        border: none !important;
     }
 
     @keyframes rainbow {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
-    }
-    /* ডেক্সটপ বা বড় স্ক্রিনের জেনারেল ডিজাইন */
-    .stApp { background-color: #0e1117; color: #e3e3e3; }
-    [data-testid="stSidebar"] { background-color: #1e1f20 !important; border-right: 1px solid #30363d; }
-    .brand-card { padding: 20px; border-radius: 15px; background: rgba(88, 166, 255, 0.05); border: 1px solid rgba(88, 166, 255, 0.2); text-align: center; margin-bottom: 25px; }
-    .wishy-tag { font-size: 11px; color: #58a6ff; letter-spacing: 2px; font-weight: 800; margin-top: 10px; text-transform: uppercase; }
-
-    /* --- শুধুমাত্র মোবাইল ফোনের জন্য (জেমিনি লুক) --- */
-    @media (max-width: 768px) {
-        [data-testid="stChatMessage"] {
-            padding: 6px 10px !important;
-            margin-bottom: 5px !important;
-            border-radius: 12px !important;
-            max-width: 88% !important; /* স্ক্রিনের একপাশে ছোট হয়ে থাকবে */
-        }
-        
-        /* ফন্ট সাইজ ছোট করা */
-        [data-testid="stChatMessage"] p, 
-        [data-testid="stChatMessage"] li, 
-        [data-testid="stChatMessage"] div {
-            font-size: 13.5px !important; 
-            line-height: 1.4 !important;
-        }
-
-        /* এআই রেসপন্সের ভেতরে টাইটেলগুলো ছোট করা */
-        [data-testid="stChatMessage"] h3 {
-            font-size: 15px !important;
-            margin-top: 4px !important;
-        }
     }
 </style>
 """, unsafe_allow_html=True)
