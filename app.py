@@ -195,9 +195,13 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    st.markdown('<div class="brand-card">', unsafe_allow_html=True)
-    st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
-    st.markdown('</div>', unsafe_allow_html=True)
+    # --- লোগো সেন্টার এবং ডিজাইন ---
+    col1, col2, col3 = st.columns([1, 2, 1]) # লোগো মাঝখানে আনার জন্য তিনটি কলাম
+    with col2:
+        # এখানে তোমার পছন্দের নতুন লোগো (Gemini/AI Style) বসানো হয়েছে
+        st.image("https://cdn-icons-png.flaticon.com/512/11105/11105151.png", width=120)
+
+    st.markdown("---")
 
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.messages = []
