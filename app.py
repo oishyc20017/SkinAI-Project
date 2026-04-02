@@ -303,8 +303,6 @@ st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html
 
 # এর নিচেই তোমার আগের টাইটেল কোড থাকব
 # --- অ্যানিমেশন লোড এবং দেখানো একসাথেই ---
-import requests
-from streamlit_lottie import st_lottie
 
 def load_lottieurl(url):
     try:
