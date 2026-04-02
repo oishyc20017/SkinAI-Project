@@ -299,14 +299,16 @@ with col2:
 
 # --- ২. টাইটেল (একবারই থাকবে) ---
 # --- ১. অ্যানিমেশন এবং লোগো সেকশন ---
-col1, col2, col3 = st.columns([1, 1, 1])
+# --- ১. লোগো এবং টাইটেল সেকশন (একদম মাঝখানে রাখার জন্য) ---
+col1, col2, col3 = st.columns([1, 1, 1]) # এখানে কলামগুলো তৈরি করা হলো
+
 with col2:
-    # 🩺 স্টেথোস্কোপ লোগো দেখানো (তুমি এটিই চেয়েছিলে)
+    # 🩺 স্টেথোস্কোপ লোগো (এখন এটি ঠিক মাঝখানে থাকবে)
     st.image("https://cdn-icons-png.flaticon.com/512/2808/2808549.png", width=120)
 
-# --- ২. টাইটেল (একবারই থাকবে) ---
-st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
-st.markdown(f'<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
+# --- ২. টাইটেল (একবারই থাকবে এবং সেন্টারে থাকবে) ---
+st.markdown(f'<h1 class="rainbow-text" style="text-align: center;">SkinAI Assistant</h1>', unsafe_allow_html=True)
+st.markdown(f'<p class="wishy-tag" style="text-align: center;">Developed by Wishy</p>', unsafe_allow_html=True)
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 if file:
