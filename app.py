@@ -278,9 +278,7 @@ with st.sidebar:
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
-# আগের টাইটেল লাইনটি মুছে এই দুইটা লাইন দাও
-# --- মেইন পেজ অ্যানিমেশন (টাইটেলের উপরে) ---
-# --- ১. মেইন পেজ অ্যানিমেশন (সবকিছু ঠিক করা হয়েছে) ---
+# --- ১. মেইন পেজ অ্যানিমেশন ---
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     try:
@@ -291,16 +289,17 @@ with col2:
             res = requests.get(url)
             return res.json() if res.status_code == 200 else None
 
+        # সঠিক লিঙ্ক দিয়ে অ্যানিমেশন লোড করা
         my_lottie_data = load_my_anim("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
 
         if my_lottie_data:
             st_lottie(my_lottie_data, height=200, key="skin_scanner_anim")
-    except Exception as e:
-        st.write("🔄 Animation is loading...")
+    except:
+        pass
 
-# ২. তোমার সেই রেইনবো টাইটেল (এটি ঠিক নিচেই থাকবে)
+# --- ২. টাইটেল (একবারই থাকবে) ---
 st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
-
+st.markdown(f'<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
 # এর নিচেই তোমার আগের টাইটেল কোড থাকব
 # --- অ্যানিমেশন লোড এবং দেখানো একসাথেই ---
 
