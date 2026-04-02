@@ -37,16 +37,15 @@ st.markdown("""
         display: block;
     }
     .wishy-tag {
-    font-family: 'Dancing Script', cursive, sans-serif; /* কার্সিভ ফন্ট */
-    font-weight: 600;
-    font-size: 18px;
-    background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #e3e3e3;
     text-align: center;
+    letter-spacing: 3px;
+    text-transform: uppercase;
     display: block;
-    letter-spacing: 1px;
-    margin-top: -5px;
+    text-shadow: 0 0 8px rgba(245, 87, 108, 0.5); /* হালকা গোলাপি গ্লো */
 }
 
     /* ২. জেমিনি লুক: ডিফল্ট বর্ডার এবং কালার পুরোপুরি ভ্যানিশ করা */
