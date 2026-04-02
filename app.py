@@ -37,15 +37,15 @@ st.markdown("""
         display: block;
     }
     .wishy-tag {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    color: #e3e3e3;
+    font-family: 'Syncopate', sans-serif; /* স্পেস-টেক ফন্ট */
+    font-weight: 700;
+    font-size: 11px;
+    color: #58a6ff;
     text-align: center;
-    letter-spacing: 3px;
+    letter-spacing: 5px; /* অক্ষরগুলোর মাঝে বেশি গ্যাপ */
     text-transform: uppercase;
     display: block;
-    text-shadow: 0 0 8px rgba(245, 87, 108, 0.5); /* হালকা গোলাপি গ্লো */
+    opacity: 0.8;
 }
 
     /* ২. জেমিনি লুক: ডিফল্ট বর্ডার এবং কালার পুরোপুরি ভ্যানিশ করা */
