@@ -195,14 +195,14 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # --- লোগো সেন্টার এবং প্রিমিয়াম ডিজাইন ---
-    st.write("") # উপরে সামান্য স্পেস দেওয়ার জন্য
+    # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
+    st.write("") 
     col1, col2, col3 = st.columns([1, 2, 1]) 
     with col2:
-        # এটি একটি গোল্ডেন-পিঙ্ক Aesthetic স্কিন কেয়ার লোগো (রঙিন)
-        st.image("https://cdn-icons-png.flaticon.com/512/3160/3160165.png", width=100)
+        # এটি একটি রঙিন 'Skin Scan' বা 'Healthy Skin' আইকন
+        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
     
-    st.markdown("<br>", unsafe_allow_html=True) # লোগোর নিচে সামান্য গ্যাপ
+    st.markdown("<br>", unsafe_allow_html=True) 
     st.markdown("---")
     st.markdown("---")
 
