@@ -203,7 +203,23 @@ with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
     
     st.markdown("<br>", unsafe_allow_html=True) 
-    st.markdown("---")
+    # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        margin-top: -10px;
+    ">
+        <p style="color: #e3e3e3; font-size: 13px; font-weight: 500; margin: 0; line-height: 1.4;">
+            ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
 
     if st.button("➕ New Chat", use_container_width=True):
