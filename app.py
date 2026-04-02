@@ -192,7 +192,6 @@ if 'user' not in st.session_state: st.session_state.user = None
 with st.sidebar:
     st.markdown('<div class="brand-card">', unsafe_allow_html=True)
     st.image("https://cdn-icons-png.flaticon.com/512/3591/3591147.png", width=90)
-    st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
     if st.button("➕ New Chat", use_container_width=True):
