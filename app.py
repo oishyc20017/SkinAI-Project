@@ -1,4 +1,6 @@
 import streamlit as st
+import requests
+from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
 from PIL import Image
@@ -24,6 +26,14 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# এখানে স্কিন স্ক্যানিং অ্যানিমেশন লিঙ্কটি দেওয়া হলো
+lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
     /* ১. তোমার সেই সুন্দর টাইটেলগুলো (অপরিবর্তিত) */
     .rainbow-text {
         background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
@@ -277,6 +287,17 @@ with st.sidebar:
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
 # আগের টাইটেল লাইনটি মুছে এই দুইটা লাইন দাও
+# --- মেইন পেজ অ্যানিমেশন (টাইটেলের উপরে) ---
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    if lottie_skin_ai:
+        st_lottie(lottie_skin_ai, height=200, key="skin_anim")
+    else:
+        st.info("Loading Aesthetic Animation...")
+
+# এর নিচেই তোমার আগের টাইটেল কোড থাকবে
+st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
+st.markdown(f'<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
 st.markdown('<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
 st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
