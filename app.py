@@ -24,25 +24,24 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
-/* Gemini Style Clean Chat */
+/* Gemini Style Clean & Professional Chat */
     .chat-bubble {
-        background-color: rgba(255, 255, 255, 0.03); /* খুব হালকা ব্যাকগ্রাউন্ড */
-        padding: 20px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.1); /* খুব চিকন বর্ডার */
-        color: #e5e5e5;
-        font-family: 'Inter', sans-serif;
-        line-height: 1.7;
-        margin-bottom: 20px;
-        box-shadow: none; /* কোনো শ্যাডো থাকবে না, একদম ক্লিন */
+        background-color: rgba(255, 255, 255, 0.05); /* হালকা স্বচ্ছ ব্যাকগ্রাউন্ড */
+        padding: 16px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1); /* একদম চিকন বর্ডার */
+        color: #e8eaed;
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        box-shadow: none;
     }
 
-    /* প্রশ্নের জন্য আলাদা একটু স্টাইল */
+    /* ইউজারের প্রশ্নের জন্য বোল্ড লুক */
     .user-query {
-        font-weight: 600;
+        font-weight: 500;
         color: #ffffff;
-        margin-bottom: 5px;
-        display: block;
+        margin-bottom: 8px;
     }
 /* উইশির জন্য স্পেশাল স্টাইল */
     .wishy-tag {
@@ -306,16 +305,32 @@ if file:
 
 st.markdown("---")
 for m in st.session_state.messages:
-    with st.chat_message(m["role"]): st.markdown(m["content"])
-
+    with st.chat_message(m["role"]):
+        if m["role"] == "assistant":
+            st.markdown(f'<div class="chat-bubble">{m["content"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(m["content"])
 if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    if st.session_state.logged_in:
-        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
     
-    st.chat_message("user").markdown(prompt)
+    with st.chat_message("user"):
+        st.markdown(prompt)
     
     with st.chat_message("assistant"):
+        # ১. থিংকিং স্ট্যাটাস লোডার
+        with st.status("🔍 Analyzing skin data...", expanded=False) as status:
+            time.sleep(1.0)
+            reply = get_intelligent_response(prompt, st.session_state.last_res)
+            status.update(label="✅ Analysis Complete", state="complete")
+        
+        # ২. সুন্দর ক্লিন চ্যাট বাবল আউটপুট
+        st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
+        
+        # ৩. ডাটাবেসে সেভ করা
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        if st.session_state.logged_in:
+            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
+            conn.commit()
         # --- Gemini/ChatGPT Style Loading Status ---
         with st.status("🔍 SkinAI is thinking...", expanded=True) as status:
             time.sleep(1.2) # এটি স্রেফ রিয়েলিস্টিক ফিল দেওয়ার জন্য
