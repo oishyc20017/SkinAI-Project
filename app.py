@@ -327,7 +327,7 @@ st.markdown("---")
                 time.sleep(0.5)
                 status.update(label="✅ Analysis Complete!", state="complete", expanded=False)
             
-            # প্রফেশনাল চ্যাট বাবল আউটপুট (একবারই আসবে)
+            # প্রফেশনাল চ্যাট বাবল আউটপুট
             st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
             
             # সেশন এবং ডাটাবেসে সেভ করা
@@ -335,5 +335,3 @@ st.markdown("---")
             if st.session_state.logged_in:
                 c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
                 conn.commit()
-        if st.session_state.logged_in:
-            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
