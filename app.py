@@ -295,24 +295,18 @@ with col2:
         if my_lottie_data:
             st_lottie(my_lottie_data, height=200, key="skin_scanner_anim")
     except:
-        pass
-
-# --- ২. টাইটেল (একবারই থাকবে) ---
-# --- ১. অ্যানিমেশন এবং লোগো সেকশন ---
-# --- ১. লোগো এবং টাইটেল সেকশন (একদম মাঝখানে রাখার জন্য) ---
-# --- ১. লোগো একদম মাঝখানে (Perfectly Centered) ---
+        # --- লোগো এবং টাইটেলকে ছোট করে উপরে গুছিয়ে রাখা ---
 st.markdown(
     """
-    <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="150">
+    <div style="text-align: center; margin-top: -70px; margin-bottom: 0px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="60">
+        <h2 class="rainbow-text" style="margin: 0; font-size: 20px; line-height: 1.2;">SkinAI Assistant</h2>
+        <p style="margin: 0; font-size: 10px; color: #888;">Developed by Wishy</p>
     </div>
+    <hr style="margin-top: 5px; margin-bottom: 10px; border: 0.1px solid #444; opacity: 0.2;">
     """,
     unsafe_allow_html=True
 )
-
-# --- ২. টাইটেল ও সাবটাইটেল (একদম মাঝখানে) ---
-st.markdown('<h1 class="rainbow-text" style="text-align: center; margin-top: 0;">SkinAI Assistant</h1>', unsafe_allow_html=True)
-st.markdown('<p class="wishy-tag" style="text-align: center;">Developed by Wishy</p>', unsafe_allow_html=True)
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 if file:
