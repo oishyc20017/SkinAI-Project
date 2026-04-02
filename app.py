@@ -196,13 +196,12 @@ if 'user' not in st.session_state: st.session_state.user = None
 
 # এই কোডটুকু তোমার সাইডবারে লোগো সেকশনে বসাও:
 with st.sidebar:
-    # --- লোগো সেন্টার এবং ডিজাইন (Lotus Style) ---
+    # --- লোগো সেন্টার এবং ডিজাইন (AI Sparkle Style) ---
     col1, col2, col3 = st.columns([1, 2, 1]) 
     with col2:
-        # অ্যাস্থেটিক লোটাস ফুল লোগো
-        st.image("https://cdn-icons-png.flaticon.com/512/10332/10332309.png", width=120)
+        # অ্যাস্থেটিক জেমিনি এআই স্পার্কল লোগো
+        st.image("https://cdn-icons-png.flaticon.com/512/10499/10499424.png", width=120)
     st.markdown("---")
-
     st.markdown("---")
 
     if st.button("➕ New Chat", use_container_width=True):
