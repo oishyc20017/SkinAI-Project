@@ -96,14 +96,6 @@ st.markdown("""
         100% { background-position: 0% 50%; }
     }
 </style>
-def load_lottieurl(url):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
-
-# এখানে স্কিন স্ক্যানিং অ্যানিমেশন লিঙ্কটি দেওয়া হলো
-lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
 """, unsafe_allow_html=True)
 
 # --- ৩. রোগের বিস্তারিত ডাটাবেস (সাতটি রোগ) ---
@@ -295,7 +287,23 @@ with col2:
     else:
         st.info("Loading Aesthetic Animation...")
 
-# এর নিচেই তোমার আগের টাইটেল কোড থাকবে
+# এর নিচেই তোমার আগের টাইটেল কোড থাকব
+# --- অ্যানিমেশন লোড এবং দেখানো একসাথেই ---
+import requests
+from streamlit_lottie import st_lottie
+
+def load_lottieurl(url):
+    try:
+        r = requests.get(url)
+        return r.json() if r.status_code == 200 else None
+    except: return None
+
+lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
+
+if lottie_skin_ai:
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        st_lottie(lottie_skin_ai, height=200, key="skin_anim")ে
 st.markdown(f'<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
 st.markdown(f'<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
 st.markdown('<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
