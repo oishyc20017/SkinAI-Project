@@ -24,6 +24,18 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
+/* ChatGPT Style Chat Bubbles */
+    .chat-bubble {
+        background-color: #2f2f2f;
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid #444;
+        color: #ececec;
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        margin-top: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
 /* উইশির জন্য স্পেশাল স্টাইল */
     .wishy-tag {
         font-family: 'Courier New', Courier, monospace; /* এটি স্টাইলিশ টাইপরাইটার ফন্ট */
@@ -292,10 +304,21 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     if st.session_state.logged_in:
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
-    with st.chat_message("user"): st.markdown(prompt)
+    
+    st.chat_message("user").markdown(prompt)
+    
     with st.chat_message("assistant"):
-        reply = get_intelligent_response(prompt, st.session_state.last_res)
-        st.markdown(reply)
+        # --- Gemini/ChatGPT Style Loading Status ---
+        with st.status("🔍 SkinAI is thinking...", expanded=True) as status:
+            time.sleep(1.2) # এটি স্রেফ রিয়েলিস্টিক ফিল দেওয়ার জন্য
+            status.update(label="⌛ Analyzing details...", state="running")
+            reply = get_intelligent_response(prompt, st.session_state.last_res)
+            time.sleep(0.5)
+            status.update(label="✅ Analysis Complete!", state="complete", expanded=False)
+        
+        # প্রফেশনাল চ্যাট বাবল আউটপুট
+        st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
+        
         st.session_state.messages.append({"role": "assistant", "content": reply})
         if st.session_state.logged_in:
             c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
