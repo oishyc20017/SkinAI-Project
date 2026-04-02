@@ -303,25 +303,37 @@ if file:
     """, unsafe_allow_html=True)
     # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
+st.markdown("---")
+    # ১. পুরনো মেসেজগুলো দেখানোর জন্য
+    for m in st.session_state.messages:
+        with st.chat_message(m["role"]):
+            if m["role"] == "assistant":
+                st.markdown(f'<div class="chat-bubble">{m["content"]}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(m["content"])
 
-        st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
+    # ২. নতুন প্রশ্ন এবং উত্তরের জন্য
+    if prompt := st.chat_input("Ask me anything about your skin..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
         
-        # ৩. ডাটাবেসে সেভ করা
-        st.session_state.messages.append({"role": "assistant", "content": reply})
-        if st.session_state.logged_in:
-            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
-            conn.commit()
-        # --- Gemini/ChatGPT Style Loading Status ---
-        with st.status("🔍 SkinAI is thinking...", expanded=True) as status:
-            time.sleep(1.2) # এটি স্রেফ রিয়েলিস্টিক ফিল দেওয়ার জন্য
-            status.update(label="⌛ Analyzing details...", state="running")
-            reply = get_intelligent_response(prompt, st.session_state.last_res)
-            time.sleep(0.5)
-            status.update(label="✅ Analysis Complete!", state="complete", expanded=False)
-        
-        # প্রফেশনাল চ্যাট বাবল আউটপুট
-        st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
-        
-        st.session_state.messages.append({"role": "assistant", "content": reply})
+        with st.chat_message("assistant"):
+            # Gemini/ChatGPT Style Loading Status
+            with st.status("🔍 SkinAI is thinking...", expanded=True) as status:
+                time.sleep(1.2)
+                status.update(label="⌛ Analyzing details...", state="running")
+                reply = get_intelligent_response(prompt, st.session_state.last_res)
+                time.sleep(0.5)
+                status.update(label="✅ Analysis Complete!", state="complete", expanded=False)
+            
+            # প্রফেশনাল চ্যাট বাবল আউটপুট (একবারই আসবে)
+            st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
+            
+            # সেশন এবং ডাটাবেসে সেভ করা
+            st.session_state.messages.append({"role": "assistant", "content": reply})
+            if st.session_state.logged_in:
+                c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
+                conn.commit()
         if st.session_state.logged_in:
             c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
