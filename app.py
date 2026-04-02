@@ -24,17 +24,25 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
-/* ChatGPT Style Chat Bubbles */
+/* Gemini Style Clean Chat */
     .chat-bubble {
-        background-color: #2f2f2f;
+        background-color: rgba(255, 255, 255, 0.03); /* খুব হালকা ব্যাকগ্রাউন্ড */
         padding: 20px;
-        border-radius: 15px;
-        border: 1px solid #444;
-        color: #ececec;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1); /* খুব চিকন বর্ডার */
+        color: #e5e5e5;
         font-family: 'Inter', sans-serif;
-        line-height: 1.6;
-        margin-top: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        line-height: 1.7;
+        margin-bottom: 20px;
+        box-shadow: none; /* কোনো শ্যাডো থাকবে না, একদম ক্লিন */
+    }
+
+    /* প্রশ্নের জন্য আলাদা একটু স্টাইল */
+    .user-query {
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 5px;
+        display: block;
     }
 /* উইশির জন্য স্পেশাল স্টাইল */
     .wishy-tag {
