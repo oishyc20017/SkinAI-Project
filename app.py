@@ -194,13 +194,15 @@ if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
-# এই কোডটুকু তোমার সাইডবারে লোগো সেকশনে বসাও:
 with st.sidebar:
-    # --- লোগো সেন্টার এবং ডিজাইন (AI Sparkle Style) ---
+    # --- লোগো সেন্টার এবং প্রিমিয়াম ডিজাইন ---
+    st.write("") # উপরে সামান্য স্পেস দেওয়ার জন্য
     col1, col2, col3 = st.columns([1, 2, 1]) 
     with col2:
-        # অ্যাস্থেটিক জেমিনি এআই স্পার্কল লোগো
-        st.image("https://cdn-icons-png.flaticon.com/512/10499/10499424.png", width=120)
+        # এটি একটি গোল্ডেন-পিঙ্ক Aesthetic স্কিন কেয়ার লোগো (রঙিন)
+        st.image("https://cdn-icons-png.flaticon.com/512/3160/3160165.png", width=100)
+    
+    st.markdown("<br>", unsafe_allow_html=True) # লোগোর নিচে সামান্য গ্যাপ
     st.markdown("---")
     st.markdown("---")
 
