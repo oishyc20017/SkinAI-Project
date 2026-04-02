@@ -319,14 +319,13 @@ st.session_state.last_res = classes[np.argmax(pred)]
 st.markdown(f"""
 <div style="
     background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
-""")
-        padding: 25px;
-        border-radius: 15px;
-        border-left: 6px solid #58a6ff;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        margin: 25px 0;
-        text-align: center;
-    ">
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 6px solid #58a6ff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    margin: 25px 0;
+    text-align: center;
+">
         <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">
             AI Diagnostic Analysis
         </p>
