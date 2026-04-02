@@ -297,44 +297,35 @@ with col2:
     except:
         pass
 
-# --- লোগো এবং টাইটেলকে ছোট করে উপরে গুছিয়ে রাখা ---
+# --- ১. লোগো এবং টাইটেলকে ছোট করে উপরে গুছিয়ে রাখা ---
 st.markdown(
     """
     <div style="text-align: center; margin-top: -80px; margin-bottom: 0px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="60">
-        <h2 class="rainbow-text" style="margin: 0; font-size: 20px;">SkinAI Assistant</h2>
-        <p style="margin: 0; font-size: 10px; color: gray;">Developed by Wishy</p>
+        <div style="display: flex; justify-content: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="70">
+        </div>
+        <h2 class="rainbow-text" style="margin: 5px 0 0 0; font-size: 22px;">SkinAI Assistant</h2>
+        <p style="margin: 0; font-size: 11px; color: gray;">Developed by Wishy</p>
     </div>
-    <hr style="margin-top: 5px; margin-bottom: 10px; border: 0.1px solid #444; opacity: 0.2;">
+    <hr style="margin-top: 5px; margin-bottom: 15px; border: 0.1px solid #444; opacity: 0.2;">
     """,
     unsafe_allow_html=True
 )
 
-# নিচের এই লাইনগুলো যেন একদম বাম পাশ ঘেঁষে থাকে
-x = np.asarray(img_res) / 255.0; x = np.expand_dims(x, axis=0)
-pred = model.predict(x, verbose=0)
-st.session_state.last_res = classes[np.argmax(pred)]
+# --- ২. ইমেজ প্রসেসিং (এটি যেন বাম পাশ ঘেঁষে থাকে) ---
+if file:
+    import numpy as np  # এই লাইনটি এরর বন্ধ করবে
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    st.session_state.last_res = classes[np.argmax(pred)]
 
-# --- গর্জিয়াস রেজাল্ট ডিজাইন শুরু ---
-st.markdown(f"""
-<div style="
-    background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
-    padding: 25px;
-    border-radius: 15px;
-    border-left: 6px solid #58a6ff;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    margin: 25px 0;
-    text-align: center;
-">
-        <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">
-            AI Diagnostic Analysis
-        </p>
-        <h1 style="color: #ffffff; margin: 15px 0; font-family: 'Segoe UI', sans-serif; font-size: 28px; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
-            🔍 {st.session_state.last_res}
-        </h1>
-        <div style="display: inline-block; padding: 6px 18px; background: rgba(88, 166, 255, 0.15); border: 1px solid rgba(88, 166, 255, 0.3); border-radius: 30px;">
-            <span style="color: #58a6ff; font-size: 14px; font-weight: 500;">✨ Professional Grade Detection</span>
-        </div>
+    # --- ৩. রেজাল্ট ডিজাইন ---
+    st.markdown(f"""
+    <div style="background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #58a6ff; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin: 25px 0; text-align: center;">
+        <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">AI Diagnostic Analysis</p>
+        <h1 style="color: #ffffff; margin: 15px 0; font-family: 'Segoe UI', sans-serif; font-size: 28px; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🔍 {st.session_state.last_res}</h1>
     </div>
     """, unsafe_allow_html=True)
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
