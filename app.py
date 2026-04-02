@@ -303,27 +303,7 @@ if file:
     """, unsafe_allow_html=True)
     # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
-st.markdown("---")
-for m in st.session_state.messages:
-    with st.chat_message(m["role"]):
-        if m["role"] == "assistant":
-            st.markdown(f'<div class="chat-bubble">{m["content"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(m["content"])
-if prompt := st.chat_input("Ask me anything about your skin..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    
-    with st.chat_message("assistant"):
-        # ১. থিংকিং স্ট্যাটাস লোডার
-        with st.status("🔍 Analyzing skin data...", expanded=False) as status:
-            time.sleep(1.0)
-            reply = get_intelligent_response(prompt, st.session_state.last_res)
-            status.update(label="✅ Analysis Complete", state="complete")
-        
-        # ২. সুন্দর ক্লিন চ্যাট বাবল আউটপুট
+
         st.markdown(f'<div class="chat-bubble">{reply}</div>', unsafe_allow_html=True)
         
         # ৩. ডাটাবেসে সেভ করা
