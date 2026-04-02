@@ -283,9 +283,9 @@ with st.sidebar:
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     if lottie_skin_ai:
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
         st_lottie(lottie_skin_ai, height=200, key="skin_anim")
-    else:
-        st.info("Loading Aesthetic Animation...")
 
 # এর নিচেই তোমার আগের টাইটেল কোড থাকব
 # --- অ্যানিমেশন লোড এবং দেখানো একসাথেই ---
