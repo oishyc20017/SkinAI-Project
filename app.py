@@ -24,7 +24,7 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
-    /* ১. রেইনবো টাইটেল (অপরিবর্তিত) */
+    /* ১. তোমার সেই সুন্দর রেইনবো টাইটেল */
     .rainbow-text {
         background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
         -webkit-background-clip: text;
@@ -37,7 +37,7 @@ st.markdown("""
         display: block;
     }
 
-    /* ২. উইশি ট্যাগ (অপরিবর্তিত) */
+    /* ২. উইশি ট্যাগ */
     .wishy-tag {
         font-family: 'Courier New', Courier, monospace;
         font-weight: 700;
@@ -51,37 +51,42 @@ st.markdown("""
         display: block;
     }
 
-    /* ৩. চ্যাট বাবলকে Gemini-র মতো "বর্ডারলেস" করা */
-    [data-testid="stChatMessage"] {
-        background-color: transparent !important; /* ব্যাকগ্রাউন্ড থাকবে না */
-        border: none !important; /* কোনো বর্ডার থাকবে না */
-        padding: 10px 0px !important;
-        margin-bottom: 20px !important;
-    }
-
-    /* ৪. এসিস্ট্যান্টের উত্তরের স্টাইল (ক্লিন লুক) */
-    .chat-bubble {
-        background-color: #1a1c20; /* হালকা গ্রে ব্যাকগ্রাউন্ড */
-        padding: 20px;
-        border-radius: 20px;
-        border: 1px solid #333; /* একদম হালকা ১ পিক্সেল বর্ডার */
-        color: #e3e3e3;
-        font-size: 15px;
-        line-height: 1.6;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-
-    /* ৫. ইউজার আইকন বা ডিফল্ট বক্স হাইড করা */
-    [data-testid="stChatMessage"] section {
-        background-color: transparent !important;
-        border: none !important;
-    }
-
-    /* ৬. চ্যাট ইনপুট বক্সকে Gemini-র মতো গোল করা */
+    /* ৩. জেমিনি লুক: লাল বর্ডার এবং ইনপুট বক্স ফিক্স */
     [data-testid="stChatInput"] {
-        border-radius: 30px !important;
-        border: 1px solid #444 !important;
-        background-color: #1e1e1e !important;
+        border: 1px solid #3c4043 !important; /* একদম চিকন জেমিনি বর্ডার */
+        border-radius: 28px !important; /* গোল ইনপুট বক্স */
+        background-color: #1e1f20 !important;
+        padding-left: 15px;
+    }
+
+    /* ইনপুটের সেই লাল বর্ডার ফোকাস সল্ভ করা */
+    [data-testid="stChatInput"] textarea {
+        color: #e3e3e3 !important;
+    }
+
+    /* ৪. চ্যাট মেসেজ থেকে সব কালার বর্ডার সরানো */
+    [data-testid="stChatMessage"] {
+        background-color: transparent !important;
+        border: none !important; /* কোনো লাল বা কমলা দাগ থাকবে না */
+        box-shadow: none !important;
+    }
+
+    /* ৫. জেমিনি স্টাইল চ্যাট বাবল (সবচেয়ে গুরুত্বপূর্ণ) */
+    .chat-bubble {
+        background-color: #1e1f20; /* জেমিনি ডার্ক গ্রে */
+        border-radius: 20px;
+        padding: 16px 20px;
+        border: 1px solid #3c4043;
+        color: #e3e3e3;
+        line-height: 1.6;
+        margin-top: 5px;
+    }
+
+    /* ৬. স্ট্যাটাস বক্স (Analyzing...) ক্লিন করা */
+    div[data-testid="stStatusWidget"] {
+        background-color: #1e1f20 !important;
+        border: 1px solid #3c4043 !important;
+        border-radius: 10px !important;
     }
 
     @keyframes rainbow {
