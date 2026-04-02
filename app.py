@@ -24,6 +24,22 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
+/* উইশির জন্য স্পেশাল স্টাইল */
+    .wishy-tag {
+        font-family: 'Courier New', Courier, monospace; /* এটি স্টাইলিশ টাইপরাইটার ফন্ট */
+        font-weight: 700;
+        font-size: 14px;
+        background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); /* গোলাপি এবং লালচে মিক্স কালার */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-top: -10px;
+        margin-bottom: 30px;
+        display: block;
+        text-shadow: 2px 2px 10px rgba(245, 87, 108, 0.3); /* হালকা গ্লোয়িং ইফেক্ট */
+    }
 /* রেইনবো টেক্সট এনিমেশন */
     .rainbow-text {
         background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
@@ -233,7 +249,9 @@ with st.sidebar:
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
+# আগের টাইটেল লাইনটি মুছে এই দুইটা লাইন দাও
 st.markdown('<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
+st.markdown('<p class="wishy-tag">Developed by Wishy</p>', unsafe_allow_html=True)
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 if file:
