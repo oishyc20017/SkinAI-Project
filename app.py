@@ -309,13 +309,17 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-    x = np.asarray(img_res) / 255.0; x = np.expand_dims(x, axis=0)
-    pred = model.predict(x, verbose=0)
-    st.session_state.last_res = classes[np.argmax(pred)]
-    # --- গর্জিয়াস রেজাল্ট ডিজাইন শুরু ---
-    st.markdown(f"""
-    <div style="
-        background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+
+# নিচের এই লাইনগুলো যেন একদম বাম পাশ ঘেঁষে থাকে
+x = np.asarray(img_res) / 255.0; x = np.expand_dims(x, axis=0)
+pred = model.predict(x, verbose=0)
+st.session_state.last_res = classes[np.argmax(pred)]
+
+# --- গর্জিয়াস রেজাল্ট ডিজাইন শুরু ---
+st.markdown(f"""
+<div style="
+    background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+""")
         padding: 25px;
         border-radius: 15px;
         border-left: 6px solid #58a6ff;
