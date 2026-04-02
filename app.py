@@ -24,6 +24,25 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
+/* রেইনবো টেক্সট এনিমেশন */
+    .rainbow-text {
+        background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 400% 400%;
+        animation: rainbow 8s ease infinite;
+        font-weight: 800;
+        font-size: 38px;
+        text-align: center;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    @keyframes rainbow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
     /* ডেক্সটপ বা বড় স্ক্রিনের জেনারেল ডিজাইন */
     .stApp { background-color: #0e1117; color: #e3e3e3; }
     [data-testid="stSidebar"] { background-color: #1e1f20 !important; border-right: 1px solid #30363d; }
@@ -214,7 +233,7 @@ with st.sidebar:
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
-st.title("🩺 SkinAI Assistant")
+st.markdown('<h1 class="rainbow-text">SkinAI Assistant</h1>', unsafe_allow_html=True)
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 if file:
