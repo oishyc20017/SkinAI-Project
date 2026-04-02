@@ -298,20 +298,22 @@ with col2:
         pass
 
 # --- লোগো এবং টাইটেল (একদম মাঝখানে এবং ছোট) ---
+# --- লোগো এবং স্টাইলিশ টাইটেল ---
 st.markdown(
     """
-    <div style="text-align: center; margin-top: -80px;">
+    <div style="text-align: center; margin-top: -80px; margin-bottom: 10px;">
         <div style="display: flex; justify-content: center;">
             <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="70">
         </div>
         <h2 class="rainbow-text" style="margin: 5px 0 0 0; font-size: 22px;">SkinAI Assistant</h2>
-        <p style="margin: 0; font-size: 11px; color: gray;">Developed by Wishy</p>
+        <p class="wishy-tag" style="margin: 0; font-size: 14px; font-weight: bold; letter-spacing: 1px;">
+            Developed by Wishy
+        </p>
     </div>
     <hr style="margin-top: 5px; margin-bottom: 15px; border: 0.1px solid #444; opacity: 0.2;">
     """,
     unsafe_allow_html=True
 )
-
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
