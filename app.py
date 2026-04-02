@@ -26,14 +26,6 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 st.markdown("""
 <style>
-def load_lottieurl(url):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
-
-# এখানে স্কিন স্ক্যানিং অ্যানিমেশন লিঙ্কটি দেওয়া হলো
-lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
     /* ১. তোমার সেই সুন্দর টাইটেলগুলো (অপরিবর্তিত) */
     .rainbow-text {
         background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
@@ -104,6 +96,14 @@ lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961
         100% { background-position: 0% 50%; }
     }
 </style>
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+# এখানে স্কিন স্ক্যানিং অ্যানিমেশন লিঙ্কটি দেওয়া হলো
+lottie_skin_ai = load_lottieurl("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
 """, unsafe_allow_html=True)
 
 # --- ৩. রোগের বিস্তারিত ডাটাবেস (সাতটি রোগ) ---
