@@ -146,38 +146,14 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (Fix: English vs Bangla/Banglish) ---
 def get_intelligent_response(query, res):
-    query = query.lower()
+    with st.status("Analyzing your question...", expanded=False) as status:
+        time.sleep(1.0)
+        status.update(label="Response Ready!", state="complete")
     
-    # ১. যদি কোনো রোগের নাম অলরেডি শনাক্ত হয়ে থাকে (res এর মান থাকলে)
-    if res and res != "None":
-        # ক্ষতির সম্ভাবনা বা ভয় নিয়ে প্রশ্ন করলে
-        if any(word in query for word in ["ক্ষতিকর", "ভয়", "danger", "harmful", "koti", "risk", "problem"]):
-            return f"""
-            আপনি **{res}** নিয়ে চিন্তিত? আমি বুঝতে পারছি আপনার মনের অবস্থা। 
-            সাধারণত এটি খুব দ্রুত ছড়ায় না, তবে অবহেলা করা ঠিক হবে না। 
-            আপনি কি জায়গাটিতে ব্যথা বা জ্বালাপোড়া অনুভব করছেন? যদি বড় কোনো পরিবর্তন দেখেন, তবে দেরি না করে একজন ডাক্তার দেখানোই ভালো।
-            """
-        
-        # প্রতিকার বা উপায় জানতে চাইলে
-        elif any(word in query for word in ["উপায়", "কি করব", "solution", "প্রতিকার", "tips"]):
-            return f"শনাক্তকৃত সমস্যাটি হলো **{res}**। এটি পরিষ্কার রাখার চেষ্টা করুন। রোদে গেলে ঢেকে রাখুন। আর বেশি চুলকালে স্ক্র্যাচ করবেন না। আপনি কি এর আগে কোনো ক্রিম ব্যবহার করেছেন?"
-
-    # ২. চর্মরোগের প্রাথমিক কথা বললে (দাগ, চুলকানি ইত্যাদি)
-    if any(word in query for word in ["দাগ", "চুলকানি", "skin", "rash", "problem", "সমস্যা", "লাল"]):
-        return """
-        আপনার ত্বকের সমস্যার কথা শুনে আমি বুঝতে পারছি আপনি অস্বস্তিতে আছেন। 
-        এই দাগ বা সমস্যাটি কি হঠাৎ করে হয়েছে নাকি অনেকদিন ধরে আছে? এটি কি খুব বেশি চুলকায়?
-        
-        সঠিকভাবে জানার জন্য নিচে থাকা **'Upload Skin Photo'** বাটন থেকে একটি ছবি দিন। ছবি দিলে আমি এর নাম ও বিস্তারিত বলতে পারবো।
-        """
-
-    # ৩. সাধারণ হাই/হ্যালো বা অন্য কিছু
-    if any(word in query for word in ["hi", "hello", "হাই", "হ্যালো", "hey"]):
-        return "হ্যালো! আমি আপনার ত্বকের সুরক্ষায় সাহায্য করতে এখানে আছি। আপনার ত্বকে কি কোনো সমস্যা হয়েছে? বিস্তারিত বলতে পারেন বা ছবি আপলোড করতে পারেন।"
-
-    return "আমি আপনার কথা বুঝতে পেরেছি। আপনার ত্বকের সমস্যা নিয়ে আরও বিস্তারিত বলুন অথবা একটি ছবি আপলোড করে নিশ্চিত হোন।"
-
-# --- ফাংশন এখানে শেষ ---
+    q = query.lower()
+    if res == "None":
+        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
 
     data = disease_details.get(res, {})
     
@@ -344,93 +320,34 @@ st.markdown(
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
-# --- ২. ইমেজ প্রসেসিং এবং বুদ্ধিমান রেজাল্ট ---
 if file:
     import numpy as np
     img_res = Image.open(file).convert('RGB').resize((100, 75))
     x = np.asarray(img_res) / 255.0
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
-    res_name = classes[np.argmax(pred)]
-    # ১. রোগের আসল নাম সেভ করা (যাতে চ্যাটবক্স কোড না দেখায়)
-   st.session_state.last_res = res_name
-   st.session_state.actual_res_html = info['local'] # এটি শুধু কার্ডের জন্যয
+    st.session_state.last_res = classes[np.argmax(pred)]
 
-    # 🏥 রোগের নাম ও বিবরণ (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
-    disease_info = {
-        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়। অবহেলা করলে এটি ভবিষ্যতে ক্যান্সারে রূপ নিতে পারে।"},
-        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি ত্বকের কোষের এক প্রকার ক্যান্সার যা সাধারণত ধীরে ছড়ায়। ডাক্তারের পরামর্শ নিন।"},
-        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়, ত্বকের স্বাভাবিক বৃদ্ধি মাত্র।"},
-        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা। এটি ক্ষতিকর নয় তবে অস্বস্তি হতে পারে।"},
-        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল। তবে তিলের রঙ বা আকার দ্রুত বদলালে সতর্ক হন।"},
-        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি ত্বকের সবথেকে বিপজ্জনক ক্যান্সার। দ্রুত চর্মরোগ বিশেষজ্ঞের সাথে যোগাযোগ করুন।"},
-        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া। এগুলো সাধারণত জটিল কোনো সমস্যা নয়।"}
-    }
-
-    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "এই সমস্যাটি সম্পর্কে বিস্তারিত তথ্য পাওয়া যায়নি।"})
-
-    # ২. সুন্দর রেজাল্ট কার্ড ডিজাইন (এটি শুধুমাত্র স্ক্রিনে দেখাবে, চ্যাটে যাবে না)
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-        <div style="margin: 20px 0;">
-            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">মানুষ যেভাবে চেনে:</h4>
-            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
-        </div>
-        <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক বা ডাক্তারি নাম:</p>
-            <h3 style="color: #58a6ff; font-style: italic; font-size: 20px; margin: 0;">{res_name}</h3>
-        </div>
-        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>বিবরণ:</b> {info['desc']}</p>
-        </div>
+    <div style="background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #58a6ff; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin: 25px 0; text-align: center;">
+        <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">AI Diagnostic Analysis</p>
+        <h1 style="color: #ffffff; margin: 15px 0; font-family: 'Segoe UI', sans-serif; font-size: 28px; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🔍 {st.session_state.last_res}</h1>
     </div>
     """, unsafe_allow_html=True)
+  # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
-# --- ৩. চ্যাটবক্স লজিক (ফাইলের একদম নিচে থাকবে) ---
 st.markdown("---")
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): st.markdown(m["content"])
 
 if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
     if st.session_state.logged_in:
-        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
-        conn.commit()
-
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    with st.chat_message("assistant"):
-        # তোমার আগের মতোই last_res থেকে ডাটা নিবে
-        res = st.session_state.last_res if "last_res" in st.session_state else "None"
-        
-        # শুধু এই চেকটুকু থাকবে যেন HTML কোড রিপ্লাইতে না চলে যায়
-        if "<div" in str(res):
-            res = "None" 
-
-        reply = get_intelligent_response(prompt, res)
-        st.markdown(reply)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
-
-        if st.session_state.logged_in:
-            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
-            conn.commit()
+        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
     with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
-            # ১. রেজাল্ট কার্ড নয়, শুধু রোগের আসল নামটি নিচ্ছি
-            if "actual_disease_name" in st.session_state:
-                clean_res = st.session_state.actual_disease_name
-            else:
-                clean_res = "None"
-            
-            # ২. এবার সুন্দর করে রিপ্লাই তৈরি করা
-            reply = get_intelligent_response(prompt, clean_res)
-            st.markdown(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
-            
-            # ৩. ডাটাবেসে সেভ করা
-            if st.session_state.logged_in:
-                c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
-                conn.commit()
+        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        st.markdown(reply)
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        if st.session_state.logged_in:
+            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
