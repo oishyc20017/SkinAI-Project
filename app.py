@@ -146,14 +146,29 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (Fix: English vs Bangla/Banglish) ---
 def get_intelligent_response(query, res):
-    with st.status("Analyzing your question...", expanded=False) as status:
-        time.sleep(1.0)
-        status.update(label="Response Ready!", state="complete")
+    query = query.lower()
     
-    q = query.lower()
-    if res == "None":
-        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+    # ১. ইউজার যদি কোনো সমস্যার কথা বলে (প্রাথমিক চ্যাট)
+    if any(word in query for word in ["দাগ", "চুলকানি", "skin", "rash", "problem", "সমস্যা", "লাল"]):
+        return """
+        আপনার ত্বকের সমস্যার কথা শুনে আমি বুঝতে পারছি আপনি কিছুটা চিন্তিত। 
+        এই দাগটি কি হঠাৎ করে হয়েছে নাকি অনেকদিন ধরে আছে? এটি কি চুলকায় বা জ্বালাপোড়া করে?
+        
+        সঠিকভাবে রোগটি শনাক্ত করার জন্য আপনি চাইলে নিচে থাকা **'Upload Skin Photo'** বাটন থেকে একটি ছবি দিতে পারেন। 
+        ছবি দিলে আমি এর **সাধারণ নাম** এবং **বৈজ্ঞানিক নাম**—দুটোই বলে দিতে পারবো।
+        """
+
+    # ২. যদি আগে কোনো রোগ শনাক্ত হয়ে থাকে (রেজাল্ট পাওয়ার পর কথা বলা)
+    if res:
+        if any(word in query for word in ["কিভাবে", "কি করবো", "solution", "প্রতিকার", "ভয়"]):
+            return f"""
+            শনাক্তকৃত রোগটি হলো **{res}**। এটি সাধারণত {res} এর লক্ষণের সাথে মিলে যায়। 
+            তবে এটি কি আপনাকে খুব বেশি কষ্ট দিচ্ছে? যেমন ব্যথা বা অতিরিক্ত চুলকানি? 
+            সাধারণত এটি দ্রুত ছড়ায় না, তবে চূড়ান্ত পরামর্শের জন্য একজন চর্মরোগ বিশেষজ্ঞকে দেখানোই বুদ্ধিমানের কাজ হবে।
+            """
+
+    # ৩. সাধারণ হাই/হ্যালো বা অন্য মেসেজ
+    return "আমি আপনার ত্বকের সুরক্ষায় সাহায্য করতে এখানে আছি। আপনার কোনো সমস্যা থাকলে বলতে পারেন বা একটি ছবি আপলোড করে পরীক্ষা করতে পারেন।"
 
     data = disease_details.get(res, {})
     
