@@ -348,6 +348,7 @@ if file:
     pred = model.predict(x, verbose=0)
     res_name = classes[np.argmax(pred)]
     st.session_state.last_res = res_name
+st.session_state.actual_disease_name = res_name
 
     # 🏥 রোগের নাম ও বিবরণ (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
@@ -401,19 +402,18 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
     with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
-            # ১. রেজাল্ট চেক করা
-            clean_res = st.session_state.last_res if "last_res" in st.session_state else "None"
+            # ১. রেজাল্ট কার্ড নয়, শুধু রোগের আসল নামটি নিচ্ছি
+            if "actual_disease_name" in st.session_state:
+                clean_res = st.session_state.actual_disease_name
+            else:
+                clean_res = "None"
             
-            # ২. যদি HTML কোড থাকে, তবে সেটাকে এড়িয়ে চলা
-            if "<div" in str(clean_res):
-                clean_res = st.session_state.get('actual_disease_name', "None")
-
-            # ৩. উত্তর জেনারেট করা
+            # ২. এবার সুন্দর করে রিপ্লাই তৈরি করা
             reply = get_intelligent_response(prompt, clean_res)
             st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
             
-            # ৪. ডাটাবেসে সেভ করা (এটি 'with' ব্লকের ভেতরেই থাকবে)
+            # ৩. ডাটাবেসে সেভ করা
             if st.session_state.logged_in:
                 c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
                 conn.commit()
