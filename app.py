@@ -328,10 +328,24 @@ if file:
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
+    # ২. সুন্দর রেজাল্ট কার্ড ডিজাইন
     st.markdown(f"""
-    <div style="background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #58a6ff; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin: 25px 0; text-align: center;">
-        <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">AI Diagnostic Analysis</p>
-        <h1 style="color: #ffffff; margin: 15px 0; font-family: 'Segoe UI', sans-serif; font-size: 28px; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🔍 {st.session_state.last_res}</h1>
+    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
+        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+        
+        <div style="margin: 20px 0;">
+            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">সাধারণ নাম:</h4>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+        </div>
+
+        <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক নাম:</p>
+            <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
+            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>তথ্য:</b> {info['desc']}</p>
+        </div>
     </div>
     """, unsafe_allow_html=True)
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
