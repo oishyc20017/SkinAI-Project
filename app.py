@@ -315,8 +315,7 @@ st.markdown(
     </div>
     <hr style="margin-top: 5px; margin-bottom: 15px; border: 0.1px solid #444; opacity: 0.2;">
     """,
-    unsafe_allow_html=True
-)
+    unsafe_allow_html=True)
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
