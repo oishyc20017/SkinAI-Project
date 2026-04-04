@@ -320,18 +320,54 @@ st.markdown(
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
+# --- ২. ইমেজ প্রসেসিং এবং বুদ্ধিমান রেজাল্ট ---
 if file:
     import numpy as np
     img_res = Image.open(file).convert('RGB').resize((100, 75))
     x = np.asarray(img_res) / 255.0
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
-    st.session_state.last_res = classes[np.argmax(pred)]
+    res_name = classes[np.argmax(pred)]
+    st.session_state.last_res = res_name
 
+    # 🏥 রোগের নাম ও বিবরণ (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
+    disease_info = {
+        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়। অবহেলা করলে এটি ভবিষ্যতে ক্যান্সারে রূপ নিতে পারে।"},
+        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি ত্বকের কোষের এক প্রকার ক্যান্সার যা সাধারণত ধীরে ছড়ায়। ডাক্তারের পরামর্শ নিন।"},
+        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়, ত্বকের স্বাভাবিক বৃদ্ধি মাত্র।"},
+        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা। এটি ক্ষতিকর নয় তবে অস্বস্তি হতে পারে।"},
+        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল। তবে তিলের রঙ বা আকার দ্রুত বদলালে সতর্ক হন।"},
+        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি ত্বকের সবথেকে বিপজ্জনক ক্যান্সার। দ্রুত চর্মরোগ বিশেষজ্ঞের সাথে যোগাযোগ করুন।"},
+        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া। এগুলো সাধারণত জটিল কোনো সমস্যা নয়।"}
+    }
+
+    # তথ্য খুঁজে বের করা
+    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "এই সমস্যাটি সম্পর্কে বিস্তারিত তথ্য পাওয়া যায়নি।"})
+
+    # --- ৩. সুন্দর রেজাল্ট কার্ড (তোমার ইচ্ছা মতো সাজানো) ---
     st.markdown(f"""
-    <div style="background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 15px; border-left: 6px solid #58a6ff; box-shadow: 0 10px 25px rgba(0,0,0,0.4); margin: 25px 0; text-align: center;">
-        <p style="color: #8b949e; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: 600;">AI Diagnostic Analysis</p>
-        <h1 style="color: #ffffff; margin: 15px 0; font-family: 'Segoe UI', sans-serif; font-size: 28px; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🔍 {st.session_state.last_res}</h1>
+    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
+        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+        
+        <div style="margin: 20px 0;">
+            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">মানুষ যেভাবে চেনে:</h4>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">{info['local']}</h1>
+        </div>
+
+        <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক বা ডাক্তারি নাম:</p>
+            <h3 style="color: #58a6ff; font-style: italic; font-size: 20px; margin: 0;">{res_name}</h3>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
+            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;">
+                <b>বিবরণ:</b> {info['desc']}
+            </p>
+        </div>
+        
+        <p style="color: #ff7b72; font-size: 12px; margin-top: 20px; font-style: italic;">
+            *এটি একটি AI ভিত্তিক ফলাফল। চূড়ান্ত সিদ্ধান্তের জন্য ডাক্তারের পরামর্শ নিন।
+        </p>
     </div>
     """, unsafe_allow_html=True)
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
