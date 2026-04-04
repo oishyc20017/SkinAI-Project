@@ -401,13 +401,14 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
     with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
-            # এই লাইনগুলো অবশ্যই ৪টি স্পেস ডানে সরিয়ে লিখতে হবে
+            # ১. রেজাল্ট চেক করা
             clean_res = st.session_state.last_res if "last_res" in st.session_state else "None"
             
-            # রেজাল্ট যদি বড় HTML কোড হয়, তবে শুধু প্রথম শব্দটি (রোগের নাম) নেব
+            # ২. যদি HTML কোড থাকে, তবে সেটাকে এড়িয়ে চলা
             if "<div" in str(clean_res):
                 clean_res = st.session_state.get('actual_disease_name', "None")
 
+            # ৩. উত্তর জেনারেট করা (এটি IF এর বাইরে, সোজা লাইনে থাকবে)
             reply = get_intelligent_response(prompt, clean_res)
             st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
