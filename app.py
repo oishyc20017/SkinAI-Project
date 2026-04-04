@@ -401,10 +401,15 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
     with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
-        # রেজাল্ট কার্ড নয়, শুধু রোগের নাম পাঠাও যেন AI সুন্দর করে উত্তর দেয়
-     clean_res = st.session_state.last_res if "last_res" in st.session_state else "None"
-      reply = get_intelligent_response(prompt, clean_res)
-       st.markdown(reply)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
+            # এই লাইনগুলো অবশ্যই ৪টি স্পেস ডানে সরিয়ে লিখতে হবে
+            clean_res = st.session_state.last_res if "last_res" in st.session_state else "None"
+            
+            # রেজাল্ট যদি বড় HTML কোড হয়, তবে শুধু প্রথম শব্দটি (রোগের নাম) নেব
+            if "<div" in str(clean_res):
+                clean_res = st.session_state.get('actual_disease_name', "None")
+
+            reply = get_intelligent_response(prompt, clean_res)
+            st.markdown(reply)
+            st.session_state.messages.append({"role": "assistant", "content": reply})
         if st.session_state.logged_in:
             c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
