@@ -408,9 +408,12 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
             if "<div" in str(clean_res):
                 clean_res = st.session_state.get('actual_disease_name', "None")
 
-            # ৩. উত্তর জেনারেট করা (এটি IF এর বাইরে, সোজা লাইনে থাকবে)
+            # ৩. উত্তর জেনারেট করা
             reply = get_intelligent_response(prompt, clean_res)
             st.markdown(reply)
             st.session_state.messages.append({"role": "assistant", "content": reply})
-        if st.session_state.logged_in:
-            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
+            
+            # ৪. ডাটাবেসে সেভ করা (এটি 'with' ব্লকের ভেতরেই থাকবে)
+            if st.session_state.logged_in:
+                c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
+                conn.commit()
