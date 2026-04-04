@@ -347,8 +347,9 @@ if file:
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     res_name = classes[np.argmax(pred)]
-    st.session_state.last_res = res_name
-st.session_state.actual_disease_name = res_name
+    # ১. রোগের আসল নাম সেভ করা (যাতে চ্যাটবক্স কোড না দেখায়)
+    st.session_state.actual_disease_name = res_name
+    st.session_state.last_res = res_name # এটিকেও শুধু নাম হিসেবে রাখলাম
 
     # 🏥 রোগের নাম ও বিবরণ (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
@@ -361,37 +362,27 @@ st.session_state.actual_disease_name = res_name
         "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া। এগুলো সাধারণত জটিল কোনো সমস্যা নয়।"}
     }
 
-    # তথ্য খুঁজে বের করা
     info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "এই সমস্যাটি সম্পর্কে বিস্তারিত তথ্য পাওয়া যায়নি।"})
 
-    # --- ৩. সুন্দর রেজাল্ট কার্ড (তোমার ইচ্ছা মতো সাজানো) ---
+    # ২. সুন্দর রেজাল্ট কার্ড ডিজাইন (এটি শুধুমাত্র স্ক্রিনে দেখাবে, চ্যাটে যাবে না)
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
         <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-        
         <div style="margin: 20px 0;">
             <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">মানুষ যেভাবে চেনে:</h4>
-            <h1 style="color: #ffffff; font-size: 32px; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">{info['local']}</h1>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
         </div>
-
         <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
             <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক বা ডাক্তারি নাম:</p>
             <h3 style="color: #58a6ff; font-style: italic; font-size: 20px; margin: 0;">{res_name}</h3>
         </div>
-
         <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;">
-                <b>বিবরণ:</b> {info['desc']}
-            </p>
+            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>বিবরণ:</b> {info['desc']}</p>
         </div>
-        
-        <p style="color: #ff7b72; font-size: 12px; margin-top: 20px; font-style: italic;">
-            *এটি একটি AI ভিত্তিক ফলাফল। চূড়ান্ত সিদ্ধান্তের জন্য ডাক্তারের পরামর্শ নিন।
-        </p>
     </div>
     """, unsafe_allow_html=True)
-  # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
+# --- ৩. চ্যাটবক্স লজিক (ফাইলের একদম নিচে থাকবে) ---
 st.markdown("---")
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): st.markdown(m["content"])
@@ -400,6 +391,16 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     if st.session_state.logged_in:
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
+    with st.chat_message("user"): st.markdown(prompt)
+    
+    with st.chat_message("assistant"):
+        # এখানে আসল রোগের নাম ফিল্টার করা হচ্ছে
+        disease_name = st.session_state.get('actual_disease_name', "None")
+        reply = get_intelligent_response(prompt, disease_name)
+        st.markdown(reply)
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        if st.session_state.logged_in:
+            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
     with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
             # ১. রেজাল্ট কার্ড নয়, শুধু রোগের আসল নামটি নিচ্ছি
