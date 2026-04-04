@@ -353,8 +353,8 @@ if file:
     pred = model.predict(x, verbose=0)
     res_name = classes[np.argmax(pred)]
     # ১. রোগের আসল নাম সেভ করা (যাতে চ্যাটবক্স কোড না দেখায়)
-    st.session_state.actual_disease_name = res_name
-    st.session_state.last_res = res_name # এটিকেও শুধু নাম হিসেবে রাখলাম
+   st.session_state.last_res = res_name
+   st.session_state.actual_res_html = info['local'] # এটি শুধু কার্ডের জন্যয
 
     # 🏥 রোগের নাম ও বিবরণ (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
@@ -394,18 +394,29 @@ for m in st.session_state.messages:
 
 if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    if st.session_state.logged_in:
-        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt)); conn.commit()
-    with st.chat_message("user"): st.markdown(prompt)
     
+    if st.session_state.logged_in:
+        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
+        conn.commit()
+
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
     with st.chat_message("assistant"):
-        # এখানে আসল রোগের নাম ফিল্টার করা হচ্ছে
-        disease_name = st.session_state.get('actual_disease_name', "None")
-        reply = get_intelligent_response(prompt, disease_name)
+        # তোমার আগের মতোই last_res থেকে ডাটা নিবে
+        res = st.session_state.last_res if "last_res" in st.session_state else "None"
+        
+        # শুধু এই চেকটুকু থাকবে যেন HTML কোড রিপ্লাইতে না চলে যায়
+        if "<div" in str(res):
+            res = "None" 
+
+        reply = get_intelligent_response(prompt, res)
         st.markdown(reply)
         st.session_state.messages.append({"role": "assistant", "content": reply})
+
         if st.session_state.logged_in:
-            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply)); conn.commit()
+            c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
+            conn.commit()
     with st.chat_message("user"): st.markdown(prompt)
     with st.chat_message("assistant"):
             # ১. রেজাল্ট কার্ড নয়, শুধু রোগের আসল নামটি নিচ্ছি
