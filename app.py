@@ -197,65 +197,50 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # --- ১. লোগো ও টাইটেল (যা তুমি অলরেডি ডিজাইন করেছ) ---
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
-    
-    st.markdown("""
-        <div style="background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%); 
-                    padding: 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); 
-                    text-align: center; margin-top: -10px;">
-            <p style="color: #e3e3e3; font-size: 13px; margin: 0;">
-                ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # --- ২. লগইন ও সাইনআপ লজিক (জেমিনি স্টাইল) ---
+    # ১. লোগো ও টাইটেল
+    st.markdown("<h1 style='text-align: center; color: #58a6ff;'>SkinAI</h1>", unsafe_allow_html=True)
     st.markdown("---")
-    if not st.session_state.get('logged_in', False):
-        st.subheader("🔑 Account")
-        auth_mode = st.radio("Option:", ["Login", "Sign Up"], horizontal=True)
+
+    # ২. লগইন ও চ্যাট ম্যানেজমেন্ট
+    if not st.session_state.logged_in:
+        auth_choice = st.radio("Access Mode", ["Login", "Register"], horizontal=True)
         
-        u_name = st.text_input("Username", key="sidebar_user")
-        p_name = st.text_input("Password", type="password", key="sidebar_pass")
+        # ইউনিক কি (Key) ব্যবহার করা হয়েছে যাতে এরর না আসে
+        email = st.text_input("Email/Username", key="sidebar_email_unique")
+        password = st.text_input("Password", type="password", key="sidebar_pass_unique")
         
-        if auth_mode == "Login":
+        if auth_choice == "Login":
             if st.button("Log In", use_container_width=True):
-                c.execute('SELECT * FROM users WHERE username=? AND password=?', (u_name, p_name))
-                if c.fetchone():
+                c.execute('SELECT password FROM users WHERE email=?', (email,))
+                user_data = c.fetchone()
+                if user_data and check_hash(password, user_data[0]):
                     st.session_state.logged_in = True
-                    st.session_state.user = u_name
-                    st.success(f"Welcome, {u_name}!")
+                    st.session_state.user = email
                     st.rerun()
                 else:
-                    st.error("Invalid credentials")
+                    st.error("Invalid Login")
         else:
-            if st.button("Create Account", use_container_width=True):
+            if st.button("Sign Up", use_container_width=True):
                 try:
-                    c.execute('INSERT INTO users VALUES (?,?)', (u_name, p_name))
+                    c.execute('INSERT INTO users VALUES (?,?)', (email, make_hash(password)))
                     conn.commit()
-                    st.success("Success! Please Login.")
+                    st.success("Account Created! Please Login.")
                 except:
-                    st.error("Username taken!")
-    
+                    st.error("User already exists!")
     else:
-        # লগইন থাকা অবস্থায় প্রোফাইল ও নিউ চ্যাট
-        st.success(f"👤 User: {st.session_state.user}")
+        # ইউজার লগইন থাকলে যা দেখাবে
+        st.success(f"Welcome, {st.session_state.user}")
         
-        # --- চ্যাট এবং লগআউট বাটন ---
-    if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.messages = []
-        st.session_state.last_res = "None"
-        st.rerun()
-        
-    if st.button("Logout", use_container_width=True):
-        st.session_state.logged_in = False
-        st.rerun()
+        if st.button("➕ New Chat", use_container_width=True):
+            st.session_state.messages = []
+            st.rerun()
+            
+        if st.button("Logout", use_container_width=True):
+            st.session_state.logged_in = False
+            st.rerun()
 
     st.markdown("---")
+    st.info("SkinAI: Professional skin analysis at your fingertips.")
     
     # --- সোশ্যাল বাটন ---
     col_f, col_g = st.columns(2)
