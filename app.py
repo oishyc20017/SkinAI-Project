@@ -196,51 +196,54 @@ if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
+# --- ১. জেমিনি স্টাইল সাইডবার (মেইন পেজ ঠিক রেখে) ---
 with st.sidebar:
-    # ১. লোগো ও টাইটেল
-    st.markdown("<h1 style='text-align: center; color: #58a6ff;'>SkinAI</h1>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: #58a6ff;'>SkinAI</h2>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # ২. লগইন ও চ্যাট ম্যানেজমেন্ট
-    if not st.session_state.logged_in:
-        auth_choice = st.radio("Access Mode", ["Login", "Register"], horizontal=True)
+    # লগইন অবস্থা চেক করা হচ্ছে
+    if not st.session_state.get('logged_in', False):
+        st.subheader("🔑 Account")
+        # ইউনিক কী (key) ব্যবহার করা হয়েছে যাতে মেইন পেজের সাথে ক্ল্যাশ না হয়
+        auth_choice = st.radio("Choose:", ["Login", "Register"], key="sb_auth_choice", horizontal=True)
         
-        # ইউনিক কি (Key) ব্যবহার করা হয়েছে যাতে এরর না আসে
-        email = st.text_input("Email/Username", key="sidebar_email_unique")
-        password = st.text_input("Password", type="password", key="sidebar_pass_unique")
+        email_in = st.text_input("Email", key="sb_email_unique")
+        pass_in = st.text_input("Password", type="password", key="sb_pass_unique")
         
         if auth_choice == "Login":
-            if st.button("Log In", use_container_width=True):
-                c.execute('SELECT password FROM users WHERE email=?', (email,))
-                user_data = c.fetchone()
-                if user_data and check_hash(password, user_data[0]):
+            if st.button("Log In", use_container_width=True, key="sb_login_btn_unique"):
+                c.execute('SELECT password FROM users WHERE email=?', (email_in,))
+                data = c.fetchone()
+                if data and check_hash(pass_in, data[0]):
                     st.session_state.logged_in = True
-                    st.session_state.user = email
+                    st.session_state.user = email_in
+                    st.success("Logged in!")
                     st.rerun()
                 else:
-                    st.error("Invalid Login")
+                    st.error("Wrong details")
         else:
-            if st.button("Sign Up", use_container_width=True):
+            if st.button("Sign Up", use_container_width=True, key="sb_signup_btn_unique"):
                 try:
-                    c.execute('INSERT INTO users VALUES (?,?)', (email, make_hash(password)))
+                    c.execute('INSERT INTO users VALUES (?,?)', (email_in, make_hash(pass_in)))
                     conn.commit()
-                    st.success("Account Created! Please Login.")
+                    st.success("Account Created!")
                 except:
-                    st.error("User already exists!")
+                    st.error("User already exists")
+    
     else:
-        # ইউজার লগইন থাকলে যা দেখাবে
-        st.success(f"Welcome, {st.session_state.user}")
-        
-        if st.button("➕ New Chat", use_container_width=True):
+        # লগইন থাকলে প্রোফাইল ও বাটন
+        st.success(f"👤 {st.session_state.user}")
+        if st.button("➕ New Chat", use_container_width=True, key="sb_new_chat_unique"):
             st.session_state.messages = []
             st.rerun()
-            
-        if st.button("Logout", use_container_width=True):
+        if st.button("Logout", use_container_width=True, key="sb_logout_unique"):
             st.session_state.logged_in = False
             st.rerun()
 
     st.markdown("---")
-    st.info("SkinAI: Professional skin analysis at your fingertips.")
+    st.info("আপনার ত্বকের যেকোনো সমস্যায় ছবি আপলোড করে পরামর্শ নিন।")
+
+# --- সাইডবার শেষ, এখন তোমার বাকি হোম পেজের কোড যেমন ছিল তেমনই থাকবে ---
     
     # --- সোশ্যাল বাটন ---
     col_f, col_g = st.columns(2)
