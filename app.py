@@ -245,34 +245,28 @@ with st.sidebar:
         # লগইন থাকা অবস্থায় প্রোফাইল ও নিউ চ্যাট
         st.success(f"👤 User: {st.session_state.user}")
         
-        if st.button("➕ New Chat", use_container_width=True):
-            st.session_state.messages = []
-            st.rerun()
-            
-        if st.button("Logout", use_container_width=True):
-            st.session_state.logged_in = False
-            st.rerun()
-
-    st.markdown("---")
-    # সোশ্যাল বাটন (যদি চাও)
-    col_f, col_g = st.columns(2)
-    with col_f: st.button("🔵 Facebook", use_container_width=True)
-    with col_g: st.button("🔴 Gmail", use_container_width=True)
+        # --- চ্যাট এবং লগআউট বাটন ---
+    if st.button("➕ New Chat", use_container_width=True):
         st.session_state.messages = []
         st.session_state.last_res = "None"
+        st.rerun()
+        
+    if st.button("Logout", use_container_width=True):
+        st.session_state.logged_in = False
         st.rerun()
 
     st.markdown("---")
     
-    if not st.session_state.logged_in:
-        # --- তোমার চাওয়া Facebook ও Gmail বাটন ---
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
-        with col2:
-            if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
-        
-        st.markdown("---")
+    # --- সোশ্যাল বাটন ---
+    col_f, col_g = st.columns(2)
+    with col_f:
+        if st.button("🔵 Facebook", use_container_width=True):
+            st.write("Redirecting to Facebook...")
+    with col_g:
+        if st.button("🔴 Gmail", use_container_width=True):
+            st.write("Redirecting to Gmail...")
+
+    st.markdown("---")
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
             e = st.text_input("Gmail Address", key="l_e")
