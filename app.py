@@ -266,53 +266,52 @@ with st.sidebar:
         if st.button("🔴 Gmail", use_container_width=True):
             st.write("Redirecting to Gmail...")
 
-    st.markdown("---")
-    
-    t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
-    
-    with t1:
-        e = st.text_input("Gmail Address", key="l_e")
-        p = st.text_input("Password", type="password", key="l_p")
-        if st.button("Log In", use_container_width=True):
-            c.execute('SELECT password FROM users WHERE email=?', (e,))
-            data = c.fetchone()
-            if data and check_hash(p, data[0]):
-                st.session_state.logged_in = True
-                st.session_state.user = e
-                # ডাটাবেস থেকে পুরনো হিস্ট্রি নিয়ে আসা
-                c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
-                st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
-                st.success("Welcome back! History Loaded.")
-                st.rerun()
-            else:
-                st.error("Invalid Login Details.")
-    with t2:
-        re = st.text_input("New Gmail", key="r_e")
-        rp = st.text_input("New Password", type="password", key="r_p")
-        if st.button("Create Account", use_container_width=True):
-            if "@" in re and len(rp) > 3:
-                try:
-                    c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
-                    conn.commit()
-                    st.success("Account Created! Now Login.")
-                except:
-                    st.error("User already exists.")
-            else:
-                st.warning("Enter valid details.")
-
-# --- ৩. যদি ইউজার লগইন অবস্থায় থাকে (Logout অপশন) ---
-else:
-    st.success(f"Logged in as: {st.session_state.user}")
-    
-    if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
+    # --- ৩. লগইন এবং রেজিস্ট্রেশন সিস্টেম (সঠিক ইনডেন্টেশন সহ) ---
+    if not st.session_state.logged_in:
+        st.markdown("---")
+        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         
-    if st.button("Logout", use_container_width=True):
-        st.session_state.logged_in = False
-        st.session_state.user = None
-        st.session_state.messages = []
-        st.rerun()
+        with t1:
+            le = st.text_input("Gmail Address", key="l_e")
+            lp = st.text_input("Password", type="password", key="l_p")
+            if st.button("Log In", use_container_width=True):
+                c.execute('SELECT password FROM users WHERE email=?', (le,))
+                data = c.fetchone()
+                if data and check_hash(lp, data[0]):
+                    st.session_state.logged_in = True
+                    st.session_state.user = le
+                    st.rerun()
+                else:
+                    st.error("Invalid Login Details.")
+
+        with t2:
+            re = st.text_input("New Gmail", key="r_e")
+            rp = st.text_input("New Password", type="password", key="r_p")
+            if st.button("Create Account", use_container_width=True):
+                if "@" in re and len(rp) > 3:
+                    try:
+                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
+                        conn.commit()
+                        st.success("Account Created! Please Login.")
+                    except:
+                        st.error("User already exists.")
+                else:
+                    st.warning("Enter valid details.")
+    
+    else:
+        # ইউজার লগইন থাকা অবস্থায় যা দেখাবে
+        st.markdown("---")
+        st.success(f"👤 Logged in as: {st.session_state.user}")
+        
+        if st.button("➕ New Chat", use_container_width=True):
+            st.session_state.messages = []
+            st.rerun()
+            
+        if st.button("Logout", use_container_width=True):
+            st.session_state.logged_in = False
+            st.session_state.user = None
+            st.session_state.messages = []
+            st.rerun()
 
     st.markdown("---")
     with st.expander("❓ Help & Information"):
