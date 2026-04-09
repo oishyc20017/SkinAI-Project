@@ -197,34 +197,67 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
-    st.write("") 
-    col1, col2, col3 = st.columns([1, 2, 1]) 
+    # --- ১. লোগো ও টাইটেল (যা তুমি অলরেডি ডিজাইন করেছ) ---
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # এটি একটি রঙিন 'Skin Scan' বা 'Healthy Skin' আইকন
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
     
-    st.markdown("<br>", unsafe_allow_html=True) 
-    # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        margin-top: -10px;
-    ">
-        <p style="color: #e3e3e3; font-size: 13px; font-weight: 500; margin: 0; line-height: 1.4;">
-            ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
-        </p>
-    </div>
+        <div style="background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%); 
+                    padding: 15px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); 
+                    text-align: center; margin-top: -10px;">
+            <p style="color: #e3e3e3; font-size: 13px; margin: 0;">
+                ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
+            </p>
+        </div>
     """, unsafe_allow_html=True)
-    
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("---")
 
-    if st.button("➕ New Chat", use_container_width=True):
+    # --- ২. লগইন ও সাইনআপ লজিক (জেমিনি স্টাইল) ---
+    st.markdown("---")
+    if not st.session_state.get('logged_in', False):
+        st.subheader("🔑 Account")
+        auth_mode = st.radio("Option:", ["Login", "Sign Up"], horizontal=True)
+        
+        u_name = st.text_input("Username", key="sidebar_user")
+        p_name = st.text_input("Password", type="password", key="sidebar_pass")
+        
+        if auth_mode == "Login":
+            if st.button("Log In", use_container_width=True):
+                c.execute('SELECT * FROM users WHERE username=? AND password=?', (u_name, p_name))
+                if c.fetchone():
+                    st.session_state.logged_in = True
+                    st.session_state.user = u_name
+                    st.success(f"Welcome, {u_name}!")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials")
+        else:
+            if st.button("Create Account", use_container_width=True):
+                try:
+                    c.execute('INSERT INTO users VALUES (?,?)', (u_name, p_name))
+                    conn.commit()
+                    st.success("Success! Please Login.")
+                except:
+                    st.error("Username taken!")
+    
+    else:
+        # লগইন থাকা অবস্থায় প্রোফাইল ও নিউ চ্যাট
+        st.success(f"👤 User: {st.session_state.user}")
+        
+        if st.button("➕ New Chat", use_container_width=True):
+            st.session_state.messages = []
+            st.rerun()
+            
+        if st.button("Logout", use_container_width=True):
+            st.session_state.logged_in = False
+            st.rerun()
+
+    st.markdown("---")
+    # সোশ্যাল বাটন (যদি চাও)
+    col_f, col_g = st.columns(2)
+    with col_f: st.button("🔵 Facebook", use_container_width=True)
+    with col_g: st.button("🔴 Gmail", use_container_width=True)
         st.session_state.messages = []
         st.session_state.last_res = "None"
         st.rerun()
