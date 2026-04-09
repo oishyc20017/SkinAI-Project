@@ -267,21 +267,25 @@ with st.sidebar:
             st.write("Redirecting to Gmail...")
 
     st.markdown("---")
-        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
-        with t1:
-            e = st.text_input("Gmail Address", key="l_e")
-            p = st.text_input("Password", type="password", key="l_p")
-            if st.button("Log In", use_container_width=True):
-                c.execute('SELECT password FROM users WHERE email=?', (e,))
-                data = c.fetchone()
-                if data and check_hash(p, data[0]):
-                    st.session_state.logged_in, st.session_state.user = True, e
-                    # ডাটাবেস থেকে পুরনো হিস্ট্রি নিয়ে আসা
-                    c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
-                    st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
-                    st.success("Welcome back! History Loaded.")
-                    time.sleep(0.5); st.rerun()
-                else: st.error("Invalid Login Details.")
+    
+    t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
+    
+    with t1:
+        e = st.text_input("Gmail Address", key="l_e")
+        p = st.text_input("Password", type="password", key="l_p")
+        if st.button("Log In", use_container_width=True):
+            c.execute('SELECT password FROM users WHERE email=?', (e,))
+            data = c.fetchone()
+            if data and check_hash(p, data[0]):
+                st.session_state.logged_in = True
+                st.session_state.user = e
+                # ডাটাবেস থেকে পুরনো হিস্ট্রি নিয়ে আসা
+                c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
+                st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
+                st.success("Welcome back! History Loaded.")
+                st.rerun()
+            else:
+                st.error("Invalid Login Details.")
         with t2:
         re = st.text_input("New Gmail", key="r_e")
         rp = st.text_input("New Password", type="password", key="r_p")
