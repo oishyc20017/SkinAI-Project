@@ -196,108 +196,79 @@ if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
-# --- ১. জেমিনি স্টাইল সাইডবার (মেইন পেজ ঠিক রেখে) ---
 with st.sidebar:
-    st.markdown("<h2 style='text-align: center; color: #58a6ff;'>SkinAI</h2>", unsafe_allow_html=True)
+    # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
+    st.write("") 
+    col1, col2, col3 = st.columns([1, 2, 1]) 
+    with col2:
+        # এটি একটি রঙিন 'Skin Scan' বা 'Healthy Skin' আইকন
+        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+    
+    st.markdown("<br>", unsafe_allow_html=True) 
+    # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        margin-top: -10px;
+    ">
+        <p style="color: #e3e3e3; font-size: 13px; font-weight: 500; margin: 0; line-height: 1.4;">
+            ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # লগইন অবস্থা চেক করা হচ্ছে
-    if not st.session_state.get('logged_in', False):
-        st.subheader("🔑 Account")
-        # ইউনিক কী (key) ব্যবহার করা হয়েছে যাতে মেইন পেজের সাথে ক্ল্যাশ না হয়
-        auth_choice = st.radio("Choose:", ["Login", "Register"], key="sb_auth_choice", horizontal=True)
-        
-        email_in = st.text_input("Email", key="sb_email_unique")
-        pass_in = st.text_input("Password", type="password", key="sb_pass_unique")
-        
-        if auth_choice == "Login":
-            if st.button("Log In", use_container_width=True, key="sb_login_btn_unique"):
-                c.execute('SELECT password FROM users WHERE email=?', (email_in,))
-                data = c.fetchone()
-                if data and check_hash(pass_in, data[0]):
-                    st.session_state.logged_in = True
-                    st.session_state.user = email_in
-                    st.success("Logged in!")
-                    st.rerun()
-                else:
-                    st.error("Wrong details")
-        else:
-            if st.button("Sign Up", use_container_width=True, key="sb_signup_btn_unique"):
-                try:
-                    c.execute('INSERT INTO users VALUES (?,?)', (email_in, make_hash(pass_in)))
-                    conn.commit()
-                    st.success("Account Created!")
-                except:
-                    st.error("User already exists")
-    
-    else:
-        # লগইন থাকলে প্রোফাইল ও বাটন
-        st.success(f"👤 {st.session_state.user}")
-        if st.button("➕ New Chat", use_container_width=True, key="sb_new_chat_unique"):
-            st.session_state.messages = []
-            st.rerun()
-        if st.button("Logout", use_container_width=True, key="sb_logout_unique"):
-            st.session_state.logged_in = False
-            st.rerun()
+    if st.button("➕ New Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.session_state.last_res = "None"
+        st.rerun()
 
     st.markdown("---")
-    st.info("আপনার ত্বকের যেকোনো সমস্যায় ছবি আপলোড করে পরামর্শ নিন।")
-
-# --- সাইডবার শেষ, এখন তোমার বাকি হোম পেজের কোড যেমন ছিল তেমনই থাকবে ---
     
-    # --- সোশ্যাল বাটন ---
-    col_f, col_g = st.columns(2)
-    with col_f:
-        if st.button("🔵 Facebook", use_container_width=True):
-            st.write("Redirecting to Facebook...")
-    with col_g:
-        if st.button("🔴 Gmail", use_container_width=True):
-            st.write("Redirecting to Gmail...")
-
-    # --- ৩. লগইন এবং রেজিস্ট্রেশন সিস্টেম (সঠিক ইনডেন্টেশন সহ) ---
     if not st.session_state.logged_in:
+        # --- তোমার চাওয়া Facebook ও Gmail বাটন ---
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
+        with col2:
+            if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
+        
         st.markdown("---")
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
-        
         with t1:
-            le = st.text_input("Gmail Address", key="l_e")
-            lp = st.text_input("Password", type="password", key="l_p")
+            e = st.text_input("Gmail Address", key="l_e")
+            p = st.text_input("Password", type="password", key="l_p")
             if st.button("Log In", use_container_width=True):
-                c.execute('SELECT password FROM users WHERE email=?', (le,))
+                c.execute('SELECT password FROM users WHERE email=?', (e,))
                 data = c.fetchone()
-                if data and check_hash(lp, data[0]):
-                    st.session_state.logged_in = True
-                    st.session_state.user = le
-                    st.rerun()
-                else:
-                    st.error("Invalid Login Details.")
-
+                if data and check_hash(p, data[0]):
+                    st.session_state.logged_in, st.session_state.user = True, e
+                    # ডাটাবেস থেকে পুরনো হিস্ট্রি নিয়ে আসা
+                    c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
+                    st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
+                    st.success("Welcome back! History Loaded.")
+                    time.sleep(0.5); st.rerun()
+                else: st.error("Invalid Login Details.")
         with t2:
             re = st.text_input("New Gmail", key="r_e")
             rp = st.text_input("New Password", type="password", key="r_p")
             if st.button("Create Account", use_container_width=True):
                 if "@" in re and len(rp) > 3:
                     try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
-                        conn.commit()
-                        st.success("Account Created! Please Login.")
-                    except:
-                        st.error("User already exists.")
-                else:
-                    st.warning("Enter valid details.")
-    
+                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
+                        st.success("Account Created! Now Login.")
+                    except: st.error("User already exists.")
+                else: st.warning("Enter valid details.")
     else:
-        # ইউজার লগইন থাকা অবস্থায় যা দেখাবে
-        st.markdown("---")
-        st.success(f"👤 Logged in as: {st.session_state.user}")
-        
-        if st.button("➕ New Chat", use_container_width=True):
-            st.session_state.messages = []
-            st.rerun()
-            
+        st.success(f"Logged in as: {st.session_state.user}")
         if st.button("Logout", use_container_width=True):
             st.session_state.logged_in = False
-            st.session_state.user = None
             st.session_state.messages = []
             st.rerun()
 
