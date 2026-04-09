@@ -286,7 +286,7 @@ with st.sidebar:
                 st.rerun()
             else:
                 st.error("Invalid Login Details.")
-        with t2:
+    with t2:
         re = st.text_input("New Gmail", key="r_e")
         rp = st.text_input("New Password", type="password", key="r_p")
         if st.button("Create Account", use_container_width=True):
