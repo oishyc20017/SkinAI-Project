@@ -283,21 +283,32 @@ with st.sidebar:
                     time.sleep(0.5); st.rerun()
                 else: st.error("Invalid Login Details.")
         with t2:
-            re = st.text_input("New Gmail", key="r_e")
-            rp = st.text_input("New Password", type="password", key="r_p")
-            if st.button("Create Account", use_container_width=True):
-                if "@" in re and len(rp) > 3:
-                    try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
-                        st.success("Account Created! Now Login.")
-                    except: st.error("User already exists.")
-                else: st.warning("Enter valid details.")
-    else:
-        st.success(f"Logged in as: {st.session_state.user}")
-        if st.button("Logout", use_container_width=True):
-            st.session_state.logged_in = False
-            st.session_state.messages = []
-            st.rerun()
+        re = st.text_input("New Gmail", key="r_e")
+        rp = st.text_input("New Password", type="password", key="r_p")
+        if st.button("Create Account", use_container_width=True):
+            if "@" in re and len(rp) > 3:
+                try:
+                    c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
+                    conn.commit()
+                    st.success("Account Created! Now Login.")
+                except:
+                    st.error("User already exists.")
+            else:
+                st.warning("Enter valid details.")
+
+# --- ৩. যদি ইউজার লগইন অবস্থায় থাকে (Logout অপশন) ---
+else:
+    st.success(f"Logged in as: {st.session_state.user}")
+    
+    if st.button("➕ New Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+        
+    if st.button("Logout", use_container_width=True):
+        st.session_state.logged_in = False
+        st.session_state.user = None
+        st.session_state.messages = []
+        st.rerun()
 
     st.markdown("---")
     with st.expander("❓ Help & Information"):
