@@ -379,134 +379,7 @@ if file:
 
 st.markdown("---")
 
-# --- ৩. ডক্টর কনসালটেশন ও বুকিং সিকোয়েন্স (চ্যাটের নিচে দেখা যাবে) ---
-if st.session_state.get('logged_in', False):
-    st.markdown("## 🩺 Doctor Consultation & Appointment Booking")
-
-    # ডাটাবেস থেকে ডাক্তারদের লিস্ট রিড করা
-    c.execute("SELECT name, specialty, fee, available_time FROM doctors")
-    doctor_list = c.fetchall()
-
-    # ডাক্তারদের প্রোফাইল সুন্দর কার্ড আকারে দেখানো
-    st.subheader("Available Specialists")
-    cols = st.columns(len(doctor_list) if doctor_list else 1)
-
-    if doctor_list:
-        for i, doc in enumerate(doctor_list):
-            with cols[i]:
-                st.markdown(f"""
-                <div style="background-color: #1e1e1e; padding: 15px; border-radius: 10px; border: 1px solid #58a6ff; margin-bottom: 10px;">
-                    <h4 style="color: #58a6ff; margin: 0;">{doc[0]}</h4>
-                    <p style="margin: 5px 0; font-size: 14px; color: #cccccc;"><b>Specialty:</b> {doc[1]}</p>
-                    <p style="margin: 5px 0; font-size: 14px; color: #cccccc;"><b>Fee:</b> {doc[2]}</p>
-                    <p style="margin: 5px 0; font-size: 13px; color: #ff7b72;">⏰ {doc[3]}</p>
-                </div>
-                """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # বুকিং ফর্ম
-    st.subheader("🗓️ Book an Appointment Now")
-    with st.form(key="doctor_booking_form_main"):
-        doc_names = [doc[0] for doc in doctor_list] if doctor_list else ["No Doctors Available"]
-        selected_doc = st.selectbox("Select Specialist", doc_names)
-        
-        appointment_date = st.date_input("Preferred Date")
-        appointment_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "5:00 PM - 6:00 PM", "7:00 PM - 8:00 PM", "8:00 PM - 9:00 PM"])
-        
-        payment_method = st.radio("Choose Payment Gateway", ["Pay at Chamber", "bKash / Nagad (Online Consultation)"], horizontal=True)
-        
-        submit_booking = st.form_submit_button("Confirm Booking")
-
-    # বুকিং সাবমিট হলে ডাটাবেসে সেভ করার লজিক
-    if submit_booking and doctor_list:
-        user_email = st.session_state.user
-        c.execute("INSERT INTO bookings (user_email, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?)",
-                  (user_email, selected_doc, str(appointment_date), appointment_time, "Confirmed"))
-        conn.commit()
-        
-        st.success(f"🎉 Appointment confirmed with {selected_doc} on {appointment_date} at {appointment_time}!")
-        if "bKash" in payment_method:
-            st.info("💳 Redirecting to SSLCommerz / bKash Payment Gateway... (Simulation)")
-
-    # ইউজারের নিজস্ব বুকিং হিস্ট্রি দেখার অপশন
-    st.markdown("<br>", unsafe_allow_html=True)
-    with st.expander("📄 View Your Appointment History"):
-        c.execute("SELECT doctor_name, date, time, status FROM bookings WHERE user_email=?", (st.session_state.user,))
-        my_bookings = c.fetchall()
-        if my_bookings:
-            for b in my_bookings:
-                st.write(f"🩺 **Doctor:** {b[0]} | 📅 **Date:** {b[1]} | ⏰ **Time:** {b[2]} | 🟢 **Status:** {b[3]}")
-        else:
-            st.info("You haven't booked any consultations yet.")
-
-st.markdown("---")
-
-# --- ৩. ডক্টর কনসালটেশন ও বুকিং সিকোয়েন্স (লগইন ছাড়াই সবার জন্য উন্মুক্ত) ---
-st.markdown("## 🩺 Doctor Consultation & Appointment Booking")
-
-# ডাটাবেস থেকে ডাক্তারদের লিস্ট রিড করা
-c.execute("SELECT name, specialty, fee, available_time FROM doctors")
-doctor_list = c.fetchall()
-
-# ডাক্তারদের প্রোফাইল সুন্দর কার্ড আকারে দেখানো
-st.subheader("Available Specialists")
-cols = st.columns(len(doctor_list) if doctor_list else 1)
-
-if doctor_list:
-    for i, doc in enumerate(doctor_list):
-        with cols[i]:
-            st.markdown(f"""
-            <div style="background-color: #1e1e1e; padding: 15px; border-radius: 10px; border: 1px solid #58a6ff; margin-bottom: 10px;">
-                <h4 style="color: #58a6ff; margin: 0;">{doc[0]}</h4>
-                <p style="margin: 5px 0; font-size: 14px; color: #cccccc;"><b>Specialty:</b> {doc[1]}</p>
-                <p style="margin: 5px 0; font-size: 14px; color: #cccccc;"><b>Fee:</b> {doc[2]}</p>
-                <p style="margin: 5px 0; font-size: 13px; color: #ff7b72;">⏰ {doc[3]}</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# বুকিং ফর্ম
-st.subheader("🗓️ Book an Appointment Now")
-with st.form(key="doctor_booking_form_main"):
-    doc_names = [doc[0] for doc in doctor_list] if doctor_list else ["No Doctors Available"]
-    selected_doc = st.selectbox("Select Specialist", doc_names)
-    
-    appointment_date = st.date_input("Preferred Date")
-    appointment_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "5:00 PM - 6:00 PM", "7:00 PM - 8:00 PM", "8:00 PM - 9:00 PM"])
-    
-    payment_method = st.radio("Choose Payment Gateway", ["Pay at Chamber", "bKash / Nagad (Online Consultation)"], horizontal=True)
-    
-    submit_booking = st.form_submit_button("Confirm Booking")
-
-# বুকিং সাবমিট হলে ডাটাবেসে সেভ করার লজিক
-if submit_booking and doctor_list:
-    # যদি লগইন থাকে তবে ইউজারের নাম সেভ হবে, না থাকলে 'Guest User' হিসেবে সেভ হবে
-    user_email = st.session_state.get('user', 'Guest User')
-    c.execute("INSERT INTO bookings (user_email, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?)",
-              (user_email, selected_doc, str(appointment_date), appointment_time, "Confirmed"))
-    conn.commit()
-    
-    st.success(f"🎉 Appointment confirmed with {selected_doc} on {appointment_date} at {appointment_time}!")
-    if "bKash" in payment_method:
-        st.info("💳 Redirecting to SSLCommerz / bKash Payment Gateway... (Simulation)")
-
-# ইউজারের নিজস্ব বুকিং হিস্ট্রি দেখার অপশন
-st.markdown("<br>", unsafe_allow_html=True)
-with st.expander("📄 View Your Appointment History"):
-    user_email = st.session_state.get('user', 'Guest User')
-    c.execute("SELECT doctor_name, date, time, status FROM bookings WHERE user_email=?", (user_email,))
-    my_bookings = c.fetchall()
-    if my_bookings:
-        for b in my_bookings:
-            st.write(f"🩺 **Doctor:** {b[0]} | 📅 **Date:** {b[1]} | ⏰ **Time:** {b[2]} | 🟢 **Status:** {b[3]}")
-    else:
-        st.info("No consultation history found for this session.")
-
-st.markdown("---")
-
-# --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন (ক্লিক করলে ওপেন হবে) ---
+# --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     st.markdown("### Choose a Specialist & Book Your Appointment")
@@ -528,7 +401,7 @@ def doctor_booking_popup():
     st.markdown("---")
     
     # বুকিং ফর্ম (পপ-আপের ভেতরে)
-    with st.form(key="popup_booking_form"):
+    with st.form(key="popup_booking_form_final"):
         doc_names = [doc[0] for doc in doctor_list] if doctor_list else ["No Doctors Available"]
         selected_doc = st.selectbox("Select Specialist", doc_names)
         appointment_date = st.date_input("Preferred Date")
@@ -545,7 +418,7 @@ def doctor_booking_popup():
         st.success(f"🎉 Appointment confirmed with {selected_doc}!")
         st.rerun()
 
-# মেইন স্ক্রিনে শুধু একটা ছিমছাম বাটন দেখাবে, যা মেইন পেজের কোনো জায়গা নষ্ট করবে না
+# 🎯 মেইন স্ক্রিনে শুধু এই ২য় অপশনটি (বাটন) থাকবে, ১ম অপশনের সব কার্ড-ফর্ম ডিলিট করা হয়েছে
 col1, col2, col3 = st.columns([3, 4, 3])
 with col2:
     if st.button("🩺 Consult a Doctor Now", use_container_width=True):
@@ -553,7 +426,7 @@ with col2:
 
 st.markdown("---")
 
-# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট (আগের কোড) ---
+# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট (আগের মেইন কোড - সম্পূর্ণ নিরাপদ) ---
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): 
         st.markdown(m["content"])
