@@ -214,12 +214,12 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
+    # --- ১. লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
     
-    # লোগোর নিচের গ্যাপ কমিয়ে সরাসরি স্টাইলিশ কার্ড (লাইন ২২৫-২৩৯ এর উন্নত রূপ)
+    # লোগোর নিচের গ্যাপ কমিয়ে সরাসরি স্টাইলিশ কার্ড
     st.markdown("""
     <div style="
         background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
@@ -236,7 +236,7 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # --- সোশাল কানেক্ট বাটন (একদম কাছাকাছি পাশাপাশি) ---
+    # --- ২. সোশাল কানেক্ট বাটন (একদম কাছাকাছি পাশাপাশি) ---
     side_col1, side_col2 = st.columns(2)
     with side_col1:
         st.button("🔵 Facebook", use_container_width=True, key="sidebar_fb_btn")
@@ -245,7 +245,7 @@ with st.sidebar:
         
     st.markdown("<hr style='margin: 8px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
     
-    # --- লগইন এবং রেজিস্ট্রেশন ট্যাব (কমপ্যাক্ট মার্জিন) ---
+    # --- ৩. লগইন এবং রেজিস্ট্রেশন ট্যাব (কমপ্যাক্ট মার্জিন) ---
     tab1, tab2 = st.tabs(["🔑 Login", "🆕 Register"])
     
     with tab1:
@@ -264,13 +264,14 @@ with st.sidebar:
 
     st.markdown("<hr style='margin: 8px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
 
-    # --- নিউ চ্যাট বাটন (আগের ২৪৪ লাইনের বাটনটি এখন এখানে কমপ্যাক্ট হয়ে বসবে) ---
+    # --- ৪. নিউ চ্যাট বাটন ---
     if st.button("➕ New Chat", use_container_width=True, key="sidebar_new_chat_btn"):
         st.session_state.messages = []
         st.rerun()
-        st.session_state.messages = []
-        st.session_state.last_res = "None"
-        st.rerun()
+
+    # --- ৫. হেল্প অ্যান্ড ইনফরমেশন (একদম নিচে একটিই থাকবে) ---
+    with st.expander("❓ Help & Information", expanded=False):
+        st.write("Welcome to SkinAI Pro. For support or legal queries, contact our campus registry team.")
 
     st.markdown("---")
     
