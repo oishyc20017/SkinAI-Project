@@ -215,33 +215,59 @@ if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
     # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
-    st.write("") 
-    col1, col2, col3 = st.columns([1, 2, 1]) 
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # এটি একটি রঙিন 'Skin Scan' বা 'Healthy Skin' আইকন
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
     
-    st.markdown("<br>", unsafe_allow_html=True) 
-    # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
+    # লোগোর নিচের গ্যাপ কমিয়ে সরাসরি স্টাইলিশ কার্ড (লাইন ২২৫-২৩৯ এর উন্নত রূপ)
     st.markdown("""
     <div style="
         background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
-        padding: 15px;
+        padding: 12px;
         border-radius: 12px;
         border: 1px solid rgba(255, 255, 255, 0.1);
         text-align: center;
-        margin-top: -10px;
+        margin-top: 5px;
+        margin-bottom: 12px;
     ">
         <p style="color: #e3e3e3; font-size: 13px; font-weight: 500; margin: 0; line-height: 1.4;">
-            ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
+        ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
         </p>
     </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("---")
 
-    if st.button("➕ New Chat", use_container_width=True):
+    # --- সোশাল কানেক্ট বাটন (একদম কাছাকাছি পাশাপাশি) ---
+    side_col1, side_col2 = st.columns(2)
+    with side_col1:
+        st.button("🔵 Facebook", use_container_width=True, key="sidebar_fb_btn")
+    with side_col2:
+        st.button("🔴 Gmail", use_container_width=True, key="sidebar_gm_btn")
+        
+    st.markdown("<hr style='margin: 8px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
+    
+    # --- লগইন এবং রেজিস্ট্রেশন ট্যাব (কমপ্যাক্ট মার্জিন) ---
+    tab1, tab2 = st.tabs(["🔑 Login", "🆕 Register"])
+    
+    with tab1:
+        st.markdown("<div style='margin-top: -5px;'>", unsafe_allow_html=True)
+        login_email = st.text_input("Gmail Address", key="sidebar_login_email")
+        login_pass = st.text_input("Password", type="password", key="sidebar_login_pass")
+        login_submit = st.button("Log In", use_container_width=True, key="sidebar_login_submit")
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+    with tab2:
+        st.markdown("<div style='margin-top: -5px;'>", unsafe_allow_html=True)
+        reg_email = st.text_input("Gmail Address", key="sidebar_reg_email")
+        reg_pass = st.text_input("Password", type="password", key="sidebar_reg_pass")
+        reg_submit = st.button("Register", use_container_width=True, key="sidebar_reg_submit")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("<hr style='margin: 8px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.1);'>", unsafe_allow_html=True)
+
+    # --- নিউ চ্যাট বাটন (আগের ২৪৪ লাইনের বাটনটি এখন এখানে কমপ্যাক্ট হয়ে বসবে) ---
+    if st.button("➕ New Chat", use_container_width=True, key="sidebar_new_chat_btn"):
+        st.session_state.messages = []
+        st.rerun()
         st.session_state.messages = []
         st.session_state.last_res = "None"
         st.rerun()
