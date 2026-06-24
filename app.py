@@ -279,16 +279,13 @@ Rules:
 
     try:
 
-        response = gemini_model.generate_content(
-            prompt,
-            generation_config={
-                "temperature": 0.8,
-                "max_output_tokens": 300,
-            }
-        )
+    st.write("STEP 1")
 
-        if response and hasattr(response, "text"):
-            return response.text
+    response = gemini_model.generate_content("Hello")
+
+    st.write("STEP 2")
+
+    return response.text
 
         return "দুঃখিত, আমি উত্তর তৈরি করতে পারিনি।"
 
