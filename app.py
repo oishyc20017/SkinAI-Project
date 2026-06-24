@@ -506,77 +506,82 @@ if file:
     """, unsafe_allow_html=True)
 st.markdown("---")
 
-    # --- ৫. ডক্টর বুকিং ও সুরক্ষিত পেমেন্ট ইন্টারফেস (সরাসরি পেজে লোড হবে) ---
-st.markdown("---")
-st.markdown("<h2 style='text-align: center; color: #3b82f6;'>📅 Consult a Doctor Now</h2>", unsafe_allow_html=True)
-
-st.markdown("""
-<div style="background-color: #1c293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 15px;">
-    <h4 style="color: #38bdf8; margin: 0;">Available Specialists & Active Slots</h4>
-    <p style="color: #94a3b8; font-size: 14px; margin: 5px 0 0 0;">Select your preferred doctor below to initiate secure booking.</p>
-</div>
-""", unsafe_allow_html=True)
-
-col1, col2 = st.columns(2)
-
-with col1:
-    doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (Senior Dermatologist)", "Dr. Asif Ahmed (Skin & Laser Specialist)", "Dr. Nusrat Jahan (Clinical Dermatologist)"])
+# --- ৫. পপ-আপ ডায়ালগের ভেতরে ৫ জন ডাক্তার ও পেমেন্ট ইন্টারফেস ---
+@st.dialog("📅 Appointment & Secure Payment")
+def doctor_booking_popup():
+    # ৫ জন ডাক্তারের লিস্ট
+    doctor_list = [
+        "Dr. Sabina Yasmin (Senior Dermatologist)",
+        "Dr. Asif Ahmed (Skin & Laser Specialist)",
+        "Dr. Nusrat Jahan (Clinical Dermatologist)",
+        "Dr. Rayhan Ahmed (Skin Pathologist)",
+        "Dr. Tania Islam (Cosmetic Dermatologist)"
+    ]
+    doctor = st.selectbox("Select Specialist", doctor_list)
+    
     import datetime
     pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
-
-with col2:
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     phone_number = st.text_input("📞 Phone Number", placeholder="e.g., 017XXXXXXXX")
     user_email = st.text_input("📧 Gmail Address", placeholder="e.g., username@gmail.com")
 
-pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
+    if "popup_stage" not in st.session_state:
+        st.session_state.popup_stage = "form"
 
-# মেইন ভ্যালিডেশন বাটন
-if st.button("Confirm Appointment Details", use_container_width=True):
-    if phone_number == "" or user_email == "":
-        st.error("Please fill up both Phone Number and Gmail Address!")
-    elif not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", user_email):
-        st.error("Please enter a valid Gmail Address!")
-    elif not re.match(r"^(?:\+88|88)?(01[3-9]\d{8})$", phone_number):
-        st.error("Please enter a valid Bangladeshi Phone Number!")
-    else:
-        st.session_state.booking_validated = True
-        st.session_state.booking_data = {
-            "email": user_email,
-            "phone": phone_number,
-            "doctor": doctor,
-            "date": str(pref_date),
-            "time": pref_time
-        }
-        st.rerun()
-
-# পেমেন্ট প্যানেল (ভ্যালিডেশন সফল হলে বাটনের বাইরে লোড হবে)
-if st.session_state.get("booking_validated", False):
     st.markdown("---")
-    st.success("✅ Details Verified! Please complete your payment in the secure window below.")
-    st.markdown("### 💳 Select Payment Method")
-    pay_method = st.radio("Choose payment gate:", ["bKash", "Nagad", "Rocket"], horizontal=True)
-    
-    st.info(f"Please send the consultation fee to our official {pay_method} personal/merchant number.")
-    tx_id = st.text_input("🔗 Enter Transaction ID (TxnID)", placeholder="e.g., TRX98765432")
-    
-    if st.button("Complete Booking & Verify TxnID", use_container_width=True):
-        if tx_id:
-            b_data = st.session_state.booking_data
-            import sqlite3
-            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-            c = conn.cursor()
-            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)",
-                      (b_data["email"], b_data["phone"], b_data["doctor"], b_data["date"], b_data["time"], f'Paid via {pay_method} ({tx_id})'))
-            conn.commit()
-            conn.close()
-            
-            # সফল বুকিংয়ের পর স্টেট রিসেট
-            st.session_state.booking_validated = False
-            st.session_state.booking_data = {}
-            st.success("🎉 Payment Received! Your Appointment is Locked Successfully.")
-            st.rerun()
-        else:
-            st.warning("Please enter the Transaction ID to verify your payment.")
+
+    # স্টেজ ১: ফর্ম ইনপুট ও ভ্যালিডেশন
+    if st.session_state.popup_stage == "form":
+        if st.button("Proceed to Payment", use_container_width=True):
+            if phone_number == "" or user_email == "":
+                st.error("Please fill up both Phone Number and Gmail Address!")
+            elif not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", user_email):
+                st.error("Please enter a valid Gmail Address!")
+            elif not re.match(r"^(?:\+88|88)?(01[3-9]\d{8})$", phone_number):
+                st.error("Please enter a valid Bangladeshi Phone Number!")
+            else:
+                st.session_state.booking_data = {
+                    "email": user_email,
+                    "phone": phone_number,
+                    "doctor": doctor,
+                    "date": str(pref_date),
+                    "time": pref_time
+                }
+                st.session_state.popup_stage = "payment"
+                st.rerun()
+
+    # স্টেজ ২: পেমেন্ট গেটওয়ে
+    if st.session_state.popup_stage == "payment":
+        st.success("✅ Details Verified!")
+        pay_method = st.radio("Select Payment Method:", ["bKash", "Nagad", "Rocket"], horizontal=True)
+        st.info(f"Please send fee to our official {pay_method} number.")
+        tx_id = st.text_input("🔗 Enter Transaction ID (TxnID)", placeholder="e.g., TRX98765432")
+        
+        col_back, col_pay = st.columns(2)
+        with col_back:
+            if st.button("⬅️ Back", use_container_width=True):
+                st.session_state.popup_stage = "form"
+                st.rerun()
+                
+        with col_pay:
+            if st.button("Confirm Booking & Pay", use_container_width=True):
+                if tx_id:
+                    b_data = st.session_state.booking_data
+                    import sqlite3
+                    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+                    c = conn.cursor()
+                    c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)",
+                              (b_data["email"], b_data["phone"], b_data["doctor"], b_data["date"], b_data["time"], f'Paid via {pay_method} ({tx_id})'))
+                    conn.commit()
+                    conn.close()
+                    
+                    st.session_state.popup_stage = "form"
+                    st.session_state.booking_data = {}
+                    st.success("🎉 Appointment Locked Successfully!")
+                    time.sleep(2)
+                    st.rerun()
+                else:
+                    st.warning("Enter TxnID to verify.")
 st.markdown("---")
 
 # --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট ---
