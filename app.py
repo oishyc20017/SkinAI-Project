@@ -333,16 +333,13 @@ with st.sidebar:
         with t2:
             r_name = st.text_input("👤 Full Name", key="r_name", placeholder="John Doe")
             re = st.text_input("✉️ New Gmail", key="r_e", placeholder="newuser@gmail.com")
-            r_phone = st.text_input("📞 Phone Number", key="r_phone", placeholder="017XXXXXXXX")
             rp = st.text_input("🔑 New Password", type="password", key="r_p", placeholder="••••••••")
             
             if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
-                if r_name == "" or r_phone == "":
-                    st.warning("Please fill in your Name and Phone Number!")
+                if r_name == "":
+                    st.warning("Please fill in your Full Name!")
                 elif "@" in re and len(rp) > 3:
                     try:
-                        # ডাটাবেজে ইউজার টেবিল যদি আগে থেকে শুধু ইমেল আর পাসওয়ার্ডের জন্য তৈরি থাকে, 
-                        # তবে আমরা আপাতত ইমেল আর পাসওয়ার্ড দিয়েই সেভ করছি।
                         c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
                         conn.commit()
                         st.success(f"Account Created for {r_name}! Now Login.")
