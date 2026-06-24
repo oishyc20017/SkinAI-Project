@@ -631,16 +631,16 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
 st.markdown("---")
 
 # --- ৮. চ্যাট মেসেজ লুপ এবং ইনপুট ---
-# নিশ্চিত করো যে এই অংশটি একদম বাম মার্জিন থেকে শুরু হচ্ছে
+# এখানে আমরা শুধুমাত্র একটি লুপ এবং একটি চ্যাট ইনপুট রাখছি
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): 
         st.markdown(m["content"])
 
-# এখানে key যোগ করা হয়েছে যাতে ডুপ্লিকেট এরর না আসে
-if prompt := st.chat_input("Ask me anything about your skin...", key="main_chat_input"):
+# ডুপ্লিকেট এড়াতে একটি নির্দিষ্ট কী (key) ব্যবহার করছি
+if prompt := st.chat_input("Ask me anything about your skin...", key="final_unique_chat_input"):
+    # ইউজারের মেসেজ অ্যাড করা
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # ডাটাবেস অপারেশন
     if st.session_state.get('logged_in', False):
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
         conn.commit()
@@ -649,6 +649,7 @@ if prompt := st.chat_input("Ask me anything about your skin...", key="main_chat_
         st.markdown(prompt)
         
     with st.chat_message("assistant"):
+        # এআই রেসপন্স
         reply = get_intelligent_response(prompt, st.session_state.last_res)
         st.markdown(reply)
         st.session_state.messages.append({"role": "assistant", "content": reply})
