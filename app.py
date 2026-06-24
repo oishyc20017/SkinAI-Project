@@ -517,10 +517,9 @@ def doctor_booking_popup():
     payment_method = st.radio("Select Payment Method", 
                              ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"], 
                              key="payment_radio")
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_select")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
-    
-    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_select")
     
     # বাটনটি শুধু এখানে থাকবে এবং এর একটি ইউনিক key থাকবে
     if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
