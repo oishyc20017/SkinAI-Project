@@ -1,4 +1,25 @@
 import streamlit as st
+import streamlit as s
+import sqlite3
+
+# --- ১. এখানে বাটন স্টাইলিংয়ের CSS টুকু বসিয়ে দাও ---
+st.markdown("""
+<style>
+div.stButton > button:first-child {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s ease;
+}
+div.stButton > button:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+</style>
+""", unsafe_allowed_html=True)
 import requests
 from streamlit_lottie import st_lottie
 import time
@@ -15,6 +36,19 @@ conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
 c = conn.cursor()
 
 def init_db():
+    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+    c = conn.cursor()
+    # bookings টেবিলে phone_number এবং user_email কলাম দুটি নিশ্চিত করো
+    c.execute('''CREATE TABLE IF NOT EXISTS bookings
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  user_email TEXT, 
+                  phone_number TEXT, 
+                  doctor_name TEXT, 
+                  date TEXT, 
+                  time TEXT, 
+                  status TEXT)''')
+    conn.commit()
+    conn.close()
     c.execute('CREATE TABLE IF NOT EXISTS users(email TEXT PRIMARY KEY, password TEXT)')
     c.execute('CREATE TABLE IF NOT EXISTS chat_history(email TEXT, role TEXT, content TEXT)')
     
