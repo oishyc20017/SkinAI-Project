@@ -567,32 +567,31 @@ with col2:
 st.markdown("---")
 
 # --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট ---
-for m in st.session_state.messages:
-    with st.chat_message(m["role"]): 
-        st.markdown(m["content"])
-
 if prompt := st.chat_input("Ask me anything about your skin..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    if st.session_state.get('logged_in', False):
-        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
-        conn.commit()
+
+    st.session_state.messages.append({
+        "role": "user",
+        "content": prompt
+    })
+
     with st.chat_message("user"):
         st.markdown(prompt)
+
     with st.chat_message("assistant"):
 
-    with st.spinner("Thinking..."):
-        reply = get_ai_response(
-            prompt,
-            st.session_state.last_res
-        )
+        with st.spinner("Thinking..."):
 
-    st.markdown(reply)
+            reply = get_ai_response(
+                prompt,
+                st.session_state.last_res
+            )
+
+        st.markdown(reply)
 
     st.session_state.messages.append({
         "role": "assistant",
         "content": reply
     })
-
     if st.session_state.get('logged_in', False):
         c.execute(
             'INSERT INTO chat_history VALUES (?,?,?)',
