@@ -506,9 +506,6 @@ if file:
     """, unsafe_allow_html=True)
 st.markdown("---")
 
-# --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
-@st.dialog("🩺 Professional Doctor Consultation")
-def doctor_booking_popup():
     # --- ৫. ডক্টর বুকিং ও সুরক্ষিত পেমেন্ট ইন্টারফেস (সরাসরি পেজে লোড হবে) ---
 st.markdown("---")
 st.markdown("<h2 style='text-align: center; color: #3b82f6;'>📅 Consult a Doctor Now</h2>", unsafe_allow_html=True)
