@@ -526,8 +526,6 @@ def doctor_booking_popup():
     )
 
     if payment_method == "বিকাশ/নগদ/রকেট (Mobile Banking)":
-        st.info("আমাদের মার্চেন্ট নাম্বারে পেমেন্ট করে ট্রানজেকশন আইডি দিন।")
-        transaction_id = st.text_input("Transaction ID")
     elif payment_method == "Bank Transfer (Direct Deposit)":
         st.write("আমাদের ব্যাংক ডিটেইলস: Account Name: SkinAI, Bank: City Bank, Acc: 123456789")
         transaction_id = st.text_input("Bank Reference / Receipt No")
