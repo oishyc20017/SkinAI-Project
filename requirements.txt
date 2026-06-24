@@ -1,7 +1,8 @@
 streamlit
+google-generativeai
 tensorflow
 numpy
 pillow
 gdown
 streamlit-lottie
-google-generativeai
+requests
