@@ -5,6 +5,52 @@ import sqlite3
 import hashlib
 
 st.set_page_config(page_title="SkinAI Pro", layout="wide")
+# --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
+st.markdown("""
+<style>
+/* ১. বাটন স্টাইলিং (যা আগে ছিল) */
+div.stButton > button:first-child {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s ease;
+}
+div.stButton > button:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* ২. সাইডবার গোছানোর সিএসএস */
+[data-testid="stSidebar"] {
+    background-color: #0f172a !important; /* ডিপ ডার্ক প্রিমিয়াম ব্যাকগ্রাউন্ড */
+    padding-top: 20px;
+}
+
+/* সাইডবারের ভেতরের ইনপুট বক্স স্পেসিং */
+[data-testid="stSidebar"] .stTextInput, 
+[data-testid="stSidebar"] .stSelectbox {
+    margin-bottom: 20px !important;
+}
+
+/* সাইডবারের শিরোনাম কালার */
+[data-testid="stSidebar"] h1, 
+[data-testid="stSidebar"] h2, 
+[data-testid="stSidebar"] h3 {
+    color: #38bdf8 !important; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+}
+
+/* ডিভাইডার লাইন হালকা করা */
+[data-testid="stSidebar"] hr {
+    margin: 15px 0 !important;
+    border-color: #334155 !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # --- ১. এখানে বাটন স্টাইলিংয়ের CSS টুকু বসিয়ে দাও ---
 st.markdown("""
@@ -274,7 +320,7 @@ if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
-st.markdown("<br>", unsafe_allow_html=True)
+with st.sidebar:
 
     # ১. সিকিউরিটি ব্যাজ ও টাইটেল (যা হ্যাকিংয়ের ভয় দূর করবে)
     st.markdown("""
