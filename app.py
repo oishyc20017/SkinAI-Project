@@ -525,16 +525,26 @@ def doctor_booking_popup():
         ["বিকাশ/নগদ/রকেট (Mobile Banking)", "Bank Transfer (Direct Deposit)", "Credit/Debit Card"]
     )
 
-    # পেমেন্ট মেথড চেক করার লজিক ঠিকভাবে ইনডেন্ট করুন
-    if payment_method == "বিকাশ/নগদ/রকেট (Mobile Banking)":
-        st.info("আমাদের বিকাশ/নগদ মার্চেন্ট নাম্বারে পেমেন্ট করে ট্রানজেকশন আইডি দিন।")
-        transaction_id = st.text_input("Transaction ID (If already paid)")
-    elif payment_method == "Bank Transfer (Direct Deposit)":
-        st.write("আমাদের ব্যাংক ডিটেইলস: Account Name: SkinAI, Bank: City Bank, Acc: 123456789")
-        transaction_id = st.text_input("Bank Reference / Receipt No")
-    else:
-        st.write("কার্ড পেমেন্ট সিস্টেম বর্তমানে মেনটেনেন্স মোডে আছে।")
-        transaction_id = "Card Payment" # সব ক্ষেত্রে যাতে ভেরিয়েবলটি থাকে
+    # পেমেন্ট মেথড সিলেকশন (সহজ অপশন)
+    payment_choice = st.selectbox(
+        "Payment Mode", 
+        ["Pay at Clinic (Consultation Day)", "Bank/Card (Pre-paid)"]
+    )
+
+    # বুকিং বাটন
+    if st.button("Confirm Appointment", use_container_width=True):
+        if phone_number == "" or user_email == "":
+            st.error("Please fill up Phone and Email!")
+        else:
+            # ডাটাবেসে পেমেন্টের তথ্যের বদলে শুধু স্ট্যাটাস সেভ হচ্ছে
+            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+            c = conn.cursor()
+            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                      (user_email, phone_number, doctor, str(pref_date), pref_time, f"Confirmed - {payment_choice}"))
+            conn.commit()
+            conn.close()
+            st.success("আপনার অ্যাপয়েন্টমেন্ট সফল হয়েছে! চেম্বারে আসার সময় বুকিং কনফার্মেশন দেখান।")
+            st.rerun()
         
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
