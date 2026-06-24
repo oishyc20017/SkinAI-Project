@@ -36,30 +36,10 @@ conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
 c = conn.cursor()
 
 def init_db():
-    c.execute('CREATE TABLE IF NOT EXISTS users(email TEXT PRIMARY KEY, password TEXT)')
-    c.execute('CREATE TABLE IF NOT EXISTS chat_history(email TEXT, role TEXT, content TEXT)')
-    
-    # 🩺 নতুন টেবিল: ডাক্তারদের লিস্ট রাখার জন্য
-    c.execute('''CREATE TABLE IF NOT EXISTS doctors 
-                 (id INTEGER PRIMARY KEY, name TEXT, specialty TEXT, fee TEXT, available_time TEXT)''')
-    
-    # 🗓️ নতুন টেবিল: ইউজারদের বুকিং হিস্ট্রি রাখার জন্য
-    c.execute('''CREATE TABLE IF NOT EXISTS bookings 
-                 (id INTEGER PRIMARY KEY, user_email TEXT, doctor_name TEXT, date TEXT, time TEXT, status TEXT)''')
-    
-    # প্রথমবার রান করার সময় ডাটাবেসে ২ জন ডামি ডাক্তার অ্যাড করে রাখা
-    c.execute("SELECT COUNT(*) FROM doctors")
-    if c.fetchone()[0] == 0:
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM')")
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM')")
-        
-    conn.commit()
-
-init_db()
-def init_db():
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
-    # bookings টেবিলে phone_number এবং user_email কলাম দুটি নিশ্চিত করো
+    
+    # নতুন টেবিল: ইউজারদের বুকিং হিস্ট্রি রাখার জন্য (ফোন নাম্বার ও জিমেইলসহ)
     c.execute('''CREATE TABLE IF NOT EXISTS bookings
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                   user_email TEXT, 
@@ -68,9 +48,22 @@ def init_db():
                   date TEXT, 
                   time TEXT, 
                   status TEXT)''')
+                  
+    # ডাক্তারদের টেবিল তৈরি করা (যদি না থাকে)
+    c.execute('''CREATE TABLE IF NOT EXISTS doctors
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  name TEXT, specialty TEXT, fee TEXT, available_time TEXT)''')
+    
+    # প্রথমবার রান করার সময় ডাটাবেসে ২ জন ডামি ডাক্তার অ্যাড করে রাখা
+    c.execute("SELECT COUNT(*) FROM doctors")
+    if c.fetchone()[0] == 0:
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM')")
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM')")
+    
     conn.commit()
     conn.close()
 
+init_db()
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
 
