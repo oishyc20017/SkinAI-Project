@@ -547,8 +547,6 @@ def doctor_booking_popup():
             st.rerun()
         
     # আগের কোডের এই লাইনটি পরিবর্তন করে নিচের মতো করো:
-if st.button("Confirm Appointment", key="btn_home_confirm"):
-    # এখানে কোড...
         # ১. নিশ্চিত করো যে re মডিউলটি এখানেই আছে
         import re 
         
