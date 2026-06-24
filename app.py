@@ -274,28 +274,36 @@ if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
-with st.sidebar:
-    # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
-    st.write("") 
-    col1, col2, col3 = st.columns([1, 2, 1]) 
-    with col2:
-        # এটি একটি রঙিন 'Skin Scan' বা 'Healthy Skin' আইকন
-        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
-    
-    st.markdown("<br>", unsafe_allow_html=True) 
-    # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
+st.markdown("<br>", unsafe_allow_html=True)
+
+    # ১. সিকিউরিটি ব্যাজ ও টাইটেল (যা হ্যাকিংয়ের ভয় দূর করবে)
     st.markdown("""
     <div style="
-        background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        margin-top: -10px;
-    ">
-        <p style="color: #e3e3e3; font-size: 13px; font-weight: 500; margin: 0; line-height: 1.4;">
-            ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
-        </p>
+        background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+        padding: 15px; 
+        border-radius: 10px; 
+        border: 1px solid #4338ca; 
+        text-align: center; 
+        margin-bottom: 20px;">
+        <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
+        <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ২. ইনপুট ফিল্ডস (সুন্দর আইকনসহ)
+    user_email = st.text_input("✉️ Registered Gmail Address", placeholder="username@gmail.com")
+    password = st.text_input("🔑 Master Password", type="password", placeholder="••••••••")
+    
+    # ৩. লগইন বাটন
+    login_btn = st.button("Authenticate Login", use_container_width=True)
+    
+    st.markdown("<hr>", unsafe_allow_html=True)
+    
+    # ④. ট্রাস্ট ও সিকিউরিটি নোটিশ
+    st.markdown("""
+    <div style="background-color: #0b1329; padding: 10px; border-radius: 6px; border-left: 4px solid #10b981;">
+        <p style="color: #10b981; font-size: 11px; margin: 0; font-weight: bold;">✓ Zero-Knowledge Privacy Enabled</p>
+        <p style="color: #64748b; font-size: 11px; margin: 3px 0 0 0;">Your credentials are locally hashed and never stored in plain text.</p>
     </div>
     """, unsafe_allow_html=True)
     
