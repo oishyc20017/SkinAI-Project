@@ -1,7 +1,8 @@
 import streamlit as st
-import streamlit as s
 import sqlite3
+import hashlib
 
+st.set_page_config(page_title="SkinAI Pro", layout="wide")
 # --- ১. এখানে বাটন স্টাইলিংয়ের CSS টুকু বসিয়ে দাও ---
 st.markdown("""
 <style>
