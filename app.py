@@ -271,13 +271,13 @@ Instructions:
 """
 
     try:
-    st.write("Calling Gemini...")
+        st.write("Calling Gemini...")
 
-    response = gemini_model.generate_content(prompt)
+        response = gemini_model.generate_content(prompt)
 
-    st.write("Gemini replied")
+        st.write("Gemini replied")
 
-    return response.text
+        return response.text
 
 except Exception as e:
     st.error(str(e))
