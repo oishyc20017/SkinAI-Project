@@ -13,6 +13,14 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
+def load_my_anim(url):
+    try:
+        r = requests.get(url, timeout=10)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except:
+        return None
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -21,7 +29,7 @@ GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=GEMINI_API_KEY)
 
 gemini_model = genai.GenerativeModel(
-    "gemini-2.0-flash"
+    "gemini-1.5-flash"
 )
 st.sidebar.write("Gemini Loaded:", bool(GEMINI_API_KEY))
 
@@ -234,19 +242,19 @@ disease_details = {
 def get_ai_response(user_question, disease):
 
     if disease == "None":
-        return "প্রথমে একটি ছবি আপলোড করুন"
+        return "প্রথমে একটি ছবি আপলোড করুন, তারপর আমি রিপোর্ট অনুযায়ী সাহায্য করতে পারব।"
 
     disease_data = disease_details.get(disease, {})
 
     history = ""
 
-    for msg in st.session_state.messages[-8:]:
+    for msg in st.session_state.messages[-6:]:
         history += f"{msg['role']}: {msg['content']}\n"
 
     prompt = f"""
 You are SkinAI Assistant.
 
-You are a friendly Bengali skin health assistant.
+You are a professional but friendly Bengali dermatologist assistant.
 
 Previous Conversation:
 {history}
@@ -254,34 +262,38 @@ Previous Conversation:
 Predicted Disease:
 {disease}
 
-Disease Description:
+Disease Information:
 {disease_data.get('desc','')}
 
 User Question:
 {user_question}
 
-Instructions:
+Rules:
 - Answer naturally like a human.
-- Speak Bengali if the user speaks Bengali.
-- Never repeat the same diagnosis again and again.
-- Understand the user's actual question.
-- Give practical medical guidance.
-- Ask follow-up questions when necessary.
-- Mention that AI prediction is not a final diagnosis.
+- Reply in Bengali.
+- Give short and clear answers.
+- Don't repeat disease name unnecessarily.
+- If needed ask follow-up questions.
+- Mention that AI prediction is not final diagnosis.
 """
 
     try:
-        st.write("Calling Gemini...")
 
-        response = gemini_model.generate_content(prompt)
+        response = gemini_model.generate_content(
+            prompt,
+            generation_config={
+                "temperature": 0.8,
+                "max_output_tokens": 300,
+            }
+        )
 
-        st.write("Gemini replied")
+        if response and hasattr(response, "text"):
+            return response.text
 
-        return response.text
+        return "দুঃখিত, আমি উত্তর তৈরি করতে পারিনি।"
 
     except Exception as e:
-        st.error(str(e))
-        return f"Error: {str(e)}"
+        return f"Gemini Error: {str(e)}"
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
