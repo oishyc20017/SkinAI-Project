@@ -536,7 +536,6 @@ def doctor_booking_popup():
         elif not re.match(r"^(?:\+88|88)?(01[3-9]\d{8})$", phone_number):
             st.error("Please enter a valid Bangladeshi Phone Number!")
         else:
-            # সেশন স্টেটে ভ্যালিডেশন সাকসেস সেভ করা যাতে লেআউট না ভাঙে
             st.session_state.booking_validated = True
             st.session_state.booking_data = {
                 "email": user_email,
@@ -545,9 +544,11 @@ def doctor_booking_popup():
                 "date": str(pref_date),
                 "time": pref_time
             }
+            st.rerun()
 
-    # ভ্যালিডেশন সফল হলে মেইন লুপে পেমেন্ট অপশন দেখানো (বাটনের বাইরে)
+    # পেমেন্ট প্যানেল (আলাদা ও সুরক্ষিত কন্টেইনারে)
     if st.session_state.get("booking_validated", False):
+        st.markdown("---")
         st.success("Details Validated! Please complete your payment below.")
         st.markdown("### 💳 Select Payment Method")
         pay_method = st.radio("Choose how you want to pay:", ["bKash", "Nagad", "Rocket", "Visa/Mastercard"], horizontal=True)
@@ -565,8 +566,9 @@ def doctor_booking_popup():
                 conn.commit()
                 conn.close()
                 
-                # সেশন স্টেট রিসেট
+                # সেশন ডাটা সফলভাবে সেভ হওয়ার পর রিসেট
                 st.session_state.booking_validated = False
+                st.session_state.booking_data = {}
                 st.success("Payment Received & Appointment Successfully Confirmed!")
                 st.rerun()
             else:
