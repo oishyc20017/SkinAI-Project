@@ -36,19 +36,6 @@ conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
 c = conn.cursor()
 
 def init_db():
-    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-    c = conn.cursor()
-    # bookings টেবিলে phone_number এবং user_email কলাম দুটি নিশ্চিত করো
-    c.execute('''CREATE TABLE IF NOT EXISTS bookings
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  user_email TEXT, 
-                  phone_number TEXT, 
-                  doctor_name TEXT, 
-                  date TEXT, 
-                  time TEXT, 
-                  status TEXT)''')
-    conn.commit()
-    conn.close()
     c.execute('CREATE TABLE IF NOT EXISTS users(email TEXT PRIMARY KEY, password TEXT)')
     c.execute('CREATE TABLE IF NOT EXISTS chat_history(email TEXT, role TEXT, content TEXT)')
     
@@ -69,6 +56,20 @@ def init_db():
     conn.commit()
 
 init_db()
+def init_db():
+    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+    c = conn.cursor()
+    # bookings টেবিলে phone_number এবং user_email কলাম দুটি নিশ্চিত করো
+    c.execute('''CREATE TABLE IF NOT EXISTS bookings
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  user_email TEXT, 
+                  phone_number TEXT, 
+                  doctor_name TEXT, 
+                  date TEXT, 
+                  time TEXT, 
+                  status TEXT)''')
+    conn.commit()
+    conn.close()
 
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
