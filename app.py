@@ -1,3 +1,5 @@
+import datetime
+import re
 import streamlit as st
 import sqlite3
 import hashlib
@@ -425,7 +427,7 @@ def doctor_booking_popup():
     
     with col1:
         doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"])
-        pref_date = st.date_input("Preferred Date")
+        pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
         
     with col2:
         # নতুন দুটি ইনপুট ফিল্ড
@@ -435,10 +437,18 @@ def doctor_booking_popup():
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
     if st.button("Confirm Appointment", use_container_width=True):
+        # ইমেইল এবং ফোন নম্বরের প্যাটার্ন চেক করার জন্য Regex
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        phone_pattern = r'^\+?[0-9]{11,14}$'
+        
         if phone_number == "" or user_email == "":
             st.error("Please fill up both Phone Number and Gmail Address!")
+        elif not re.match(email_pattern, user_email):
+            st.error("Please enter a valid Gmail/Email address (e.g., name@gmail.com)!")
+        elif not re.match(phone_pattern, phone_number):
+            st.error("Please enter a valid 11-digit Phone Number!")
         else:
-            # ডাটাবেসে সেভ করার কোড (INSERT INTO)
+            # ডাটাবেসে সেভ করার কোড (INSERT INTO) যা আগে ছিল...
             conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
             c = conn.cursor()
             c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
@@ -448,7 +458,6 @@ def doctor_booking_popup():
             
             st.success("Appointment successfully committed to database logs!")
             st.rerun()
-
 # 🎯 মেইন স্ক্রিনে শুধু এই ২য় অপশনটি (বাটন) থাকবে, ১ম অপশনের সব কার্ড-ফর্ম ডিলিট করা হয়েছে
 col1, col2, col3 = st.columns([3, 4, 3])
 with col2:
