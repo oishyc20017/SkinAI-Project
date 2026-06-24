@@ -353,12 +353,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("---")
-with st.expander("❓ Help & Information"):
-    st.write("১. স্পষ্ট ছবি আপলোড করুন।")
-    st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
-    st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
-
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
