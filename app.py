@@ -241,23 +241,19 @@ disease_details = {
 }
 def get_ai_response(user_question, disease):
 
-    st.write("STEP 1")
-
     try:
-        st.write("STEP 2")
-
         response = gemini_model.generate_content(
-            user_question
+            user_question,
+            request_options={"timeout": 20}
         )
 
-        st.write("STEP 3")
+        if hasattr(response, "text"):
+            return response.text
 
-        return response.text
+        return "Gemini returned empty response."
 
     except Exception as e:
-        st.write("STEP ERROR")
         return f"Gemini Error: {str(e)}"
-        return "প্রথমে একটি ছবি আপলোড করুন, তারপর আমি রিপোর্ট অনুযায়ী সাহায্য করতে পারব।"
 
     disease_data = disease_details.get(disease, {})
 
@@ -591,14 +587,24 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
 
     with st.chat_message("assistant"):
 
-        with st.spinner("Thinking..."):
+        st.write("DEBUG: CHAT STARTED")
+
+        try:
 
             reply = get_ai_response(
                 prompt,
                 st.session_state.last_res
             )
 
-        st.markdown(reply)
+            st.write("DEBUG: AI RETURNED")
+
+            st.markdown(reply)
+
+        except Exception as e:
+
+            st.error(f"CHAT ERROR: {e}")
+
+            reply = "Error"
 
     st.session_state.messages.append({
         "role": "assistant",
