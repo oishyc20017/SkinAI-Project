@@ -507,7 +507,7 @@ if file:
 st.markdown("---")
 st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
-# --- ১. ডায়ালগ ফাংশন (পুরোটা ফাংশনের ভেতরে) ---
+# # --- ডায়ালগ ফাংশন: সবকিছু এই ফাংশনের ভেতরেই থাকবে ---
 @st.dialog("📅 Appointment & Secure Payment")
 def doctor_booking_popup():
     doctor_list = ["Dr. Sabina Yasmin", "Dr. Asif Ahmed", "Dr. Nusrat Jahan", "Dr. Rayhan Ahmed", "Dr. Tania Islam"]
@@ -517,35 +517,37 @@ def doctor_booking_popup():
     pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
     phone = st.text_input("📞 Phone Number")
     
+    # স্টেজ ম্যানেজমেন্ট
     if "popup_stage" not in st.session_state:
         st.session_state.popup_stage = "form"
 
+    # ফর্ম লজিক
     if st.session_state.popup_stage == "form":
         if st.button("Proceed to Payment"):
             if phone == "":
-                st.error("Fill the phone number!")
+                st.error("Please enter your phone number!")
             else:
                 st.session_state.booking_data = {"doctor": doctor, "date": str(pref_date), "phone": phone}
                 st.session_state.popup_stage = "payment"
                 st.rerun()
 
+    # পেমেন্ট লজিক
     if st.session_state.popup_stage == "payment":
         st.info("Pay to bKash/Nagad: 01XXXXXXXXX")
         tx_id = st.text_input("🔗 Enter Transaction ID")
         if st.button("Confirm Booking"):
             if tx_id:
                 st.success(f"Confirmed for {st.session_state.booking_data['doctor']} at City Skin Care!")
-                st.session_state.popup_stage = "form"
+                st.session_state.popup_stage = "form" # রিসেট
             else:
-                st.warning("Enter TxnID!")
+                st.warning("Enter Transaction ID!")
 
-# --- ২. মেইন পেজ বাটন (সরাসরি মেইন লেআউটে) ---
+# --- মেইন পেজ বাটন (এটি ডায়ালগের বাইরে থাকবে) ---
 st.markdown("---")
 if st.button("🔍 Consult a Doctor Now"):
     st.session_state.popup_stage = "form"
     doctor_booking_popup()
 st.markdown("---")
-    # স্টেজ ১: ফর্ম ইনপুট ও ভ্যালিডেশন
     if st.session_state.popup_stage == "form":
         if st.button("Proceed to Payment", use_container_width=True):
             if phone_number == "" or user_email == "":
