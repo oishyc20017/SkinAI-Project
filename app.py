@@ -29,6 +29,7 @@ GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=GEMINI_API_KEY)
 
 gemini_model = genai.GenerativeModel("gemini-2.0-flash")
+st.sidebar.write("Gemini Loaded:", bool(GEMINI_API_KEY))
 st.sidebar.write("API Key Length:", len(GEMINI_API_KEY))
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
