@@ -12,8 +12,14 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
+import random
+import re
 
-# --- পেজ কনফিগারেশন (একটিই থাকবে) ---
+# --- বুকিং সেশন স্টেট ইনিশিয়ালাইজেশন ---
+if "booking_validated" not in st.session_state:
+    st.session_state.booking_validated = False
+if "booking_data" not in st.session_state:
+    st.session_state.booking_data = {}# --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
