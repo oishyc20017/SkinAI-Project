@@ -520,11 +520,6 @@ def doctor_booking_popup():
                              key="pay_f")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
-    
-    # বাটনটি পপআপের ভেতরেই আছে
-    if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
-        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        phone_pattern = r'^\+?[0-9]{11,14}$'
         
         user_email_str = str(user_email)
         phone_number_str = str(phone_number)
