@@ -505,6 +505,7 @@ if file:
     </div>
     """, unsafe_allow_html=True)
 st.markdown("---")
+st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
 # --- ৫. পপ-আপ ডায়ালগের ভেতরে ৫ জন ডাক্তার ও পেমেন্ট ইন্টারফেস ---
 @st.dialog("📅 Appointment & Secure Payment")
