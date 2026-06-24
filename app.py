@@ -523,26 +523,33 @@ def doctor_booking_popup():
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
     if st.button("Confirm Appointment", use_container_width=True):
-        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        phone_pattern = r'^\+?[0-9]{11,14}$'
-        
         if phone_number == "" or user_email == "":
             st.error("Please fill up both Phone Number and Gmail Address!")
-        elif not re.match(email_pattern, user_email):
-            st.error("Please enter a valid Gmail/Email address (e.g., name@gmail.com)!")
-        elif not re.match(phone_pattern, phone_number):
-            st.error("Please enter a valid 11-digit Phone Number!")
+        elif not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", user_email):
+            st.error("Please enter a valid Gmail Address!")
+        elif not re.match(r"^(?:\+88|88)?(01[3-9]\d{8})$", phone_number):
+            st.error("Please enter a valid Bangladeshi Phone Number!")
         else:
-            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-            c = conn.cursor()
-            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                      (user_email, phone_number, doctor, str(pref_date), pref_time, 'Confirmed'))
-            conn.commit()
-            conn.close()
-            st.success("Appointment successfully committed to database logs!")
-            st.rerun()
-
-col1, col2, col3 = st.columns([3, 4, 3])
+            st.success("Details Validated! Please complete your payment below.")
+            
+            st.markdown("### 💳 Select Payment Method")
+            pay_method = st.radio("Choose how you want to pay:", ["bKash", "Nagad", "Rocket", "Visa/Mastercard"], horizontal=True)
+            
+            st.info(f"Please send the consultation fee to our official {pay_method} merchant account.")
+            tx_id = st.text_input("🔗 Enter Transaction ID (TxnID)", placeholder="e.g., TRX98765432")
+            
+            if st.button("Complete Booking & Pay", use_container_width=True):
+                if tx_id:
+                    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+                    c = conn.cursor()
+                    c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)",
+                              (user_email, phone_number, doctor, str(pref_date), pref_time, f'Paid via {pay_method} ({tx_id})'))
+                    conn.commit()
+                    conn.close()
+                    st.success("Payment Received & Appointment Successfully Confirmed!")
+                    st.rerun()
+                else:
+                    st.warning("Please enter the Transaction ID to verify your payment.")col1, col2, col3 = st.columns([3, 4, 3])
 with col2:
     if st.button("🩺 Consult a Doctor Now", use_container_width=True):
         doctor_booking_popup()
