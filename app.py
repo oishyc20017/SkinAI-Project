@@ -241,19 +241,9 @@ disease_details = {
 }
 def get_ai_response(user_question, disease):
 
-    try:
-        response = gemini_model.generate_content(
-            user_question,
-            request_options={"timeout": 20}
-        )
+    st.write("STEP 1")
 
-        if hasattr(response, "text"):
-            return response.text
-
-        return "Gemini returned empty response."
-
-    except Exception as e:
-        return f"Gemini Error: {str(e)}"
+    return "Hello from Gemini"
 
     disease_data = disease_details.get(disease, {})
 
@@ -577,28 +567,20 @@ st.markdown("---")
 # --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট ---
 if prompt := st.chat_input("Ask me anything about your skin..."):
 
-    st.session_state.messages.append({
-        "role": "user",
-        "content": prompt
-    })
-
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    st.write("DEBUG 0")
 
     with st.chat_message("assistant"):
 
-        st.write("DEBUG: CHAT STARTED")
+        st.write("DEBUG 1")
 
-        try:
+        reply = get_ai_response(
+            prompt,
+            st.session_state.last_res
+        )
 
-            reply = get_ai_response(
-                prompt,
-                st.session_state.last_res
-            )
+        st.write("DEBUG 2")
 
-            st.write("DEBUG: AI RETURNED")
-
-            st.markdown(reply)
+        st.markdown(reply)
 
         except Exception as e:
 
