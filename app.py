@@ -507,10 +507,9 @@ if file:
 st.markdown("---")
 st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
-# --- ১. ডায়ালগ ফাংশন: ৫ জন ডাক্তার, পেমেন্ট এবং কনফার্মেশন মেসেজ ---
+# --- ১. ডায়ালগ ফাংশন ---
 @st.dialog("📅 Appointment & Secure Payment")
 def doctor_booking_popup():
-    # ৫ জন ডাক্তারের লিস্ট
     doctor_list = [
         "Dr. Sabina Yasmin (Senior Dermatologist)",
         "Dr. Asif Ahmed (Skin & Laser Specialist)",
@@ -520,45 +519,56 @@ def doctor_booking_popup():
     ]
     doctor = st.selectbox("Select Specialist", doctor_list)
     
-    # অ্যাপয়েন্টমেন্ট ডিটেইলস
     import datetime
     pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     phone_number = st.text_input("📞 Phone Number")
     user_email = st.text_input("📧 Gmail Address")
 
-    # পেমেন্ট ও কনফার্মেশন লজিক
-    if st.button("Confirm & Pay"):
-        # পেমেন্ট মেথড
+    if "popup_stage" not in st.session_state:
+        st.session_state.popup_stage = "form"
+
+    # স্টেজ ১: ফর্ম ইনপুট
+    if st.session_state.popup_stage == "form":
+        if st.button("Proceed to Payment"):
+            if phone_number == "" or user_email == "":
+                st.error("Please fill up Phone and Gmail!")
+            else:
+                st.session_state.booking_data = {"email": user_email, "phone": phone_number, "doctor": doctor, "date": str(pref_date), "time": pref_time}
+                st.session_state.popup_stage = "payment"
+                st.rerun()
+
+    # স্টেজ ২: পেমেন্ট ও কনফার্মেশন
+    if st.session_state.popup_stage == "payment":
+        st.success("✅ Details Verified!")
         pay_method = st.radio("Select Payment Method:", ["bKash", "Nagad", "Rocket", "Bank Transfer"], horizontal=True)
         tx_id = st.text_input("🔗 Enter Transaction ID")
         
         if st.button("Complete Booking"):
             if tx_id:
-                # কনফার্মেশন মেসেজ এবং হাসপাতালের ডিটেইলস
+                # কনফার্মেশন মেসেজ
                 confirmation_msg = f"""
                 ### ✅ Appointment Confirmed!
                 **Hospital:** City Skin Care & Laser Centre, Dhaka.
-                **Doctor:** {doctor}
-                **Date:** {pref_date}
-                **Time:** {pref_time}
+                **Doctor:** {st.session_state.booking_data['doctor']}
+                **Date:** {st.session_state.booking_data['date']}
+                **Time:** {st.session_state.booking_data['time']}
                 **Payment:** Paid via {pay_method} (TxnID: {tx_id})
-                
-                *You will receive a confirmation call shortly.*
                 """
-                st.success("Appointment Successfully Booked!")
                 st.markdown(confirmation_msg)
                 
-                # ডেটাবেজ সেভ করার কোড এখানে থাকবে
+                # ডেটাবেজ সেভ করার লজিক এখানে যুক্ত করবে
+                st.session_state.popup_stage = "form" # রিসেট
+                st.success("Appointment Successfully Locked!")
             else:
                 st.warning("Please enter your Transaction ID.")
 
-# --- ২. মেইন পেজে বাটন (যাতে বাটনটি আবার ফিরে আসে) ---
+# --- ২. মেইন পেজের বাটন (এটি অবশ্যই লুপের বাইরে রাখবে) ---
 st.markdown("---")
-if st.button("🔍 Consult a Doctor Now", use_container_width=True):
+if st.button("🔍 Consult a Doctor Now"):
+    st.session_state.popup_stage = "form"
     doctor_booking_popup()
 st.markdown("---")
-
     # স্টেজ ১: ফর্ম ইনপুট ও ভ্যালিডেশন
     if st.session_state.popup_stage == "form":
         if st.button("Proceed to Payment", use_container_width=True):
