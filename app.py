@@ -576,13 +576,13 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
         "content": reply
     })
 
-        if st.session_state.get('logged_in', False):
-            c.execute(
-                'INSERT INTO chat_history VALUES (?,?,?)',
-                (
-                   st.session_state.user,
-                   "assistant",
-                   reply
+    if st.session_state.get('logged_in', False):
+        c.execute(
+            'INSERT INTO chat_history VALUES (?,?,?)',
+            (
+                st.session_state.user,
+                "assistant",
+                 reply
             )
         )
         conn.commit()
