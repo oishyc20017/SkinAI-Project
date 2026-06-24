@@ -388,6 +388,7 @@ st.markdown(
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
+# --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
 if file:
     img_res = Image.open(file).convert('RGB').resize((100, 75))
     x = np.asarray(img_res) / 255.0
@@ -395,36 +396,81 @@ if file:
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
+    # ২. ডাবল ল্যাঙ্গুয়েজ ডাটাবেস (Bangla & English)
     disease_info = {
-        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়।"},
-        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি এক প্রকার স্কিন ক্যান্সার।"},
-        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়।"},
-        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা।"},
-        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল।"},
-        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি দ্রুত চিকিৎসা করা জরুরি।"},
-        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।"}
+        "Actinic keratoses": {
+            "local_bn": "রোদে পোড়া খসখসে দাগ", "desc_bn": "এটি সূর্যরশ্মির কারণে হয়।",
+            "local_en": "Actinic Keratosis", "desc_en": "Rough, scaly patches caused by long-term sun exposure."
+        },
+        "Basal cell carcinoma": {
+            "local_bn": "সাধারণ স্কিন ক্যান্সার", "desc_bn": "এটি এক প্রকার স্কিন ক্যান্সার।",
+            "local_en": "Basal Cell Carcinoma", "desc_en": "A type of skin cancer that begins in the basal cells."
+        },
+        "Benign keratosis-like lesions": {
+            "local_bn": "ক্ষতিহীন আঁচিল বা তিল", "desc_bn": "এটি সাধারণত ভয়ের কিছু নয়।",
+            "local_en": "Benign Keratosis", "desc_en": "Non-cancerous skin growths that appear with aging."
+        },
+        "Dermatofibroma": {
+            "local_bn": "ত্বকের শক্ত গুটি", "desc_bn": "ত্বকের নিচে ছোট শক্ত দানা।",
+            "local_en": "Dermatofibroma", "desc_en": "Common benign skin nodules that feel like small, hard bumps."
+        },
+        "Melanocytic nevi": {
+            "local_bn": "সাধারণ তিল বা জন্মদাগ", "desc_bn": "এটি আমাদের ত্বকের অতি পরিচিত তিল।",
+            "local_en": "Melanocytic Nevi (Mole)", "desc_en": "Common, benign skin growths safely known as moles."
+        },
+        "Melanoma": {
+            "local_bn": "মারাত্মক স্কিন ক্যান্সার", "desc_bn": "এটি দ্রুত চিকিৎসা করা জরুরি।",
+            "local_en": "Melanoma", "desc_en": "The most serious type of skin cancer; requires immediate medical care."
+        },
+        "Vascular lesions": {
+            "local_bn": "রক্তনালীর লাল দাগ", "desc_bn": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।",
+            "local_en": "Vascular Lesion", "desc_en": "Skin abnormalities related to blood vessels, like birthmarks."
+        }
     }
     
     res_name = st.session_state.last_res
-    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "বিস্তারিত তথ্য পাওয়া যায়নি।"})
+    info = disease_info.get(res_name, {
+        "local_bn": "অজানা সমস্যা", "desc_bn": "বিস্তারিত তথ্য পাওয়া যায়নি।",
+        "local_en": "Unknown Condition", "desc_en": "No detailed information available."
+    })
 
+    # ৩. ইউজার চ্যাটে বা ইনপুটে বাংলা লিখছে কি না তা ট্র্যাক করা
+    # ডিফল্টভাবে কার্ডটি ইংরেজিতে দেখাবে, যদি ইউজার বাংলায় কিছু না চায়
+    show_english = True 
+
+    # ল্যাঙ্গুয়েজ সিলেকশন অনুযায়ী টাইটেল ও সাবটাইটেল ডাইনামিক করা
+    if show_english:
+        card_title = "AI Diagnostic Analysis"
+        name_label = "Common Name:"
+        sci_label = "Scientific Name:"
+        info_label = "Information:"
+        display_name = info['local_en']
+        display_desc = info['desc_en']
+    else:
+        card_title = "AI ডায়াগনস্টিক বিশ্লেষণ"
+        name_label = "সাধারণ নাম:"
+        sci_label = "বৈজ্ঞানিক নাম:"
+        info_label = "তথ্য:"
+        display_name = info['local_bn']
+        display_desc = info['desc_bn']
+
+    # ৪. গর্জিয়াস কার্ড ডিজাইন (সম্পূর্ণ ডাইনামিক)
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">{card_title}</p>
         <div style="margin: 20px 0;">
-            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">সাধারণ নাম:</h4>
-            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">{name_label}</p>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{display_name}</h1>
         </div>
         <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক নাম:</p>
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">{sci_label}</p>
             <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
         </div>
         <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>তথ্য:</b> {info['desc']}</p>
+            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>{info_label}</b> {display_desc}</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
-
 st.markdown("---")
 
 # --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
