@@ -279,13 +279,13 @@ Rules:
 
     try:
 
-    st.write("STEP 1")
+        st.write("STEP 1")
 
-    response = gemini_model.generate_content("Hello")
+        response = gemini_model.generate_content("Hello")
 
-    st.write("STEP 2")
+        st.write("STEP 2")
 
-    return response.text
+        return response.text
 
         return "দুঃখিত, আমি উত্তর তৈরি করতে পারিনি।"
 
