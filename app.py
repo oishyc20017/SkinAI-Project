@@ -23,7 +23,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 gemini_model = genai.GenerativeModel(
     "gemini-2.0-flash"
 )
-st.write("Gemini Loaded:", bool(GEMINI_API_KEY))
+st.sidebar.write("Gemini Loaded:", bool(GEMINI_API_KEY))
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
@@ -271,11 +271,17 @@ Instructions:
 """
 
     try:
-        response = gemini_model.generate_content(prompt)
-        return response.text
+    st.write("Calling Gemini...")
 
-    except Exception as e:
-        return f"Error: {str(e)}"
+    response = gemini_model.generate_content(prompt)
+
+    st.write("Gemini replied")
+
+    return response.text
+
+except Exception as e:
+    st.error(str(e))
+    return f"Error: {str(e)}"
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
