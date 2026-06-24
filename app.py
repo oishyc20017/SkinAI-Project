@@ -522,20 +522,28 @@ def doctor_booking_popup():
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
     if st.button("Confirm Appointment", use_container_width=True):
+        # ১. নিশ্চিত করো যে re মডিউলটি এখানেই আছে
+        import re 
+        
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         phone_pattern = r'^\+?[0-9]{11,14}$'
         
-        if phone_number == "" or user_email == "":
+        # ২. ইনপুট চেক করার সময় নিশ্চিত করো যে এগুলো স্ট্রিং (str)
+        user_email_str = str(user_email) if user_email else ""
+        phone_number_str = str(phone_number) if phone_number else ""
+        
+        if phone_number_str == "" or user_email_str == "":
             st.error("Please fill up both Phone Number and Gmail Address!")
-        elif not re.match(email_pattern, user_email):
+        elif not re.match(email_pattern, user_email_str):
             st.error("Please enter a valid Gmail/Email address (e.g., name@gmail.com)!")
-        elif not re.match(phone_pattern, phone_number):
+        elif not re.match(phone_pattern, phone_number_str):
             st.error("Please enter a valid 11-digit Phone Number!")
         else:
+            # তোমার ডাটাবেস লজিক এখানে থাকবে...
             conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
             c = conn.cursor()
             c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                      (user_email, phone_number, doctor, str(pref_date), pref_time, 'Confirmed'))
+                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
             conn.commit()
             conn.close()
             st.success("Appointment successfully committed to database logs!")
