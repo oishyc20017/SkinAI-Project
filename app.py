@@ -239,29 +239,18 @@ disease_details = {
     }
 }
 def get_ai_response(user_question, disease):
-
     try:
-
-        st.write("STEP 1")
-
-        response = gemini_model.generate_content(
-            user_question,
-            request_options={"timeout": 30}
-        )
-
-        st.write("STEP 2")
-
-        if not response:
-            return "Gemini returned empty response"
-
-        if hasattr(response, "text"):
+        # মডেলকে প্রম্পট দিচ্ছি
+        prompt_with_context = f"Context: The detected skin condition is {disease}. User Question: {user_question}"
+        response = gemini_model.generate_content(prompt_with_context)
+        
+        if response and response.text:
             return response.text
-
-        return str(response)
-
+        else:
+            return "দুঃখিত, আমি এই মুহূর্তে কোনো উত্তর খুঁজে পাচ্ছি না। দয়া করে আবার চেষ্টা করো।"
+            
     except Exception as e:
-
-        st.error(str(e))
+        return f"এপিআই এরর হয়েছে: {str(e)}"
 
         return f"Gemini Error: {e}"
 @st.cache_resource
