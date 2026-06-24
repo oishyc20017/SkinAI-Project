@@ -504,32 +504,31 @@ st.markdown("---")
 def doctor_booking_popup():
     st.write("Please fill in your details to book an appointment.")
 
-    # ইনপুট ফিল্ডগুলো দুই কলামে সুন্দর করে সাজানো
     col1, col2 = st.columns(2)
     with col1:
-        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"])
-        pref_date = st.date_input("Preferred Date")
+        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"], key="doc_select")
+        pref_date = st.date_input("Preferred Date", key="date_select")
     with col2:
-        phone_number = st.text_input("📋 Phone Number")
-        user_email = st.text_input("✉️ Gmail Address")
-
-    # পেমেন্ট অপশনগুলো নিচে সুন্দরভাবে সাজানো
-    st.divider()
-    payment_choice = st.selectbox(
-        "Payment Mode", 
-        ["Pay at Clinic (Consultation Day)", "Bank/Card (Pre-paid)"]
-    )
+        phone_number = st.text_input("📋 Phone Number", key="phone_input")
+        user_email = st.text_input("✉️ Gmail Address", key="email_input")
     
-    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
-
-    # ফাইনাল কনফার্মেশন বাটন (unique key সহ)
-    if st.button("Confirm Appointment", key="btn_dialog_confirm"):
-    # এখানে কোড...
+    st.divider()
+    # পেমেন্ট অপশনগুলো শুধু দেখার জন্য (বাধ্যতামূলক কিছু নেই)
+    payment_method = st.radio("Select Payment Method", 
+                             ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"], 
+                             key="payment_radio")
+    
+    st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
+    
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_select")
+    
+    # বাটনটি শুধু এখানে থাকবে এবং এর একটি ইউনিক key থাকবে
+    if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
         if not phone_number or not user_email:
             st.error("Please fill all required fields!")
         else:
-            # ডাটাবেসে সেভ করার অংশ (তোমার আগের কোড অনুযায়ী)
-            st.success("Appointment successfully booked!")
+            # ডাটাবেসে সেভ করার অংশ (পেমেন্ট আইডি ছাড়াই)
+            st.success("Appointment successfully booked! See you at the clinic.")
             st.rerun()
         
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
