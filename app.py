@@ -240,7 +240,7 @@ disease_details = {
     }
 }
 def get_ai_response(user_question, disease):
-
+    return "Test Successful"
     if disease == "None":
         return "প্রথমে একটি ছবি আপলোড করুন, তারপর আমি রিপোর্ট অনুযায়ী সাহায্য করতে পারব।"
 
