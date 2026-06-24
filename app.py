@@ -234,7 +234,7 @@ disease_details = {
 def get_ai_response(user_question, disease):
 
     if disease == "None":
-        return "প্রথমে একটি ছবি আপলোড করুন।"
+        return "প্রথমে একটি ছবি আপলোড করুন"
 
     disease_data = disease_details.get(disease, {})
 
@@ -257,12 +257,6 @@ Predicted Disease:
 Disease Description:
 {disease_data.get('desc','')}
 
-Disease Cause:
-{disease_data.get('cause','')}
-
-Medical Advice:
-{disease_data.get('advice','')}
-
 User Question:
 {user_question}
 
@@ -276,11 +270,12 @@ Instructions:
 - Mention that AI prediction is not a final diagnosis.
 """
 
-   try:
-    response = gemini_model.generate_content(prompt)
-    return response.text
-except Exception as e:
-    return f"Error: {str(e)}"
+    try:
+        response = gemini_model.generate_content(prompt)
+        return response.text
+
+    except Exception as e:
+        return f"Error: {str(e)}"
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
