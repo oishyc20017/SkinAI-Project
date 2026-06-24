@@ -240,8 +240,23 @@ disease_details = {
     }
 }
 def get_ai_response(user_question, disease):
-    return "Test Successful"
-    if disease == "None":
+
+    st.write("STEP 1")
+
+    try:
+        st.write("STEP 2")
+
+        response = gemini_model.generate_content(
+            user_question
+        )
+
+        st.write("STEP 3")
+
+        return response.text
+
+    except Exception as e:
+        st.write("STEP ERROR")
+        return f"Gemini Error: {str(e)}"
         return "প্রথমে একটি ছবি আপলোড করুন, তারপর আমি রিপোর্ট অনুযায়ী সাহায্য করতে পারব।"
 
     disease_data = disease_details.get(disease, {})
