@@ -507,45 +507,18 @@ if file:
 st.markdown("---")
 st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
-# # --- ডায়ালগ ফাংশন: সবকিছু এই ফাংশনের ভেতরেই থাকবে ---
-@st.dialog("📅 Appointment & Secure Payment")
+@st.dialog("Consult a Doctor")
 def doctor_booking_popup():
-    doctor_list = ["Dr. Sabina Yasmin", "Dr. Asif Ahmed", "Dr. Nusrat Jahan", "Dr. Rayhan Ahmed", "Dr. Tania Islam"]
-    doctor = st.selectbox("Select Specialist", doctor_list)
-    
-    import datetime
-    pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
-    phone = st.text_input("📞 Phone Number")
-    
-    # স্টেজ ম্যানেজমেন্ট
-    if "popup_stage" not in st.session_state:
-        st.session_state.popup_stage = "form"
+    doctor = st.selectbox("Select Specialist", ["Dr. Sabina", "Dr. Asif", "Dr. Nusrat", "Dr. Rayhan", "Dr. Tania"])
+    phone = st.text_input("Phone Number")
+    if st.button("Submit"):
+        if phone:
+            st.success(f"Confirmed for {doctor}! You will be contacted.")
+        else:
+            st.error("Please enter your phone number.")
 
-    # ফর্ম লজিক
-    if st.session_state.popup_stage == "form":
-        if st.button("Proceed to Payment"):
-            if phone == "":
-                st.error("Please enter your phone number!")
-            else:
-                st.session_state.booking_data = {"doctor": doctor, "date": str(pref_date), "phone": phone}
-                st.session_state.popup_stage = "payment"
-                st.rerun()
-
-    # পেমেন্ট লজিক
-    if st.session_state.popup_stage == "payment":
-        st.info("Pay to bKash/Nagad: 01XXXXXXXXX")
-        tx_id = st.text_input("🔗 Enter Transaction ID")
-        if st.button("Confirm Booking"):
-            if tx_id:
-                st.success(f"Confirmed for {st.session_state.booking_data['doctor']} at City Skin Care!")
-                st.session_state.popup_stage = "form" # রিসেট
-            else:
-                st.warning("Enter Transaction ID!")
-
-# --- মেইন পেজ বাটন (এটি ডায়ালগের বাইরে থাকবে) ---
 st.markdown("---")
 if st.button("🔍 Consult a Doctor Now"):
-    st.session_state.popup_stage = "form"
     doctor_booking_popup()
 st.markdown("---")
     if st.session_state.popup_stage == "form":
