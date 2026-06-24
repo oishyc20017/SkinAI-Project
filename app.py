@@ -549,7 +549,7 @@ def doctor_booking_popup():
                     st.success("Payment Received & Appointment Successfully Confirmed!")
                     st.rerun()
                 else:
-                    st.warning("Please enter the Transaction ID to verify your payment.")col1, col2, col3 = st.columns([3, 4, 3])
+                    st.warning("Please enter the Transaction ID to verify your payment.")
 with col2:
     if st.button("🩺 Consult a Doctor Now", use_container_width=True):
         doctor_booking_popup()
