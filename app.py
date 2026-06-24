@@ -271,6 +271,11 @@ with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
     st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("---")
+    with st.expander("❓ Help & Information"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
+        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
+        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
 
     # ২. সিকিউরিটি গেটওয়ে কার্ড
     st.markdown("""
