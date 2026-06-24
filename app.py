@@ -548,7 +548,8 @@ def doctor_booking_popup():
         
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
-    if st.button("Confirm Appointment", use_container_width=True):
+    # আগের কোডের এই লাইনটি পরিবর্তন করে নিচের মতো করো:
+if st.button("Confirm Appointment", use_container_width=True, key="unique_booking_button"):
         # ১. নিশ্চিত করো যে re মডিউলটি এখানেই আছে
         import re 
         
