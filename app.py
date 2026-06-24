@@ -331,7 +331,7 @@ with st.sidebar:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ২. সিকিউরিটি গেটওয়ে কার্ড (নতুন ডিজাইন)
+        # ২. সিকিউরিটি গেটওয়ে কার্ড
         st.markdown("""
         <div style="
             background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
@@ -345,15 +345,12 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
 
-        # ৩. নিউ চ্যাট বাটন
-        if st.button("+ New Chat", use_container_width=True):
-            st.session_state.messages = []
-            st.session_state.last_res = "None"
-            st.rerun()
+        # ৩. নিউ চ্যাট বাটন (সব এক লাইনে, যাতে কোনো ইনদেন্টেশন এরর না আসে)
+        if st.button("+ New Chat", use_container_width=True): st.session_state.messages = []; st.session_state.last_res = "None"; st.rerun()
 
         st.markdown("---")
 
-        # ৪. তোমার ফেসবুক ও জিমেইল বাটন (যা আগে ছিল)
+        # ৪. ফেসবুক ও জিমেইল বাটন লজিক
         if not st.session_state.logged_in:
             st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 12px;'>Or Sign In With</p>", unsafe_allow_html=True)
             social_col1, social_col2 = st.columns(2)
@@ -364,7 +361,7 @@ with st.sidebar:
 
             st.markdown("---")
 
-            # ৫. তোমার ডেটাবেজ কানেক্টেড আসল Login ও Register ট্যাব
+            # ৫. তোমার ডেটাবেজের আসল Login ও Register ট্যাব লজিক
             t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
             
             with t1:
@@ -378,7 +375,7 @@ with st.sidebar:
                         st.session_state.user = e
                         c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
                         st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
-                        st.success("Welcome back! History Loaded.")
+                        st.success("Welcome back!")
                         time.sleep(0.5)
                         st.rerun()
                     else:
