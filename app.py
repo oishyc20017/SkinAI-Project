@@ -279,9 +279,9 @@ Instructions:
 
         return response.text
 
-except Exception as e:
-    st.error(str(e))
-    return f"Error: {str(e)}"
+    except Exception as e:
+        st.error(str(e))
+        return f"Error: {str(e)}"
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
