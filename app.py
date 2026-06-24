@@ -28,9 +28,7 @@ GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-gemini_model = genai.GenerativeModel(
-    "gemini-1.5-flash"
-)
+gemini_model = genai.GenerativeModel("gemini-2.0-flash")
 st.sidebar.write("Gemini Loaded:", bool(GEMINI_API_KEY))
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
@@ -241,57 +239,30 @@ disease_details = {
 }
 def get_ai_response(user_question, disease):
 
-    st.write("STEP 1")
-
-    return "Hello from Gemini"
-
-    disease_data = disease_details.get(disease, {})
-
-    history = ""
-
-    for msg in st.session_state.messages[-6:]:
-        history += f"{msg['role']}: {msg['content']}\n"
-
-    prompt = f"""
-You are SkinAI Assistant.
-
-You are a professional but friendly Bengali dermatologist assistant.
-
-Previous Conversation:
-{history}
-
-Predicted Disease:
-{disease}
-
-Disease Information:
-{disease_data.get('desc','')}
-
-User Question:
-{user_question}
-
-Rules:
-- Answer naturally like a human.
-- Reply in Bengali.
-- Give short and clear answers.
-- Don't repeat disease name unnecessarily.
-- If needed ask follow-up questions.
-- Mention that AI prediction is not final diagnosis.
-"""
-
     try:
 
         st.write("STEP 1")
 
-        response = gemini_model.generate_content("Hello")
+        response = gemini_model.generate_content(
+            user_question,
+            request_options={"timeout": 30}
+        )
 
         st.write("STEP 2")
 
-        return response.text
+        if not response:
+            return "Gemini returned empty response"
 
-        return "দুঃখিত, আমি উত্তর তৈরি করতে পারিনি।"
+        if hasattr(response, "text"):
+            return response.text
+
+        return str(response)
 
     except Exception as e:
-        return f"Gemini Error: {str(e)}"
+
+        st.error(str(e))
+
+        return f"Gemini Error: {e}"
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
