@@ -417,41 +417,42 @@ st.markdown("---")
 # --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
-    st.markdown("### Choose a Specialist & Book Your Appointment")
-    
-    # ডাটাবেস থেকে ডাক্তারদের লিস্ট রিড করা
-    c.execute("SELECT name, specialty, fee, available_time FROM doctors")
-    doctor_list = c.fetchall()
+    # ক্যাটালগ কার্ড ডিজাইন (ডাক্তারের নাম দেখানোর জন্য)
+    st.markdown("""
+    <div style="background-color: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 15px;">
+        <h4 style="color: #38bdf8; margin: 0;">Available Specialists & Active Slots</h4>
+        <p style="color: #94a3b8; font-size: 14px; margin: 5px 0 0 0;">Select your preferred doctor below to initiate transaction log.</p>
+    </div>
+    """, unsafe_allowed_html=True)
 
-    if doctor_list:
-        for doc in doctor_list:
-            st.markdown(f"""
-            <div style="background-color: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #58a6ff; margin-bottom: 10px;">
-                <h4 style="color: #58a6ff; margin: 0;">{doc[0]}</h4>
-                <p style="margin: 3px 0; font-size: 13px; color: #cccccc;"><b>Specialty:</b> {doc[1]} | <b>Fee:</b> {doc[2]}</p>
-                <p style="margin: 3px 0; font-size: 12px; color: #ff7b72;">⏰ {doc[3]}</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-    st.markdown("---")
+    # ২ কলামের নতুন ফর্ম লেআউট
+    col1, col2 = st.columns(2)
     
-    # বুকিং ফর্ম (পপ-আপের ভেতরে)
-    with st.form(key="popup_booking_form_final"):
-        doc_names = [doc[0] for doc in doctor_list] if doctor_list else ["No Doctors Available"]
-        selected_doc = st.selectbox("Select Specialist", doc_names)
-        appointment_date = st.date_input("Preferred Date")
-        appointment_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "5:00 PM - 6:00 PM", "7:00 PM - 8:00 PM", "8:00 PM - 9:00 PM"])
-        payment_method = st.radio("Payment Gateway", ["Pay at Chamber", "bKash / Nagad"], horizontal=True)
+    with col1:
+        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"])
+        pref_date = st.date_input("Preferred Date")
         
-        submit_booking = st.form_submit_button("Confirm Appointment")
-
-    if submit_booking and doctor_list:
-        user_email = st.session_state.get('user', 'Guest User')
-        c.execute("INSERT INTO bookings (user_email, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?)",
-                  (user_email, selected_doc, str(appointment_date), appointment_time, "Confirmed"))
-        conn.commit()
-        st.success(f"🎉 Appointment confirmed with {selected_doc}!")
-        st.rerun()
+    with col2:
+        # নতুন দুটি ইনপুট ফিল্ড
+        phone_number = st.text_input("📋 Phone Number", placeholder="e.g., +88017XXXXXXXX")
+        user_email = st.text_input("✉️ Gmail Address", placeholder="e.g., patient@gmail.com")
+        
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
+    
+    if st.button("Confirm Appointment", use_container_width=True):
+        if phone_number == "" or user_email == "":
+            st.error("Please fill up both Phone Number and Gmail Address!")
+        else:
+            # ডাটাবেসে সেভ করার কোড (INSERT INTO)
+            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+            c = conn.cursor()
+            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                      (user_email, phone_number, doctor, str(pref_date), pref_time, 'Confirmed'))
+            conn.commit()
+            conn.close()
+            
+            st.success("Appointment successfully committed to database logs!")
+            st.rerun()
 
 # 🎯 মেইন স্ক্রিনে শুধু এই ২য় অপশনটি (বাটন) থাকবে, ১ম অপশনের সব কার্ড-ফর্ম ডিলিট করা হয়েছে
 col1, col2, col3 = st.columns([3, 4, 3])
