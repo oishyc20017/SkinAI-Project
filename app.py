@@ -403,8 +403,7 @@ with st.sidebar:
             <p style="color: #64748b; font-size: 11px; margin: 3px 0 0 0;">Your credentials are locally hashed and never stored in plain text.</p>
         </div>
         """, unsafe_allow_html=True)
-            st.session_state.messages = []
-            st.rerun()
+           
 
     st.markdown("---")
     with st.expander("❓ Help & Information"):
