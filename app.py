@@ -269,18 +269,18 @@ classes = list(disease_details.keys())
 
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (Buttons & History Fixed) ---
 # --- সেশন ও সাইডবার ম্যানেজমেন্ট (একদম ফ্রেশ ও সিঙ্গেল ব্লক) ---
-    if 'logged_in' not in st.session_state: st.session_state.logged_in = False
-    if 'messages' not in st.session_state: st.session_state.messages = []
-    if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-    if 'user' not in st.session_state: st.session_state.user = None
+if 'logged_in' not in st.session_state: st.session_state.logged_in = False
+if 'messages' not in st.session_state: st.session_state.messages = []
+if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+if 'user' not in st.session_state: st.session_state.user = None
 
-    with st.sidebar:
+with st.sidebar:
         # ১. লোগো এরিয়া
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
-        st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
         # ২. সিকিউরিটি গেটওয়ে কার্ড
         st.markdown("""
