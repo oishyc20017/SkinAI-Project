@@ -1,5 +1,4 @@
 import datetime
-import random
 import re
 import streamlit as st
 import sqlite3
@@ -234,7 +233,7 @@ def get_intelligent_response(query, res):
     is_banglish = any(word in q.split() for word in bangla_hints)
     is_bn_mode = is_bangla_script or is_banglish
 
-    # [HIGH PRIORITY] ১. ইউজার যখন নির্দিষ্ট নাম, বেস্ট সাজেশন বা ব্যক্তিগত মতামত জানতে চাইবে
+    # ১. নির্দিষ্ট নাম বা বেস্ট সাজেশনের হাই-প্রায়োরিটি কন্ডিশন
     if any(word in q for word in ["specific", "name", "nam", "tomar mote", "best", "kake", "kak", "mention"]):
         if is_bn_mode:
             personal_suggestions = [
@@ -249,45 +248,24 @@ def get_intelligent_response(query, res):
             ]
             return random.choice(personal_suggestions)
 
-    # ২. ইউজার যখন শুধু কিসের ডাক্তার বা কোন ক্যাটাগরি জানতে চাইবে (সাধারণ প্রশ্ন)
+    # ২. সাধারণ ক্যাটাগরি কন্ডিশন (কিসের ডাক্তার)
     elif any(word in q for word in ["doctor", "daktar", "dekhale", "specialist", "consult"]):
         if is_bn_mode:
             return f"যেহেতু এআই বিশ্লেষণে **{res}** এসেছে, এটি মূলত ত্বকের একটি বিশেষ সমস্যা। তাই এর জন্য আপনাকে অবশ্যই একজন **চর্মরোগ বিশেষজ্ঞ (Skin Specialist বা Dermatologist)** দেখাতে হবে। আপনার কি কোনো নির্দিষ্ট ডাক্তারের নাম জানার প্রয়োজন আছে?"
         else:
             return f"Since the analysis indicates **{res}**, this falls under skin-related pathologies. You should definitely consult a qualified **Dermatologist (Skin Specialist)**. Do you need any specific doctor names?"
 
-    # ৩. ইউজার যদি কেন হয় বা কারণ জানতে চায়
+    # ৩. কেন হয় বা কারণ কন্ডিশন
     elif any(word in q for word in ["keno", "ken", "cause", "caron", "bhav"]):
         if is_bn_mode:
             return f"এটি সাধারণত {data.get('cause', 'নির্দিষ্ট কিছু কারণে')} হয়ে থাকে। ত্বক সুরক্ষিত রাখতে কড়া রোদ থেকে দূরে থাকা ভালো। এই বিষয়ে কি আরও কোনো তথ্য আপনার প্রয়োজন?"
         else:
             return f"This condition is usually caused by {data.get('cause', 'various factors')}. Keep your skin shielded from UV rays. Do you need any further insights?"
 
-    # ৪. ইউজার যদি ঘরোয়া চিকিৎসা বা প্রতিকার জানতে চায়
+    # ৪. ঘরোয়া চিকিৎসা কন্ডিশন
     elif any(word in q for word in ["home", "goroa", "tips", "bashay", "upai", "treatment", "upokar"]):
         if is_bn_mode:
-            return f"বাসায় বসে আপনি যা করতে পারেন: {data.get('home', 'ত্বক পরিষ্কার ও ময়েশ্চারাইজড রাখুন।')}। তবে মনে রাখবেন, ঘরোয়া উপায় সাময়িক, মূল চিকিৎসার জন্য ডাক্তার দেখানোই শ্রেয়। আর কিছু কি জানতে চান?"
-        else:
-            return f"For temporary home care: {data.get('home', 'Keep the skin clean.')} However, professional diagnosis is highly recommended. Anything else I can help with?"
-
-    # ৫. ডিফল্ট সাধারণ উত্তর
-    else:
-        if is_bn_mode:
-            return f"আপনার আপলোড করা ছবিতে সম্ভবত **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এর কারণ বা কোন ডাক্তার দেখাবেন সে সম্পর্কে জানতে চান?"
-        else:
-            return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know about its causes or appropriate specialists?"
-
-    # ৩. ইউজার যদি কেন হয় বা কারণ জানতে চায়
-    elif any(word in q for word in ["keno", "ken", "cause", "caron", "bhav"]):
-        if is_bn_mode:
-            return f"এটি সাধারণত {data.get('cause', 'নির্দিষ্ট কিছু কারণে')} হয়ে থাকে। ত্বক সুরক্ষিত রাখতে কড়া রোদ থেকে দূরে থাকা ভালো। এই বিষয়ে কি আরও কোনো তথ্য আপনার প্রয়োজন?"
-        else:
-            return f"This condition is usually caused by {data.get('cause', 'various factors')}. Keep your skin shielded from UV rays. Do you need any further insights?"
-
-    # ৪. ইউজার যদি ঘরোয়া চিকিৎসা বা প্রতিকার জানতে চায়
-    elif any(word in q for word in ["home", "goroa", "tips", "bashay", "upai", "treatment", "upokar"]):
-        if is_bn_mode:
-            return f"বাসায় বসে আপনি যা করতে পারেন: {data.get('home', 'ত্বক পরিষ্কার ও ময়েশ্চারাইজড রাখুন।')}। তবে মনে রাখবেন, ঘরোয়া উপায় সাময়িক, মূল চিকিৎসার জন্য ডাক্তার দেখানোই শ্রেয়। আর কিছু কি জানতে চান?"
+            return f"বাসায় বসে আপনি যা করতে পারেন: {data.get('home', 'ত্বক পরিষ্কার ও ময়েশ্চারाइजড রাখুন।')}। তবে মনে রাখবেন, ঘরোয়া উপায় সাময়িক, মূল চিকিৎসার জন্য ডাক্তার দেখানোই শ্রেয়। আর কিছু কি জানতে চান?"
         else:
             return f"For temporary home care: {data.get('home', 'Keep the skin clean.')} However, professional diagnosis is highly recommended. Anything else I can help with?"
 
