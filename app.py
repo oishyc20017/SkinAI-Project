@@ -523,7 +523,8 @@ def doctor_booking_popup():
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
 
     # ফাইনাল কনফার্মেশন বাটন (unique key সহ)
-    if st.button("Confirm Appointment", use_container_width=True, key="unique_booking_button_final"):
+    if st.button("Confirm Appointment", key="btn_dialog_confirm"):
+    # এখানে কোড...
         if not phone_number or not user_email:
             st.error("Please fill all required fields!")
         else:
@@ -534,7 +535,8 @@ def doctor_booking_popup():
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
     # আগের কোডের এই লাইনটি পরিবর্তন করে নিচের মতো করো:
-if st.button("Confirm Appointment", use_container_width=True, key="unique_booking_button"):
+if st.button("Confirm Appointment", key="btn_home_confirm"):
+    # এখানে কোড...
         # ১. নিশ্চিত করো যে re মডিউলটি এখানেই আছে
         import re 
         
