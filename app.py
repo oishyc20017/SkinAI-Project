@@ -511,23 +511,40 @@ def doctor_booking_popup():
     with col2:
         phone_number = st.text_input("📋 Phone Number", key="phone_f")
         user_email = st.text_input("✉️ Gmail Address", key="email_f")
-        pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_f")
+    
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_f")
     
     st.divider()
-    # পেমেন্ট মেথড শুধু দেখানোর জন্য
     payment_method = st.radio("Select Payment Method", 
                              ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"], 
                              key="pay_f")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
     
-    # বাটনটি শুধু পপআপের ভেতরেই থাকবে
+    # বাটনটি পপআপের ভেতরেই আছে
     if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
-        if not phone_number or not user_email:
-            st.error("Please fill all required fields!")
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        phone_pattern = r'^\+?[0-9]{11,14}$'
+        
+        user_email_str = str(user_email)
+        phone_number_str = str(phone_number)
+        
+        if phone_number_str == "" or user_email_str == "":
+            st.error("Please fill up both Phone Number and Gmail Address!")
+        elif not re.match(email_pattern, user_email_str):
+            st.error("Please enter a valid Gmail address!")
+        elif not re.match(phone_pattern, phone_number_str):
+            st.error("Please enter a valid 11-digit Phone Number!")
         else:
-            # ডাটাবেসে সেভ করার অংশ
-            st.success("Appointment successfully booked!")
+            # ডাটাবেস সেভ লজিক
+            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+            c = conn.cursor()
+            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+            conn.commit()
+            conn.close()
+            st.success("Appointment successfully committed!")
+            time.sleep(1)
             st.rerun()
         
     # আগের কোডের এই লাইনটি পরিবর্তন করে নিচের মতো করো:
@@ -560,9 +577,10 @@ if st.button("Confirm Appointment", key="btn_home_confirm"):
             st.success("Appointment successfully committed to database logs!")
             st.rerun()
 
+# মেইন বডিতে এই অংশটি রাখো, অন্য কোনো বাটন ডিলিট করে দাও
 col1, col2, col3 = st.columns([3, 4, 3])
 with col2:
-    if st.button("🩺 Consult a Doctor Now", use_container_width=True):
+    if st.button("🩺 Consult a Doctor Now", use_container_width=True, key="btn_open_popup"):
         doctor_booking_popup()
 
 st.markdown("---")
