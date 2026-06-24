@@ -275,11 +275,11 @@ if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
         # --- লোগো সেন্টার ---
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
-        st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
         # ১. সিকিউরিটি ব্যাজ ও টাইটেল
         st.markdown("""
