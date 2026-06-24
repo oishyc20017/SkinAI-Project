@@ -507,63 +507,39 @@ if file:
 st.markdown("---")
 st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
-# --- ১. ডায়ালগ ফাংশন ---
+# --- ১. ডায়ালগ ফাংশন (পুরোটা ফাংশনের ভেতরে) ---
 @st.dialog("📅 Appointment & Secure Payment")
 def doctor_booking_popup():
-    doctor_list = [
-        "Dr. Sabina Yasmin (Senior Dermatologist)",
-        "Dr. Asif Ahmed (Skin & Laser Specialist)",
-        "Dr. Nusrat Jahan (Clinical Dermatologist)",
-        "Dr. Rayhan Ahmed (Skin Pathologist)",
-        "Dr. Tania Islam (Cosmetic Dermatologist)"
-    ]
+    doctor_list = ["Dr. Sabina Yasmin", "Dr. Asif Ahmed", "Dr. Nusrat Jahan", "Dr. Rayhan Ahmed", "Dr. Tania Islam"]
     doctor = st.selectbox("Select Specialist", doctor_list)
     
     import datetime
     pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
-    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
-    phone_number = st.text_input("📞 Phone Number")
-    user_email = st.text_input("📧 Gmail Address")
-
+    phone = st.text_input("📞 Phone Number")
+    
     if "popup_stage" not in st.session_state:
         st.session_state.popup_stage = "form"
 
-    # স্টেজ ১: ফর্ম ইনপুট
     if st.session_state.popup_stage == "form":
         if st.button("Proceed to Payment"):
-            if phone_number == "" or user_email == "":
-                st.error("Please fill up Phone and Gmail!")
+            if phone == "":
+                st.error("Fill the phone number!")
             else:
-                st.session_state.booking_data = {"email": user_email, "phone": phone_number, "doctor": doctor, "date": str(pref_date), "time": pref_time}
+                st.session_state.booking_data = {"doctor": doctor, "date": str(pref_date), "phone": phone}
                 st.session_state.popup_stage = "payment"
                 st.rerun()
 
-    # স্টেজ ২: পেমেন্ট ও কনফার্মেশন
     if st.session_state.popup_stage == "payment":
-        st.success("✅ Details Verified!")
-        pay_method = st.radio("Select Payment Method:", ["bKash", "Nagad", "Rocket", "Bank Transfer"], horizontal=True)
+        st.info("Pay to bKash/Nagad: 01XXXXXXXXX")
         tx_id = st.text_input("🔗 Enter Transaction ID")
-        
-        if st.button("Complete Booking"):
+        if st.button("Confirm Booking"):
             if tx_id:
-                # কনফার্মেশন মেসেজ
-                confirmation_msg = f"""
-                ### ✅ Appointment Confirmed!
-                **Hospital:** City Skin Care & Laser Centre, Dhaka.
-                **Doctor:** {st.session_state.booking_data['doctor']}
-                **Date:** {st.session_state.booking_data['date']}
-                **Time:** {st.session_state.booking_data['time']}
-                **Payment:** Paid via {pay_method} (TxnID: {tx_id})
-                """
-                st.markdown(confirmation_msg)
-                
-                # ডেটাবেজ সেভ করার লজিক এখানে যুক্ত করবে
-                st.session_state.popup_stage = "form" # রিসেট
-                st.success("Appointment Successfully Locked!")
+                st.success(f"Confirmed for {st.session_state.booking_data['doctor']} at City Skin Care!")
+                st.session_state.popup_stage = "form"
             else:
-                st.warning("Please enter your Transaction ID.")
+                st.warning("Enter TxnID!")
 
-# --- ২. মেইন পেজের বাটন (এটি অবশ্যই লুপের বাইরে রাখবে) ---
+# --- ২. মেইন পেজ বাটন (সরাসরি মেইন লেআউটে) ---
 st.markdown("---")
 if st.button("🔍 Consult a Doctor Now"):
     st.session_state.popup_stage = "form"
