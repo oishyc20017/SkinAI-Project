@@ -267,12 +267,14 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_details.keys())
 
-# --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (একদম ফ্রেশ ও সিঙ্গেল ব্লক) ---
+# --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (Buttons & History Fixed) ---
+# --- সেশন ও সাইডবার ম্যানেজমেন্ট (একদম ফ্রেশ ও সিঙ্গেল ব্লক) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
+# --- সাইডবার প্যানেল (একদম ফাইলের শেষে এবং মার্জিন থেকে শুরু) ---
 with st.sidebar:
     # ১. লোগো এরিয়া
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -289,76 +291,278 @@ with st.sidebar:
         border-radius: 10px; 
         border: 1px solid #4338ca; 
         text-align: center; 
-        margin-bottom: 15px;">
+        margin-bottom: 20px;">
         <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
     """, unsafe_allow_html=True)
 
-    # ৩. নিউ চ্যাট বাটন (ইউনিক কি সহ)
-    if st.button("+ New Chat", use_container_width=True, key="sidebar_new_chat_btn"):
+    # ৩. ইনপুট ফিল্ডস ও বাটন
+    user_email = st.text_input("✉️ Registered Gmail Address", placeholder="username@gmail.com")
+    password = st.text_input("🔑 Master Password", type="password", placeholder="••••••••")
+    login_btn = st.button("Authenticate Login", use_container_width=True)
+    
+    st.markdown("<hr>", unsafe_allow_html=True)
+    
+    # ৪. নিউ চ্যাট বাটন
+    if st.button("+ New Chat", use_container_width=True):
         st.session_state.messages = []
         st.session_state.last_res = "None"
         st.rerun()
 
-    st.markdown("---")
-
-    # ৪. ফেসবুক ও জিমেইল বাটন লজিক
-    if not st.session_state.logged_in:
-        st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 12px;'>Or Sign In With</p>", unsafe_allow_html=True)
-        social_col1, social_col2 = st.columns(2)
-        with social_col1:
-            if st.button("🔵 Facebook", use_container_width=True, key="fb_login"): st.info("Coming Soon!")
-        with social_col2:
-            if st.button("🔴 Gmail", use_container_width=True, key="gm_login"): st.info("Coming Soon!")
-
-        st.markdown("---")
-
-        # ৫. আসল Login ও Register ট্যাব লজিক
-        t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
-        
-        with t1:
-            e = st.text_input("✉️ Gmail Address", key="login_email_input", placeholder="username@gmail.com")
-            p = st.text_input("🔑 Password", type="password", key="login_pass_input", placeholder="••••••••")
-            if st.button("Log In", use_container_width=True, key="submit_login"):
-                c.execute('SELECT password FROM users WHERE email=?', (e,))
-                data = c.fetchone()
-                if data and check_hash(p, data[0]):
-                    st.session_state.logged_in = True
-                    st.session_state.user = e
-                    c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
-                    st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
-                    st.success("Welcome back!")
-                    time.sleep(0.5)
-                    st.rerun()
-                else:
-                    st.error("Invalid Login Details.")
-                    
-        with t2:
-            re = st.text_input("✉️ New Gmail", key="register_email_input", placeholder="newuser@gmail.com")
-            rp = st.text_input("🔑 New Password", type="password", key="register_pass_input", placeholder="••••••••")
-            if st.button("Create Account", use_container_width=True, key="submit_register"):
-                if "@" in re and len(rp) > 3:
-                    try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
-                        st.success("Account Created! Now Login.")
-                    except:
-                        st.error("User already exists.")
-                else:
-                    st.warning("Enter valid details.")
-
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ৬. ট্রাস্ট ও সিকিউরিটি নোটিশ
+    # ৫. ট্রাস্ট ও সিকিউরিটি নোটিশ
     st.markdown("""
     <div style="background-color: #0b1329; padding: 10px; border-radius: 6px; border-left: 4px solid #10b981;">
         <p style="color: #10b981; font-size: 11px; margin: 0; font-weight: bold;">✓ Zero-Knowledge Privacy Enabled</p>
         <p style="color: #64748b; font-size: 11px; margin: 3px 0 0 0;">Your credentials are locally hashed and never stored in plain text.</p>
     </div>
     """, unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("---")
+
+    with st.sidebar:
+        # ১. লোগো এরিয়া
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # ২. সিকিউরিটি গেটওয়ে কার্ড
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #4338ca; 
+            text-align: center; 
+            margin-bottom: 15px;">
+            <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
+            <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # ৩. নিউ চ্যাট বাটন (সব এক লাইনে, যাতে কোনো ইনদেন্টেশন এরর না আসে)
+        if st.button("+ New Chat", use_container_width=True): st.session_state.messages = []; st.session_state.last_res = "None"; st.rerun()
+
+        st.markdown("---")
+
+        # ৪. ফেসবুক ও জিমেইল বাটন লজিক
+        if not st.session_state.logged_in:
+            st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 12px;'>Or Sign In With</p>", unsafe_allow_html=True)
+            social_col1, social_col2 = st.columns(2)
+            with social_col1:
+                if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
+            with social_col2:
+                if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
+
+            st.markdown("---")
+
+            # ৫. তোমার ডেটাবেজের আসল Login ও Register ট্যাব লজিক
+            t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
+            
+            with t1:
+                e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
+                p = st.text_input("🔑 Password", type="password", key="l_p", placeholder="••••••••")
+                if st.button("Log In", use_container_width=True):
+                    c.execute('SELECT password FROM users WHERE email=?', (e,))
+                    data = c.fetchone()
+                    if data and check_hash(p, data[0]):
+                        st.session_state.logged_in = True
+                        st.session_state.user = e
+                        c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
+                        st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
+                        st.success("Welcome back!")
+                        time.sleep(0.5)
+                        st.rerun()
+                    else:
+                        st.error("Invalid Login Details.")
+                        
+            with t2:
+                re = st.text_input("✉️ New Gmail", key="r_e", placeholder="newuser@gmail.com")
+                rp = st.text_input("🔑 New Password", type="password", key="r_p", placeholder="••••••••")
+                if st.button("Create Account", use_container_width=True):
+                    if "@" in re and len(rp) > 3:
+                        try:
+                            c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
+                            st.success("Account Created! Now Login.")
+                        except:
+                            st.error("User already exists.")
+                    else:
+                        st.warning("Enter valid details.")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # ৬. ট্রাস্ট ও সিকিউরিটি নোটিশ
+        st.markdown("""
+        <div style="background-color: #0b1329; padding: 10px; border-radius: 6px; border-left: 4px solid #10b981;">
+            <p style="color: #10b981; font-size: 11px; margin: 0; font-weight: bold;">✓ Zero-Knowledge Privacy Enabled</p>
+            <p style="color: #64748b; font-size: 11px; margin: 3px 0 0 0;">Your credentials are locally hashed and never stored in plain text.</p>
+        </div>
+        """, unsafe_allow_html=True)
+           
+
+    st.markdown("---")
+    with st.expander("❓ Help & Information"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
+        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
+        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
+# --- ৭. মেইন চ্যাট ইন্টারফেস ---
+# --- ১. মেইন পেজ অ্যানিমেশন ---
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    try:
+        import requests
+        from streamlit_lottie import st_lottie
+        
+        def load_my_anim(url):
+            res = requests.get(url)
+            return res.json() if res.status_code == 200 else None
+
+        # সঠিক লিঙ্ক দিয়ে অ্যানিমেশন লোড করা
+        my_lottie_data = load_my_anim("https://lottie.host/8040d75a-5262-4217-a9a7-961453a25d2a/T87hS79p1U.json")
+
+        if my_lottie_data:
+            st_lottie(my_lottie_data, height=200, key="skin_scanner_anim")
+    except:
+        pass
+
+# --- লোগো এবং টাইটেল (একদম মাঝখানে এবং ছোট) ---
+# --- লোগো এবং স্টাইলিশ টাইটেল ---
+# --- লোগো এবং বড় টাইটেল (একদম মাঝখানে) ---
+st.markdown(
+    """
+    <div style="text-align: center; margin-top: -80px; margin-bottom: 10px;">
+        <div style="display: flex; justify-content: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2808/2808549.png" width="80">
+        </div>
+        <h1 class="rainbow-text" style="margin: 10px 0 0 0; font-size: 45px; font-weight: 800; line-height: 1.1;">
+            SkinAI Assistant
+        </h1>
+        <p class="wishy-tag" style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold;">
+            Developed by Wishy
+        </p>
+    </div>
+    <hr style="margin-top: 5px; margin-bottom: 15px; border: 0.1px solid #444; opacity: 0.2;">
+    """,
+    unsafe_allow_html=True)
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
+
+# --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
+if file:
+    import numpy as np
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    st.session_state.last_res = classes[np.argmax(pred)]
+
+    # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
+    disease_info = {
+        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়।"},
+        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি এক প্রকার স্কিন ক্যান্সার।"},
+        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়।"},
+        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা।"},
+        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল।"},
+        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি দ্রুত চিকিৎসা করা জরুরি।"},
+        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।"}
+    }
+    
+    res_name = st.session_state.last_res
+    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "বিস্তারিত তথ্য পাওয়া যায়নি।"})
+
+    # ৩. তোমার নতুন রেজাল্ট কার্ড ডিজাইন
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
+        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+        <div style="margin: 20px 0;">
+            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">সাধারণ নাম:</h4>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+        </div>
+        <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক নাম:</p>
+            <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
+            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>তথ্য:</b> {info['desc']}</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+  # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
-with st.expander("❓ Help & Information"):
-    st.write("১. স্পষ্ট ছবি আপলোড করুন।")
-    st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
-    st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
+
+# --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
+@st.dialog("🩺 Professional Doctor Consultation")
+def doctor_booking_popup():
+    # ক্যাটালগ কার্ড ডিজাইন (ডাক্তারের নাম দেখানোর জন্য)
+    st.markdown("""
+    <div style="background-color: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 15px;">
+        <h4 style="color: #38bdf8; margin: 0;">Available Specialists & Active Slots</h4>
+        <p style="color: #94a3b8; font-size: 14px; margin: 5px 0 0 0;">Select your preferred doctor below to initiate transaction log.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ২ কলামের নতুন ফর্ম লেআউট
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"])
+        pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
+        
+    with col2:
+        # নতুন দুটি ইনপুট ফিল্ড
+        phone_number = st.text_input("📋 Phone Number", placeholder="e.g., +88017XXXXXXXX")
+        user_email = st.text_input("✉️ Gmail Address", placeholder="e.g., patient@gmail.com")
+        
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
+    
+    if st.button("Confirm Appointment", use_container_width=True):
+        # ইমেইল এবং ফোন নম্বরের প্যাটার্ন চেক করার জন্য Regex
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        phone_pattern = r'^\+?[0-9]{11,14}$'
+        
+        if phone_number == "" or user_email == "":
+            st.error("Please fill up both Phone Number and Gmail Address!")
+        elif not re.match(email_pattern, user_email):
+            st.error("Please enter a valid Gmail/Email address (e.g., name@gmail.com)!")
+        elif not re.match(phone_pattern, phone_number):
+            st.error("Please enter a valid 11-digit Phone Number!")
+        else:
+            # ডাটাবেসে সেভ করার কোড (INSERT INTO) যা আগে ছিল...
+            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+            c = conn.cursor()
+            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                      (user_email, phone_number, doctor, str(pref_date), pref_time, 'Confirmed'))
+            conn.commit()
+            conn.close()
+            
+            st.success("Appointment successfully committed to database logs!")
+            st.rerun()
+# 🎯 মেইন স্ক্রিনে শুধু এই ২য় অপশনটি (বাটন) থাকবে, ১ম অপশনের সব কার্ড-ফর্ম ডিলিট করা হয়েছে
+col1, col2, col3 = st.columns([3, 4, 3])
+with col2:
+    if st.button("🩺 Consult a Doctor Now", use_container_width=True):
+        doctor_booking_popup()
+
+st.markdown("---")
+
+# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট (আগের মেইন কোড - সম্পূর্ণ নিরাপদ) ---
+for m in st.session_state.messages:
+    with st.chat_message(m["role"]): 
+        st.markdown(m["content"])
+
+if prompt := st.chat_input("Ask me anything about your skin..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    if st.session_state.get('logged_in', False):
+        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
+        conn.commit()
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    with st.chat_message("assistant"):
+        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        st.markdown(reply)
+        st.session_state.messages.append({"role": "assistant", "content": reply})
