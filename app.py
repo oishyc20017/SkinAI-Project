@@ -530,26 +530,41 @@ def doctor_booking_popup():
         elif not re.match(r"^(?:\+88|88)?(01[3-9]\d{8})$", phone_number):
             st.error("Please enter a valid Bangladeshi Phone Number!")
         else:
-            st.success("Details Validated! Please complete your payment below.")
-            
-            st.markdown("### 💳 Select Payment Method")
-            pay_method = st.radio("Choose how you want to pay:", ["bKash", "Nagad", "Rocket", "Visa/Mastercard"], horizontal=True)
-            
-            st.info(f"Please send the consultation fee to our official {pay_method} merchant account.")
-            tx_id = st.text_input("🔗 Enter Transaction ID (TxnID)", placeholder="e.g., TRX98765432")
-            
-            if st.button("Complete Booking & Pay", use_container_width=True):
-                if tx_id:
-                    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-                    c = conn.cursor()
-                    c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)",
-                              (user_email, phone_number, doctor, str(pref_date), pref_time, f'Paid via {pay_method} ({tx_id})'))
-                    conn.commit()
-                    conn.close()
-                    st.success("Payment Received & Appointment Successfully Confirmed!")
-                    st.rerun()
-                else:
-                    st.warning("Please enter the Transaction ID to verify your payment.")
+            # সেশন স্টেটে ভ্যালিডেশন সাকসেস সেভ করা যাতে লেআউট না ভাঙে
+            st.session_state.booking_validated = True
+            st.session_state.booking_data = {
+                "email": user_email,
+                "phone": phone_number,
+                "doctor": doctor,
+                "date": str(pref_date),
+                "time": pref_time
+            }
+
+    # ভ্যালিডেশন সফল হলে মেইন লুপে পেমেন্ট অপশন দেখানো (বাটনের বাইরে)
+    if st.session_state.get("booking_validated", False):
+        st.success("Details Validated! Please complete your payment below.")
+        st.markdown("### 💳 Select Payment Method")
+        pay_method = st.radio("Choose how you want to pay:", ["bKash", "Nagad", "Rocket", "Visa/Mastercard"], horizontal=True)
+        
+        st.info(f"Please send the consultation fee to our official {pay_method} merchant account.")
+        tx_id = st.text_input("🔗 Enter Transaction ID (TxnID)", placeholder="e.g., TRX98765432")
+        
+        if st.button("Complete Booking & Pay Now", use_container_width=True):
+            if tx_id:
+                b_data = st.session_state.booking_data
+                conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+                c = conn.cursor()
+                c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)",
+                          (b_data["email"], b_data["phone"], b_data["doctor"], b_data["date"], b_data["time"], f'Paid via {pay_method} ({tx_id})'))
+                conn.commit()
+                conn.close()
+                
+                # সেশন স্টেট রিসেট
+                st.session_state.booking_validated = False
+                st.success("Payment Received & Appointment Successfully Confirmed!")
+                st.rerun()
+            else:
+                st.warning("Please enter the Transaction ID to verify your payment.")
 with col2:
     if st.button("🩺 Consult a Doctor Now", use_container_width=True):
         doctor_booking_popup()
