@@ -3,6 +3,7 @@ import sqlite3
 import hashlib
 
 st.set_page_config(page_title="SkinAI Pro", layout="wide")
+
 # --- ১. এখানে বাটন স্টাইলিংয়ের CSS টুকু বসিয়ে দাও ---
 st.markdown("""
 <style>
@@ -20,7 +21,7 @@ div.stButton > button:first-child:hover {
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 </style>
-""", unsafe_allowed_html=True)
+""", unsafe_allow_html=True)
 import requests
 from streamlit_lottie import st_lottie
 import time
