@@ -531,8 +531,6 @@ def doctor_booking_popup():
             st.success("Appointment successfully booked! See you at the clinic.")
             st.rerun()
         
-    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
-    
     # আগের কোডের এই লাইনটি পরিবর্তন করে নিচের মতো করো:
 if st.button("Confirm Appointment", key="btn_home_confirm"):
     # এখানে কোড...
