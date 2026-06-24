@@ -635,7 +635,7 @@ for m in st.session_state.messages:
     with st.chat_message(m["role"]): 
         st.markdown(m["content"])
 
-if prompt := st.chat_input("Ask me anything about your skin..."):
+st.chat_input("Ask me anything about your skin...", key="unique_chat_input_key")
     st.session_state.messages.append({"role": "user", "content": prompt})
     if st.session_state.get('logged_in', False):
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
