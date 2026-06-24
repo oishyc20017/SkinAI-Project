@@ -4,6 +4,8 @@ import streamlit as st
 import sqlite3
 import hashlib
 import requests
+import random
+import google.generativeai as genai
 from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
@@ -14,6 +16,13 @@ import gdown
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+
+genai.configure(api_key=GEMINI_API_KEY)
+
+gemini_model = genai.GenerativeModel(
+    "gemini-2.0-flash"
+)
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
@@ -155,6 +164,13 @@ def init_db():
                   
     c.execute('''CREATE TABLE IF NOT EXISTS chat_history
                  (email TEXT, role TEXT, content TEXT)''')
+    c.execute('''
+CREATE TABLE IF NOT EXISTS users
+(
+email TEXT PRIMARY KEY,
+password TEXT
+)
+''')
     
     c.execute("SELECT COUNT(*) FROM doctors")
     if c.fetchone()[0] == 0:
@@ -214,68 +230,54 @@ disease_details = {
         'advice': "লেজার ট্রিটমেন্টের মাধ্যমে এটি পুরোপুরি দূর করা সম্ভব।"
     }
 }
+def get_ai_response(user_question, disease):
 
-# --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
-def get_intelligent_response(query, res):
-    with st.status("Analyzing your question...", expanded=False) as status:
-        time.sleep(1.0)
-        status.update(label="Response Ready!", state="complete")
-    
-    q = query.lower()
-    if res == "None":
-        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+    if disease == "None":
+        return "প্রথমে একটি ছবি আপলোড করুন।"
 
-    data = disease_details.get(res, {})
-    
-    is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
-    bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar", "valo", "daktar"]
-    is_banglish = any(word in q.split() for word in bangla_hints)
-    is_bn_mode = is_bangla_script or is_banglish
+    disease_data = disease_details.get(disease, {})
 
-    # ১. নির্দিষ্ট নাম বা বেস্ট সাজেশনের হাই-প্রায়োরিটি কন্ডিশন
-    if any(word in q for word in ["specific", "name", "nam", "tomar mote", "best", "kake", "kak", "mention"]):
-        if is_bn_mode:
-            personal_suggestions = [
-                f"আমার ব্যক্তিগত মতামত চাইলে বলবো, আপনি আমাদের প্যানেলের সিনিয়র ডার্মাটোলজিস্ট **Dr. Sabina Yasmin** অথবা লেজার স্পেশালিস্ট **Dr. Asif Ahmed**-কে দেখাতে পারেন। ওনারা দুজনেই এই বিষয়ে বেশ অভিজ্ঞ।",
-                f"যদি সুনির্দিষ্ট ১-২ জন ভালো ডাক্তারের কথা বলতে বলেন, তবে আমি সাজেস্ট করবো আপনি **Dr. Sabina Yasmin** অথবা **Dr. Nusrat Jahan**-এর অ্যাপয়েন্টমেন্ট নিতে পারেন।"
-            ]
-            return random.choice(personal_suggestions)
-        else:
-            personal_suggestions = [
-                f"If you want specific recommendations, I highly suggest consulting **Dr. Sabina Yasmin** or **Dr. Asif Ahmed** from our panel. They are highly experienced with {res}.",
-                f"Personally, scheduling a visit with either **Dr. Sabina Yasmin** or **Dr. Nusrat Jahan** would be the best choice for this condition."
-            ]
-            return random.choice(personal_suggestions)
+    history = ""
 
-    # ২. সাধারণ ক্যাটাগরি কন্ডিশন (কিসের ডাক্তার)
-    elif any(word in q for word in ["doctor", "daktar", "dekhale", "specialist", "consult"]):
-        if is_bn_mode:
-            return f"যেহেতু এআই বিশ্লেষণে **{res}** এসেছে, এটি মূলত ত্বকের একটি বিশেষ সমস্যা। তাই এর জন্য আপনাকে অবশ্যই একজন **চর্মরোগ বিশেষজ্ঞ (Skin Specialist বা Dermatologist)** দেখাতে হবে। আপনার কি কোনো নির্দিষ্ট ডাক্তারের নাম জানার প্রয়োজন আছে?"
-        else:
-            return f"Since the analysis indicates **{res}**, this falls under skin-related pathologies. You should definitely consult a qualified **Dermatologist (Skin Specialist)**. Do you need any specific doctor names?"
+    for msg in st.session_state.messages[-8:]:
+        history += f"{msg['role']}: {msg['content']}\n"
 
-    # ৩. কেন হয় বা কারণ কন্ডিশন
-    elif any(word in q for word in ["keno", "ken", "cause", "caron", "bhav"]):
-        if is_bn_mode:
-            return f"এটি সাধারণত {data.get('cause', 'নির্দিষ্ট কিছু কারণে')} হয়ে থাকে। ত্বক সুরক্ষিত রাখতে কড়া রোদ থেকে দূরে থাকা ভালো। এই বিষয়ে কি আরও কোনো তথ্য আপনার প্রয়োজন?"
-        else:
-            return f"This condition is usually caused by {data.get('cause', 'various factors')}. Keep your skin shielded from UV rays. Do you need any further insights?"
+    prompt = f"""
+You are SkinAI Assistant.
 
-    # ৪. ঘরোয়া চিকিৎসা কন্ডিশন
-    elif any(word in q for word in ["home", "goroa", "tips", "bashay", "upai", "treatment", "upokar"]):
-        if is_bn_mode:
-            return f"বাসায় বসে আপনি যা করতে পারেন: {data.get('home', 'ত্বক পরিষ্কার ও ময়েশ্চারाइजড রাখুন।')}। তবে মনে রাখবেন, ঘরোয়া উপায় সাময়িক, মূল চিকিৎসার জন্য ডাক্তার দেখানোই শ্রেয়। আর কিছু কি জানতে চান?"
-        else:
-            return f"For temporary home care: {data.get('home', 'Keep the skin clean.')} However, professional diagnosis is highly recommended. Anything else I can help with?"
+You are a friendly Bengali skin health assistant.
 
-    # ৫. ডিফল্ট সাধারণ উত্তর
-    else:
-        if is_bn_mode:
-            return f"আপনার আপলোড করা ছবিতে সম্ভবত **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এর কারণ বা কোন ডাক্তার দেখাবেন সে সম্পর্কে জানতে চান?"
-        else:
-            return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know about its causes or appropriate specialists?"
-# --- ৫. モデル লোডিং ---
+Previous Conversation:
+{history}
+
+Predicted Disease:
+{disease}
+
+Disease Description:
+{disease_data.get('desc','')}
+
+Disease Cause:
+{disease_data.get('cause','')}
+
+Medical Advice:
+{disease_data.get('advice','')}
+
+User Question:
+{user_question}
+
+Instructions:
+- Answer naturally like a human.
+- Speak Bengali if the user speaks Bengali.
+- Never repeat the same diagnosis again and again.
+- Understand the user's actual question.
+- Give practical medical guidance.
+- Ask follow-up questions when necessary.
+- Mention that AI prediction is not a final diagnosis.
+"""
+
+    response = gemini_model.generate_content(prompt)
+
+    return response.text
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
@@ -561,6 +563,22 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
     with st.chat_message("user"):
         st.markdown(prompt)
     with st.chat_message("assistant"):
-        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        reply = get_ai_response(
+    prompt,
+    st.session_state.last_res
+)
         st.markdown(reply)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.session_state.messages.append({
+    "role": "assistant",
+    "content": reply
+})
+        if st.session_state.get('logged_in', False):
+    c.execute(
+        'INSERT INTO chat_history VALUES (?,?,?)',
+        (
+            st.session_state.user,
+            "assistant",
+            reply
+        )
+    )
+    conn.commit()
