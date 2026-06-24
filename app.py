@@ -519,18 +519,21 @@ def doctor_booking_popup():
         phone_number = st.text_input("📋 Phone Number")
         user_email = st.text_input("✉️ Gmail Address")
         # পেমেন্ট মেথড যোগ করা
-        payment_method = st.selectbox("Select Payment Method", ["বিকাশ", "নগদ", "রকেট"])
-        transaction_id = st.text_input("Transaction ID (After Payment)")
+        # পেমেন্ট মেথড সিলেকশন
+    payment_method = st.radio(
+        "Select Payment Method", 
+        ["বিকাশ/নগদ/রকেট (Mobile Banking)", "Bank Transfer (Direct Deposit)", "Credit/Debit Card"]
+    )
 
-    # বুকিং কনফার্মেশন লজিক
-    if st.button("Confirm Appointment"):
-        if not transaction_id:
-            st.error("অনুগ্রহ করে আপনার পেমেন্টের ট্রানজেকশন আইডিটি দিন।")
-        else:
-            # ডাটাবেসে সেভ করার সময় পেমেন্ট স্ট্যাটাসও সেভ করে রাখবে
-            # এখানে পেমেন্ট আইডি যাচাই করার লজিক বসাতে পারো
-            st.success(f"আপনার {payment_method} পেমেন্টটি সফলভাবে সম্পন্ন হয়েছে!")
-            # বাকি ডাটাবেস কোড এখানে থাকবে...
+    if payment_method == "বিকাশ/নগদ/রকেট (Mobile Banking)":
+        st.info("আমাদের মার্চেন্ট নাম্বারে পেমেন্ট করে ট্রানজেকশন আইডি দিন।")
+        transaction_id = st.text_input("Transaction ID")
+    elif payment_method == "Bank Transfer (Direct Deposit)":
+        st.write("আমাদের ব্যাংক ডিটেইলস: Account Name: SkinAI, Bank: City Bank, Acc: 123456789")
+        transaction_id = st.text_input("Bank Reference / Receipt No")
+    else:
+        st.write("কার্ড পেমেন্ট সিস্টেম বর্তমানে মেনটেনেন্স মোডে আছে।")
+        transaction_id = "Card Payment"
         
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
