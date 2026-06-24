@@ -418,7 +418,7 @@ def doctor_booking_popup():
         <h4 style="color: #38bdf8; margin: 0;">Available Specialists & Active Slots</h4>
         <p style="color: #94a3b8; font-size: 14px; margin: 5px 0 0 0;">Select your preferred doctor below to initiate transaction log.</p>
     </div>
-    """, unsafe_allowed_html=True)
+    """, unsafe_allow_html=True)
 
     # ২ কলামের নতুন ফর্ম লেআউট
     col1, col2 = st.columns(2)
