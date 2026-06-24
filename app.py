@@ -578,10 +578,10 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
                 st.session_state.last_res
            )
 
-           st.markdown(reply)
+            st.markdown(reply)
 
-           except Exception as e:
-               st.error(f"CHAT ERROR: {e}")
+            except Exception as e:
+                st.error(f"CHAT ERROR: {e}")
             reply = "Error"
 
     st.session_state.messages.append({
