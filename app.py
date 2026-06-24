@@ -507,20 +507,76 @@ if file:
 st.markdown("---")
 st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
-@st.dialog("Consult a Doctor")
+# --- ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
+@st.dialog("📅 Appointment & Secure Payment")
 def doctor_booking_popup():
-    doctor = st.selectbox("Select Specialist", ["Dr. Sabina", "Dr. Asif", "Dr. Nusrat", "Dr. Rayhan", "Dr. Tania"])
-    phone = st.text_input("Phone Number")
-    if st.button("Submit"):
-        if phone:
-            st.success(f"Confirmed for {doctor}! You will be contacted.")
-        else:
-            st.error("Please enter your phone number.")
+    doctor_list = [
+        "Dr. Sabina Yasmin (Senior Dermatologist)", 
+        "Dr. Asif Ahmed (Skin & Laser Specialist)", 
+        "Dr. Nusrat Jahan (Clinical Dermatologist)", 
+        "Dr. Rayhan Ahmed (Skin Pathologist)", 
+        "Dr. Tania Islam (Cosmetic Dermatologist)"
+    ]
+    doctor = st.selectbox("Select Specialist", doctor_list)
+    
+    import datetime
+    pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
+    phone_number = st.text_input("📞 Phone Number", placeholder="017XXXXXXXX")
+    user_email = st.text_input("📧 Gmail Address", placeholder="username@gmail.com")
 
+    if "popup_stage" not in st.session_state:
+        st.session_state.popup_stage = "form"
+
+    # স্টেজ ১: ফর্ম ভ্যালিডেশন
+    if st.session_state.popup_stage == "form":
+        if st.button("Proceed to Payment", use_container_width=True):
+            if phone_number == "" or user_email == "":
+                st.error("Please fill up required fields!")
+            else:
+                st.session_state.booking_data = {
+                    "email": user_email, "phone": phone_number, 
+                    "doctor": doctor, "date": str(pref_date), "time": pref_time
+                }
+                st.session_state.popup_stage = "payment"
+                st.rerun()
+
+    # স্টেজ ২: পেমেন্ট ও কনফার্মেশন
+    if st.session_state.popup_stage == "payment":
+        st.success("✅ Details Verified!")
+        pay_method = st.radio("Select Payment Method:", ["bKash", "Nagad", "Rocket"], horizontal=True)
+        tx_id = st.text_input("🔗 Enter Transaction ID")
+        
+        if st.button("Confirm & Complete Booking", use_container_width=True):
+            if tx_id:
+                st.success("🎉 Appointment Locked Successfully!")
+                st.info(f"Hospital: City Skin Care & Laser Centre\nDoctor: {st.session_state.booking_data['doctor']}\nTransaction: {pay_method} ({tx_id})")
+                st.session_state.popup_stage = "form"
+                st.session_state.booking_data = {}
+                time.sleep(3)
+                st.rerun()
+            else:
+                st.warning("Please enter TxnID.")
+
+# --- বাটন কল করা (এটি ফাংশনের বাইরে থাকবে) ---
 st.markdown("---")
-if st.button("🔍 Consult a Doctor Now"):
+if st.button("🔍 Consult a Doctor Now", use_container_width=True):
+    st.session_state.popup_stage = "form"
     doctor_booking_popup()
+
+# --- চ্যাট ইন্টারফেস ---
 st.markdown("---")
+for m in st.session_state.messages:
+    with st.chat_message(m["role"]):
+        st.markdown(m["content"])
+
+if prompt := st.chat_input("Ask me anything about your skin..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"): st.markdown(prompt)
+    with st.chat_message("assistant"):
+        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        st.markdown(reply)
+        st.session_state.messages.append({"role": "assistant", "content": reply})
     if st.session_state.popup_stage == "form":
         if st.button("Proceed to Payment", use_container_width=True):
             if phone_number == "" or user_email == "":
