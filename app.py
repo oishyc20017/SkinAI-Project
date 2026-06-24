@@ -215,7 +215,7 @@ disease_details = {
     }
 }
 
-# --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন ---
+# --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (মানুষের মতো স্বাভাবিক উত্তর) ---
 def get_intelligent_response(query, res):
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
@@ -228,26 +228,38 @@ def get_intelligent_response(query, res):
 
     data = disease_details.get(res, {})
     
-    bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar"]
+    # ইউজার বাংলায় বা বাংলিশে প্রশ্ন করছে কি না তা চেক করা
+    bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar", "valo"]
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     is_banglish = any(word in q.split() for word in bangla_hints)
 
-    if is_bangla_script or is_banglish:
-        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
-        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
-        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
-        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
-        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
-        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
+    # ১. ইউজার যদি ডাক্তার দেখানোর কথা জিজ্ঞেস করে
+    if any(word in q for word in ["doctor", "daktar", "dekhale", "specialist", "consult"]):
+        if is_bangla_script or is_banglish:
+            return f"যেহেতু এআই বিশ্লেষণে **{res}** এসেছে, তাই আপনার যত দ্রুত সম্ভব একজন চর্মরোগ বিশেষজ্ঞ (Dermatologist) বা অনকোলজিস্ট দেখানো উচিত। আপনি কি এই বিষয়ে আরও কিছু জানতে চান?"
+        else:
+            return f"Since the analysis indicates **{res}**, you should consult a Dermatologist or an Oncologist as soon as possible. Would you like me to help you with more details?"
+
+    # ২. ইউজার যদি কেন হয় বা কারণ জানতে চায়
+    elif any(word in q for word in ["keno", "ken", "cause", "caron", "bhav"]):
+        if is_bangla_script or is_banglish:
+            return f"এটি সাধারণত {data.get('cause', 'নির্দিষ্ট কারণে')} হয়ে থাকে। ত্বক সুরক্ষিত রাখতে রোদ থেকে দূরে থাকুন। এই বিষয়ে কি আরও কোনো ঘরোয়া টিপস লাগবে?"
+        else:
+            return f"This condition is usually caused by {data.get('cause', 'various factors')}. Would you like to know some home care tips for this?"
+
+    # ৩. ইউজার যদি ঘরোয়া চিকিৎসা বা প্রতিকার জানতে চায়
+    elif any(word in q for word in ["home", "goroa", "tips", "bashay", "upai", "treatment"]):
+        if is_bangla_script or is_banglish:
+            return f"বাসায় বসে আপনি যা করতে পারেন: {data.get('home', 'ত্বক পরিষ্কার রাখুন।')}। তবে সমস্যা বাড়লে অবশ্যই ডাক্তার দেখাবেন। আর কিছু কি জানার আছে?"
+        else:
+            return f"For home care: {data.get('home', 'Keep the skin clean.')} Please consult a doctor if it worsens. Do you have any other questions?"
+
+    # ৪. ডিফল্ট সাধারণ উত্তর (যদি শুধু নরমাল প্রশ্ন করে বা প্রথমবার জানতে চায়)
     else:
-        response = f"### 🩺 **AI Analysis: {res}**\n\n"
-        response += f"**1. What is it?**\nIt is identified as {res}. This condition causes changes in skin texture.\n\n"
-        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
-        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
-        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
-        response += "---\n*Do you have any more questions about this?*"
-    
-    return response
+        if is_bangla_script or is_banglish:
+            return f"আপনার ত্বকে সম্ভবত **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এর কারণ বা ঘরোয়া প্রতিকার সম্পর্কে জানতে চান?"
+        else:
+            return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know about its causes or home remedies?"
 
 # --- ৫. モデル লোডিং ---
 @st.cache_resource
