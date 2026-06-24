@@ -563,22 +563,26 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
     with st.chat_message("user"):
         st.markdown(prompt)
     with st.chat_message("assistant"):
-        reply = get_ai_response(
-    prompt,
-    st.session_state.last_res
-)
-        st.markdown(reply)
-        st.session_state.messages.append({
-    "role": "assistant",
-    "content": reply
-})
-     if st.session_state.get('logged_in', False):
-         c.execute(
-             'INSERT INTO chat_history VALUES (?,?,?)',
-             (
+
+    reply = get_ai_response(
+        prompt,
+        st.session_state.last_res
+    )
+
+    st.markdown(reply)
+
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": reply
+    })
+
+    if st.session_state.get('logged_in', False):
+        c.execute(
+            'INSERT INTO chat_history VALUES (?,?,?)',
+            (
                 st.session_state.user,
                 "assistant",
                 reply
+            )
         )
-    )
-    conn.commit()
+        conn.commit()
