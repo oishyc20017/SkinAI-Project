@@ -536,26 +536,39 @@ with col2:
 
 st.markdown("---")
 
-# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট ---
-if prompt := st.chat_input("Ask me anything about your skin..."):
+# --- ৮. চ্যাট মেসেজ লুপ এবং ইনপুট ---
 
-    st.write("DEBUG 0")
+# ১. আগের মেসেজগুলো ডিসপ্লে করার লুপ
+for m in st.session_state.messages:
+    with st.chat_message(m["role"]): 
+        st.markdown(m["content"])
 
+# ২. নতুন চ্যাট ইনপুট (key ব্যবহার করা হয়েছে যাতে ডুপ্লিকেট না হয়)
+if prompt := st.chat_input("Ask me anything about your skin...", key="main_chat_input"):
+    
+    # ইউজার মেসেজ ডিসপ্লে ও সেভ
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    
+    if st.session_state.get('logged_in', False):
+        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
+        conn.commit()
+
+    # এআই রেসপন্স ও ডিসপ্লে
     with st.chat_message("assistant"):
-
-        try:
-
-            reply = get_ai_response(
-                prompt,
-                st.session_state.last_res
-            )
-
-            st.markdown(reply)
-
-        except Exception as e:
-
-            st.error(f"CHAT ERROR: {e}")
-            reply = "Error"
+        with st.spinner("Thinking..."):
+            try:
+                reply = get_ai_response(prompt, st.session_state.last_res)
+                st.markdown(reply)
+                
+                # এআই রেসপন্স সেভ করা
+                st.session_state.messages.append({"role": "assistant", "content": reply})
+                if st.session_state.get('logged_in', False):
+                    c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "assistant", reply))
+                    conn.commit()
+            except Exception as e:
+                st.error(f"Error: {e}")
 
     st.session_state.messages.append({
         "role": "assistant",
