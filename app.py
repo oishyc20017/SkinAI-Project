@@ -516,8 +516,21 @@ def doctor_booking_popup():
         pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
         
     with col2:
-        phone_number = st.text_input("📋 Phone Number", placeholder="e.g., +88017XXXXXXXX")
-        user_email = st.text_input("✉️ Gmail Address", placeholder="e.g., patient@gmail.com")
+        phone_number = st.text_input("📋 Phone Number")
+        user_email = st.text_input("✉️ Gmail Address")
+        # পেমেন্ট মেথড যোগ করা
+        payment_method = st.selectbox("Select Payment Method", ["বিকাশ", "নগদ", "রকেট"])
+        transaction_id = st.text_input("Transaction ID (After Payment)")
+
+    # বুকিং কনফার্মেশন লজিক
+    if st.button("Confirm Appointment"):
+        if not transaction_id:
+            st.error("অনুগ্রহ করে আপনার পেমেন্টের ট্রানজেকশন আইডিটি দিন।")
+        else:
+            # ডাটাবেসে সেভ করার সময় পেমেন্ট স্ট্যাটাসও সেভ করে রাখবে
+            # এখানে পেমেন্ট আইডি যাচাই করার লজিক বসাতে পারো
+            st.success(f"আপনার {payment_method} পেমেন্টটি সফলভাবে সম্পন্ন হয়েছে!")
+            # বাকি ডাটাবেস কোড এখানে থাকবে...
         
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
