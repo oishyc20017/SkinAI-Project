@@ -268,50 +268,56 @@ model = load_skin_model()
 classes = list(disease_details.keys())
 
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (Buttons & History Fixed) ---
-if 'logged_in' not in st.session_state: st.session_state.logged_in = False
-if 'messages' not in st.session_state: st.session_state.messages = []
-if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-if 'user' not in st.session_state: st.session_state.user = None
+# --- সেশন ও সাইডবার ম্যানেজমেন্ট (একদম ফ্রেশ ও সিঙ্গেল ব্লক) ---
+    if 'logged_in' not in st.session_state: st.session_state.logged_in = False
+    if 'messages' not in st.session_state: st.session_state.messages = []
+    if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+    if 'user' not in st.session_state: st.session_state.user = None
 
-# --- সাইডবার প্যানেল (একদম মার্জিন থেকে শুরু) ---
-with st.sidebar:
-    # --- লোগো সেন্টার ---
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+    with st.sidebar:
+        # ১. লোগো এরিয়া
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
-    # ১. সিকিউরিটি ব্যাজ ও টাইটেল
-    st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
-        padding: 15px; 
-        border-radius: 10px; 
-        border: 1px solid #4338ca; 
-        text-align: center; 
-        margin-bottom: 20px;">
-        <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
-        <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
-    </div>
-    """, unsafe_allow_html=True)
+        # ২. সিকিউরিটি গেটওয়ে কার্ড
+        st.markdown("""
+        <div style="
+            background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+            padding: 15px; 
+            border-radius: 10px; 
+            border: 1px solid #4338ca; 
+            text-align: center; 
+            margin-bottom: 20px;">
+            <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
+            <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    # ২. ইনপুট ফিল্ডস
-    user_email = st.text_input("✉️ Registered Gmail Address", placeholder="username@gmail.com")
-    password = st.text_input("🔑 Master Password", type="password", placeholder="••••••••")
-    
-    # ৩. লগইন বাটন
-    login_btn = st.button("Authenticate Login", use_container_width=True)
-    
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    # ৪. ট্রাস্ট ও সিকিউরিটি নোটিশ
-    st.markdown("""
-    <div style="background-color: #0b1329; padding: 10px; border-radius: 6px; border-left: 4px solid #10b981;">
-        <p style="color: #10b981; font-size: 11px; margin: 0; font-weight: bold;">✓ Zero-Knowledge Privacy Enabled</p>
-        <p style="color: #64748b; font-size: 11px; margin: 3px 0 0 0;">Your credentials are locally hashed and never stored in plain text.</p>
-    </div>
-    """, unsafe_allow_html=True)
+        # ৩. ইনপুট ফিল্ডস ও বাটন
+        user_email = st.text_input("✉️ Registered Gmail Address", placeholder="username@gmail.com")
+        password = st.text_input("🔑 Master Password", type="password", placeholder="••••••••")
+        login_btn = st.button("Authenticate Login", use_container_width=True)
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
+        
+        # ৪. নিউ চ্যাট বাটন (যা মেইন ইন্টারফেসে যাওয়ার জন্য দরকার)
+        if st.button("+ New Chat", use_container_width=True):
+            st.session_state.messages = []
+            st.session_state.last_res = "None"
+            st.rerun()
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # ৫. ট্রাস্ট ও সিকিউরিটি নোটিশ
+        st.markdown("""
+        <div style="background-color: #0b1329; padding: 10px; border-radius: 6px; border-left: 4px solid #10b981;">
+            <p style="color: #10b981; font-size: 11px; margin: 0; font-weight: bold;">✓ Zero-Knowledge Privacy Enabled</p>
+            <p style="color: #64748b; font-size: 11px; margin: 3px 0 0 0;">Your credentials are locally hashed and never stored in plain text.</p>
+        </div>
+        """, unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
