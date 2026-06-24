@@ -9,6 +9,7 @@ st.set_page_config(page_title="SkinAI Pro", layout="wide")
 # --- ১. এখানে বাটন স্টাইলিংয়ের CSS টুকু বসিয়ে দাও ---
 st.markdown("""
 <style>
+/* --- ১. বাটন স্টাইলিং (যা আগে ছিল) --- */
 div.stButton > button:first-child {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: white;
@@ -21,6 +22,34 @@ div.stButton > button:first-child {
 div.stButton > button:first-child:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* --- ২. সাইডবার গোছানোর অ্যাডভান্সড সিএসএস --- */
+[data-testid="stSidebar"] {
+    background-color: #0f172a !important; /* ডিপ ডার্ক প্রিমিয়াম ব্যাকগ্রাউন্ড */
+    padding-top: 20px;
+}
+
+/* সাইডবারের ভেতরের ইনপুট বক্স এবং উইজেটের স্পেসিং গোছানো */
+[data-testid="stSidebar"] .stTextInput, 
+[data-testid="stSidebar"] .stSelectbox {
+    margin-bottom: 20px !important;
+}
+
+/* সাইডবারের ভেতরের শিরোনাম বা সাব-হেডারগুলোকে সুন্দর করা */
+[data-testid="stSidebar"] h1, 
+[data-testid="stSidebar"] h2, 
+[data-testid="stSidebar"] h3 {
+    color: #38bdf8 !important; /* স্কাই ব্লু টেক্সট কালার */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* সাইডবারের বর্ডার বা ডিভাইডার লাইন আরও হালকা ও গোছানো করা */
+[data-testid="stSidebar"] hr {
+    margin: 15px 0 !important;
+    border-color: #334155 !important;
 }
 </style>
 """, unsafe_allow_html=True)
