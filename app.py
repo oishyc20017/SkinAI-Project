@@ -630,18 +630,24 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
                     st.warning("Enter TxnID to verify.")
 st.markdown("---")
 
-# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট ---
+# --- ৮. চ্যাট মেসেজ লুপ এবং ইনপুট ---
+# নিশ্চিত করো যে এই অংশটি একদম বাম মার্জিন থেকে শুরু হচ্ছে
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): 
         st.markdown(m["content"])
 
-st.chat_input("Ask me anything about your skin...", key="unique_chat_input_key")
+# এখানে key যোগ করা হয়েছে যাতে ডুপ্লিকেট এরর না আসে
+if prompt := st.chat_input("Ask me anything about your skin...", key="main_chat_input"):
     st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    # ডাটাবেস অপারেশন
     if st.session_state.get('logged_in', False):
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
         conn.commit()
+    
     with st.chat_message("user"):
         st.markdown(prompt)
+        
     with st.chat_message("assistant"):
         reply = get_intelligent_response(prompt, st.session_state.last_res)
         st.markdown(reply)
