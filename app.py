@@ -511,13 +511,13 @@ def doctor_booking_popup():
     with col2:
         phone_number = st.text_input("📋 Phone Number", key="phone_input")
         user_email = st.text_input("✉️ Gmail Address", key="email_input")
+        pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_select")
     
     st.divider()
     # পেমেন্ট অপশনগুলো শুধু দেখার জন্য (বাধ্যতামূলক কিছু নেই)
     payment_method = st.radio("Select Payment Method", 
                              ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"], 
                              key="payment_radio")
-    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_select")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
     
