@@ -525,15 +525,16 @@ def doctor_booking_popup():
         ["বিকাশ/নগদ/রকেট (Mobile Banking)", "Bank Transfer (Direct Deposit)", "Credit/Debit Card"]
     )
 
+    # পেমেন্ট মেথড চেক করার লজিক ঠিকভাবে ইনডেন্ট করুন
     if payment_method == "বিকাশ/নগদ/রকেট (Mobile Banking)":
-        # শুধু একটি টেক্সট ফিল্ড হিসেবে রাখো, কোনো বাধ্যতামূলক লজিক ছাড়া
-transaction_id = st.text_input("Transaction ID (If already paid)")
+        st.info("আমাদের বিকাশ/নগদ মার্চেন্ট নাম্বারে পেমেন্ট করে ট্রানজেকশন আইডি দিন।")
+        transaction_id = st.text_input("Transaction ID (If already paid)")
     elif payment_method == "Bank Transfer (Direct Deposit)":
         st.write("আমাদের ব্যাংক ডিটেইলস: Account Name: SkinAI, Bank: City Bank, Acc: 123456789")
         transaction_id = st.text_input("Bank Reference / Receipt No")
     else:
         st.write("কার্ড পেমেন্ট সিস্টেম বর্তমানে মেনটেনেন্স মোডে আছে।")
-        transaction_id = "Card Payment"
+        transaction_id = "Card Payment" # সব ক্ষেত্রে যাতে ভেরিয়েবলটি থাকে
         
     pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
     
