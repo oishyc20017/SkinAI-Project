@@ -507,10 +507,10 @@ if file:
 st.markdown("---")
 st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
-# --- ৫. পপ-আপ ডায়ালগের ভেতরে ৫ জন ডাক্তার ও পেমেন্ট ইন্টারফেস ---
-# --- ১. ডায়ালগ ফাংশন সবার ওপরে (ফাংশনটি এখানে ডিফাইন করা থাকল) ---
+# --- ১. ডায়ালগ ফাংশন: ৫ জন ডাক্তার, পেমেন্ট এবং কনফার্মেশন মেসেজ ---
 @st.dialog("📅 Appointment & Secure Payment")
 def doctor_booking_popup():
+    # ৫ জন ডাক্তারের লিস্ট
     doctor_list = [
         "Dr. Sabina Yasmin (Senior Dermatologist)",
         "Dr. Asif Ahmed (Skin & Laser Specialist)",
@@ -519,13 +519,42 @@ def doctor_booking_popup():
         "Dr. Tania Islam (Cosmetic Dermatologist)"
     ]
     doctor = st.selectbox("Select Specialist", doctor_list)
-    # ... (এখানে তোমার ফর্ম এবং পেমেন্ট লজিক আগের মতোই থাকবে) ...
-    if st.button("Confirm Appointment"):
-        st.success("Booking Done!")
+    
+    # অ্যাপয়েন্টমেন্ট ডিটেইলস
+    import datetime
+    pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
+    phone_number = st.text_input("📞 Phone Number")
+    user_email = st.text_input("📧 Gmail Address")
 
-# --- ২. মেইন পেজে বাটন (নিচের দিকে যেখানে তোমার বাটন থাকার কথা) ---
+    # পেমেন্ট ও কনফার্মেশন লজিক
+    if st.button("Confirm & Pay"):
+        # পেমেন্ট মেথড
+        pay_method = st.radio("Select Payment Method:", ["bKash", "Nagad", "Rocket", "Bank Transfer"], horizontal=True)
+        tx_id = st.text_input("🔗 Enter Transaction ID")
+        
+        if st.button("Complete Booking"):
+            if tx_id:
+                # কনফার্মেশন মেসেজ এবং হাসপাতালের ডিটেইলস
+                confirmation_msg = f"""
+                ### ✅ Appointment Confirmed!
+                **Hospital:** City Skin Care & Laser Centre, Dhaka.
+                **Doctor:** {doctor}
+                **Date:** {pref_date}
+                **Time:** {pref_time}
+                **Payment:** Paid via {pay_method} (TxnID: {tx_id})
+                
+                *You will receive a confirmation call shortly.*
+                """
+                st.success("Appointment Successfully Booked!")
+                st.markdown(confirmation_msg)
+                
+                # ডেটাবেজ সেভ করার কোড এখানে থাকবে
+            else:
+                st.warning("Please enter your Transaction ID.")
+
+# --- ২. মেইন পেজে বাটন (যাতে বাটনটি আবার ফিরে আসে) ---
 st.markdown("---")
-# আমরা কোনো কলাম ছাড়াই সরাসরি বাটনটি দিচ্ছি যাতে এটি মিস হওয়ার চান্স না থাকে
 if st.button("🔍 Consult a Doctor Now", use_container_width=True):
     doctor_booking_popup()
 st.markdown("---")
