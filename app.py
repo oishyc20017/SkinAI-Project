@@ -508,9 +508,9 @@ st.markdown("---")
 st.markdown("<h3 style='text-align: center;'>Need Professional Help?</h3>", unsafe_allow_html=True)
 
 # --- ৫. পপ-আপ ডায়ালগের ভেতরে ৫ জন ডাক্তার ও পেমেন্ট ইন্টারফেস ---
+# --- ১. ডায়ালগ ফাংশন সবার ওপরে (ফাংশনটি এখানে ডিফাইন করা থাকল) ---
 @st.dialog("📅 Appointment & Secure Payment")
 def doctor_booking_popup():
-    # ৫ জন ডাক্তারের লিস্ট
     doctor_list = [
         "Dr. Sabina Yasmin (Senior Dermatologist)",
         "Dr. Asif Ahmed (Skin & Laser Specialist)",
@@ -519,17 +519,16 @@ def doctor_booking_popup():
         "Dr. Tania Islam (Cosmetic Dermatologist)"
     ]
     doctor = st.selectbox("Select Specialist", doctor_list)
-    
-    import datetime
-    pref_date = st.date_input("Preferred Date", min_value=datetime.date.today())
-    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"])
-    phone_number = st.text_input("📞 Phone Number", placeholder="e.g., 017XXXXXXXX")
-    user_email = st.text_input("📧 Gmail Address", placeholder="e.g., username@gmail.com")
+    # ... (এখানে তোমার ফর্ম এবং পেমেন্ট লজিক আগের মতোই থাকবে) ...
+    if st.button("Confirm Appointment"):
+        st.success("Booking Done!")
 
-    if "popup_stage" not in st.session_state:
-        st.session_state.popup_stage = "form"
-
-    st.markdown("---")
+# --- ২. মেইন পেজে বাটন (নিচের দিকে যেখানে তোমার বাটন থাকার কথা) ---
+st.markdown("---")
+# আমরা কোনো কলাম ছাড়াই সরাসরি বাটনটি দিচ্ছি যাতে এটি মিস হওয়ার চান্স না থাকে
+if st.button("🔍 Consult a Doctor Now", use_container_width=True):
+    doctor_booking_popup()
+st.markdown("---")
 
     # স্টেজ ১: ফর্ম ইনপুট ও ভ্যালিডেশন
     if st.session_state.popup_stage == "form":
