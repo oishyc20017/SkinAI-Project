@@ -1,4 +1,5 @@
 import datetime
+import random
 import re
 import streamlit as st
 import sqlite3
@@ -215,7 +216,7 @@ disease_details = {
     }
 }
 
-# --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (প্রশ্নের ধরন বুঝে সুনির্দিষ্ট উত্তর) ---
+# --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query, res):
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
@@ -233,27 +234,48 @@ def get_intelligent_response(query, res):
     is_banglish = any(word in q.split() for word in bangla_hints)
     is_bn_mode = is_bangla_script or is_banglish
 
-    # ১. ইউজার যখন ব্যক্তিগত সাজেশন বা বেস্ট ১/২ জন ডাক্তারের নাম জানতে চাইবে (যেমন: "tomar mote best", "kake dekhale", "nam mention koro")
-    if any(word in q for word in ["tomar mote", "best doctor", "kake dekhale", "mention koro", "kak dekhale", "chhena", "chena"]):
+    # [HIGH PRIORITY] ১. ইউজার যখন নির্দিষ্ট নাম, বেস্ট সাজেশন বা ব্যক্তিগত মতামত জানতে চাইবে
+    if any(word in q for word in ["specific", "name", "nam", "tomar mote", "best", "kake", "kak", "mention"]):
         if is_bn_mode:
             personal_suggestions = [
                 f"আমার ব্যক্তিগত মতামত চাইলে বলবো, আপনি আমাদের প্যানেলের সিনিয়র ডার্মাটোলজিস্ট **Dr. Sabina Yasmin** অথবা লেজার স্পেশালিস্ট **Dr. Asif Ahmed**-কে দেখাতে পারেন। ওনারা দুজনেই এই বিষয়ে বেশ অভিজ্ঞ।",
-                f"যদি ১-২ জন ভালো ডাক্তারের কথা বলতে বলেন, তবে আমি সাজেস্ট করবো আপনি **Dr. Sabina Yasmin** অথবা **Dr. Nusrat Jahan**-এর অ্যাপয়েন্টমেন্ট নিতে পারেন। ওনারা স্কিন কেয়ারে দারুণ কাজ করেন।"
+                f"যদি সুনির্দিষ্ট ১-২ জন ভালো ডাক্তারের কথা বলতে বলেন, তবে আমি সাজেস্ট করবো আপনি **Dr. Sabina Yasmin** অথবা **Dr. Nusrat Jahan**-এর অ্যাপয়েন্টমেন্ট নিতে পারেন।"
             ]
             return random.choice(personal_suggestions)
         else:
             personal_suggestions = [
-                f"If you want my personal recommendation, I would highly suggest consulting **Dr. Sabina Yasmin** or **Dr. Asif Ahmed**. They have an excellent track record with conditions like {res}.",
-                f"Personally, I think scheduling a visit with either **Dr. Sabina Yasmin** or **Dr. Nusrat Jahan** would be the best option for you."
+                f"If you want specific recommendations, I highly suggest consulting **Dr. Sabina Yasmin** or **Dr. Asif Ahmed** from our panel. They are highly experienced with {res}.",
+                f"Personally, scheduling a visit with either **Dr. Sabina Yasmin** or **Dr. Nusrat Jahan** would be the best choice for this condition."
             ]
             return random.choice(personal_suggestions)
 
-    # ২. ইউজার যখন সাধারণভাবে জিজ্ঞেস করবে কিসের ডাক্তার বা কোন ক্যাটাগরির ডাক্তার দেখাবে (যেমন: "kiser doctor", "kon daktar")
+    # ২. ইউজার যখন শুধু কিসের ডাক্তার বা কোন ক্যাটাগরি জানতে চাইবে (সাধারণ প্রশ্ন)
     elif any(word in q for word in ["doctor", "daktar", "dekhale", "specialist", "consult"]):
         if is_bn_mode:
-            return f"যেহেতু এআই বিশ্লেষণে **{res}** এসেছে, এটি মূলত ত্বকের একটি বিশেষ সমস্যা। তাই এর জন্য আপনাকে অবশ্যই একজন **চর্মরোগ বিশেষজ্ঞ (Skin Specialist বা Dermatologist)** দেখাতে হবে। আপনার কি এই রোগের কারণ বা কোনো ঘরোয়া টিপস জানার প্রয়োজন আছে?"
+            return f"যেহেতু এআই বিশ্লেষণে **{res}** এসেছে, এটি মূলত ত্বকের একটি বিশেষ সমস্যা। তাই এর জন্য আপনাকে অবশ্যই একজন **চর্মরোগ বিশেষজ্ঞ (Skin Specialist বা Dermatologist)** দেখাতে হবে। আপনার কি কোনো নির্দিষ্ট ডাক্তারের নাম জানার প্রয়োজন আছে?"
         else:
-            return f"Since the analysis indicates **{res}**, this falls under skin-related pathologies. You should definitely consult a qualified **Dermatologist (Skin Specialist)**. Would you like to know about its causes?"
+            return f"Since the analysis indicates **{res}**, this falls under skin-related pathologies. You should definitely consult a qualified **Dermatologist (Skin Specialist)**. Do you need any specific doctor names?"
+
+    # ৩. ইউজার যদি কেন হয় বা কারণ জানতে চায়
+    elif any(word in q for word in ["keno", "ken", "cause", "caron", "bhav"]):
+        if is_bn_mode:
+            return f"এটি সাধারণত {data.get('cause', 'নির্দিষ্ট কিছু কারণে')} হয়ে থাকে। ত্বক সুরক্ষিত রাখতে কড়া রোদ থেকে দূরে থাকা ভালো। এই বিষয়ে কি আরও কোনো তথ্য আপনার প্রয়োজন?"
+        else:
+            return f"This condition is usually caused by {data.get('cause', 'various factors')}. Keep your skin shielded from UV rays. Do you need any further insights?"
+
+    # ৪. ইউজার যদি ঘরোয়া চিকিৎসা বা প্রতিকার জানতে চায়
+    elif any(word in q for word in ["home", "goroa", "tips", "bashay", "upai", "treatment", "upokar"]):
+        if is_bn_mode:
+            return f"বাসায় বসে আপনি যা করতে পারেন: {data.get('home', 'ত্বক পরিষ্কার ও ময়েশ্চারাইজড রাখুন।')}। তবে মনে রাখবেন, ঘরোয়া উপায় সাময়িক, মূল চিকিৎসার জন্য ডাক্তার দেখানোই শ্রেয়। আর কিছু কি জানতে চান?"
+        else:
+            return f"For temporary home care: {data.get('home', 'Keep the skin clean.')} However, professional diagnosis is highly recommended. Anything else I can help with?"
+
+    # ৫. ডিফল্ট সাধারণ উত্তর
+    else:
+        if is_bn_mode:
+            return f"আপনার আপলোড করা ছবিতে সম্ভবত **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এর কারণ বা কোন ডাক্তার দেখাবেন সে সম্পর্কে জানতে চান?"
+        else:
+            return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know about its causes or appropriate specialists?"
 
     # ৩. ইউজার যদি কেন হয় বা কারণ জানতে চায়
     elif any(word in q for word in ["keno", "ken", "cause", "caron", "bhav"]):
