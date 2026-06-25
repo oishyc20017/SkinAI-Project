@@ -565,13 +565,14 @@ def doctor_booking_popup():
                 pass # SMS ফেইল করলেও অ্যাপ যেন ক্র্যাশ না করে
 
             # ডাটাবেসে সফলভাবে ডাটা সেভ হওয়ার পর এই মেসেজটি দেখান
+            # সফলতার মেসেজ
                 st.success("Appointment successfully confirmed!")
-            st.info("Booking details have been sent to your provided email and phone number.")
-            st.balloons() 
-            
-            # ৩ সেকেন্ড অপেক্ষা করার পর রিফ্রেশ হবে, যাতে ইউজার মেসেজটি পড়তে পারেন
-            time.sleep(10) 
-            st.rerun()
+                st.info("Booking details have been sent to your provided email and phone number.")
+                st.balloons() 
+                
+                # ১৫ সেকেন্ড সময় নেওয়া যাতে পরীক্ষক আরাম করে মেসেজটি পড়তে পারেন
+                time.sleep(15) 
+                st.rerun()
         # Ensure this button is aligned correctly with the previous code block
     
         user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
