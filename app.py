@@ -466,9 +466,8 @@ def doctor_booking_popup():
     
     st.markdown("### Book Your Appointment")
 
-    # আপনার মার্ক করা ফিল্ডগুলো শুধুমাত্র এই একটি ফর্মের ভেতরেই থাকবে
+    # আপনার পছন্দের নিচের ডিটেইলড ফর্মটি
     with st.form(key="popup_booking_form_final"):
-        # ১. উপরের তথ্যগুলো মুছে দিয়েছি, এখন সরাসরি নিচের ফিল্ডগুলো
         patient_name = st.text_input("Patient Name")
         phone_number = st.text_input("Phone Number")
         
@@ -483,6 +482,9 @@ def doctor_booking_popup():
         preferred_date = st.date_input("Preferred Date")
         symptoms = st.text_area("Brief description of symptoms/issues")
         
+        # পেমেন্ট মেথড
+        payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
+        
         # সাবমিট বাটন
         submit_booking = st.form_submit_button("Confirm Appointment")
 
@@ -491,41 +493,6 @@ def doctor_booking_popup():
         
     conn.close()
     # ... বাকি ফর্ম কোড এখানে থাকবে ...
-
-    
-    
-    st.divider()
-    payment_method = st.radio("Select Payment Method", 
-                             ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"], 
-                             key="pay_f")
-    
-    st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
-    # কনফার্ম বাটন
-    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_date}_{pref_time}"):
-        
-        user_email_str = str(st.session_state.get('email_f', ''))
-        phone_number_str = str(st.session_state.get('phone_f', ''))
-        
-        if not phone_number_str or not user_email_str:
-            st.error("Please fill up both Phone Number and Gmail Address!")
-        else:
-            try:
-                # ডাটাবেস অপারেশান
-                conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-                c = conn.cursor()
-                c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                          (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
-                conn.commit()
-                conn.close()
-                
-                # সাকসেস মেসেজ
-                st.success("Appointment successfully confirmed!")
-                st.info("Booking details have been sent to your provided email and phone number.")
-                st.balloons() 
-                
-                time.sleep(10) # ১০ সেকেন্ড বিরতি
-                st.rerun()
-
             except Exception as e:
                 # এটিই একমাত্র এবং সর্বশেষ এক্সেপশন হ্যান্ডলার
                 st.error(f"An unexpected error occurred: {e}")
