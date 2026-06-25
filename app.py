@@ -1,21 +1,60 @@
+import streamlit as st
 import datetime
 import re
-import streamlit as st
 import sqlite3
 import smtplib
-from email.message import EmailMessage
-import requests # API দিয়ে SMS পাঠানোর জন্য
-import hashlib
 import requests
-from streamlit_lottie import st_lottie
+import hashlib
 import time
 import tensorflow as tf
-from PIL import Image
 import numpy as np
 import os
 import gdown
+import random
+from PIL import Image
 
+# ১. পেজ কনফিগারেশন (একদম উপরে)
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+
+# ২. ডাটাবেস (আপনার আগের ডিকশনারিটি এখানে বসান)
+disease_details = {
+    # আপনার আগের disease_details ডিকশনারিটি ঠিক এই ব্র্যাকেটের ভেতরে বসান
+}
+
+# ৩. মডেল লোড করা
+@st.cache_resource
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path):
+        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
+
+model = load_skin_model()
+
+# ৪. বুদ্ধিমান রেসপন্স ফাংশন (ফিক্সড ভার্সন)
+def get_intelligent_response(query, res):
+    is_bn = any('\u0980' <= char <= '\u09FF' for char in query)
+    
+    if res == "None":
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+
+    data = disease_details.get(res, {})
+    q = query.lower()
+    
+    if any(word in q for word in ["doctor", "daktar", "specialist", "consult"]):
+        return f"যেহেতু বিশ্লেষণে **{res}** এসেছে, আপনাকে একজন চর্মরোগ বিশেষজ্ঞ দেখাতে হবে।" if is_bn else f"Since the analysis indicates **{res}**, you should consult a Dermatologist."
+            
+    elif any(word in q for word in ["keno", "ken", "cause", "why"]):
+        return f"{res} সাধারণত {data.get('cause', 'বিভিন্ন কারণে')} হয়ে থাকে।" if is_bn else f"{res} is usually caused by {data.get('cause', 'various factors')}."
+
+    elif any(word in q for word in ["home", "tips", "bashay"]):
+        return f"এর জন্য ঘরোয়া পরামর্শ: {data.get('home', 'ত্বক পরিষ্কার রাখুন।')}" if is_bn else f"Home care tips: {data.get('home', 'Keep the skin clean.')}"
+
+    else:
+        return f"আপনার ছবিতে **{res}** এর লক্ষণ দেখা যাচ্ছে। {data.get('desc', 'এটি একটি ত্বকের সমস্যা')}" if is_bn else f"Based on the analysis, it is **{res}**. {data.get('desc', 'This is a skin condition.')}"
+
+# ৫. বাকি ইউজার ইন্টারফেস ও চ্যাট লজিক (আপনার আগের কোড থেকে নিচে বসান)
+# চ্যাটবক্স এবং ফাইল আপলোডার এর অংশগুলো এখানে নিচে বসিয়ে দিন
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
