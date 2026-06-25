@@ -264,29 +264,38 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # ১. লোগো বা হেডার
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=80) 
-    st.title("SkinAI Pro")
-    
-    # ২. নতুন চ্যাট বাটন
-    if st.button("➕ New Chat"):
+    # ১. লোগো এরিয়া
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("---")
+    with st.expander("❓ Help & Information"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
+        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
+        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
+
+    # ২. সিকিউরিটি গেটওয়ে কার্ড
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+        padding: 15px; 
+        border-radius: 10px; 
+        border: 1px solid #4338ca; 
+        text-align: center; 
+        margin-bottom: 15px;">
+        <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
+        <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
+    if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
+        st.session_state.messages = []
+        st.session_state.last_res = "None"
         st.rerun()
-        
-    st.markdown("---")
-    
-    # ৩. সিকিউরিটি গেটওয়ে (আপনার চাহিদামতো)
-    st.subheader("🔒 Secure Gateway")
-    st.caption("SHA-256 Encrypted Session")
-    
-    st.markdown("---")
-    
-    # ৪. লগইন এবং রেজিস্টার সেকশন
-    st.subheader("Account")
-    # এখানে আপনি আপনার বর্তমান লগইন লজিক বা বাটন বসাতে পারেন
-    if st.button("Login"):
-        st.write("Redirecting to Login...")
-    if st.button("Register"):
-        st.write("Redirecting to Registration...")
+
         
     st.markdown("---")
     
