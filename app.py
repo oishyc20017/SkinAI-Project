@@ -219,24 +219,23 @@ disease_details = {
 }
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
+# ফাংশনের একদম শুরুতে 'model' কে গ্লোবাল হিসেবে ডাকুন
 def get_intelligent_response(query):
-    # ইউজার কোন ভাষা সিলেক্ট করেছে তা নিন (সাইডবার থেকে)
+    global model  # এটিই সবচেয়ে জরুরি লাইন
+    
+    # এরর হ্যান্ডলিং যোগ করুন যেন অ্যাপ ক্র্যাশ না করে
+    if 'model' not in globals() or model is None:
+        return "Error: Model is not initialized properly."
+        
     target_lang = st.session_state.get('user_language', 'English')
+    system_instruction = f"Answer in {target_lang}."
     
-    # ইনস্ট্রাকশন তৈরি
-    system_instruction = f"You are a medical assistant. Answer in {target_lang}."
-    
-    # আপনার মডেল কল করার অংশ (আপনার আগের কোড অনুযায়ী এটি দেখুন)
-    # আমি এখানে একটি উদাহরণ দিচ্ছি, আপনার মডেলে যা ছিল সেটিই বসাবেন
-    # যেমন: response = model.generate_content(system_instruction + query)
-    
-    # ধরুন আপনার মডেলের আউটপুট ভেরিয়েবলটি 'response'
-    # আপনার কোডে যদি 'response' না থেকে অন্য কিছু থাকে, তবে নিচের লাইনে সেটি লিখুন
-    
-    # যদি আপনার মডেলে 'model.generate_content' থাকে, তবে এভাবে লিখুন:
-    response = model.generate_content(system_instruction + "\n" + query)
-    
-    return response.text
+    # এবার মডেল কল করুন
+    try:
+        response = model.generate_content(system_instruction + "\n" + query)
+        return response.text
+    except Exception as e:
+        return f"Error: {str(e)}"
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
         status.update(label="Response Ready!", state="complete")
