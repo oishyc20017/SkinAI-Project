@@ -340,7 +340,7 @@ with st.sidebar:
     st.markdown("---")
     t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
         
-        with t1:
+     with t1:
             e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
             p = st.text_input("🔑 Password", type="password", key="l_p", placeholder="••••••••")
             if st.button("Log In", use_container_width=True, key="unique_login_submit"):
