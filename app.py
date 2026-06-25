@@ -230,6 +230,15 @@ def get_intelligent_response(query, res):
         return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
 
     data = disease_details.get(res, {})
+    # Function er vitore eta add koro
+selected_lang = st.session_state.get('user_language', 'English')
+system_prompt = f"You are a helpful medical assistant. You MUST respond in {selected_lang}. If the user asks in {selected_lang}, answer in {selected_lang}."
+
+# Messages list-e eta bosao
+messages = [
+    {"role": "system", "content": system_prompt},
+    {"role": "user", "content": user_input}
+]
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar", "valo", "daktar"]
@@ -294,8 +303,20 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # ১. লোগো এরিয়া
-    col1, col2, col3 = st.columns([1, 2, 1])
+        # ২৯৬ নম্বর লাইনের ঠিক নিচে এইটুকু যোগ করুন:
+        st.markdown("---") 
+        st.markdown("### 🌐 Language Settings")
+        language_list = [
+            "English", "Bangla", "Banglish", "Hindi", "Spanish", 
+            "French", "German", "Arabic", "Chinese", "Japanese"
+        ]
+        language = st.selectbox("Select Language", language_list, key="lang_select")
+        st.session_state['user_language'] = language
+        st.markdown("---")
+        
+        # আপনার আগের কোড (২৯৮ নম্বর লাইন থেকে শুরু হবে)
+        col1, col2, col3 = st.columns([1, 2, 1])
+        # ... বাকি কোড
     with col2:
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
