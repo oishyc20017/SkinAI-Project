@@ -156,6 +156,10 @@ def init_db():
     if c.fetchone()[0] == 0:
         c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM')")
         c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM')")
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Farhana Begum', 'Dermatologist', '1200 BDT', '10:00 AM - 12:00 PM')")
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Rokeya Afrin', 'Skin & Laser Specialist', '1200 BDT', '2:00 PM - 4:00 PM')")
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Mithun Das', 'Cosmetic Dermatologist', '1200 BDT', '8:00 PM - 10:00 PM')")
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Moina Charan', 'Pediatric Dermatologist', '1200 BDT', '9:00 AM - 11:00 AM')")
     
     conn.commit()
     conn.close()
