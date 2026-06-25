@@ -1,35 +1,85 @@
-import datetime
-import re
 import streamlit as st
+import google.generativeai as genai
 import sqlite3
-import smtplib
-from email.message import EmailMessage
-import requests # API দিয়ে SMS পাঠানোর জন্য
 import hashlib
-import requests
-from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
-import streamlit as st
-import google.generativeai as genai
-# অন্যান্য সব import...
+from email.message import EmailMessage
+import smtplib
+import re
 
-# একদম শুরুতেই API Key এবং মডেল ডিফাইন করে দিন (কোনো ফাংশনের ভেতরে নয়)
-genai.configure(api_key="আপনার_API_KEY")
+# --- ১. কনফিগারেশন ---
+st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+genai.configure(api_key="YOUR_API_KEY") # এখানে আপনার এপিআই কি দিন
 chat_model = genai.GenerativeModel('gemini-1.5-flash')
 
-# এরপর আপনার ফাংশন দিন
+# --- ২. মডেল ও ডাটাবেস ফাংশন ---
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path): 
+        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
+
+model = load_skin_model()
+
+disease_details = {
+    'Actinic keratoses': "Actinic keratoses are rough, scaly patches on the skin, caused by years of sun exposure. They are considered precancerous.",
+    'Basal cell carcinoma': "Basal cell carcinoma is a type of skin cancer that begins in the basal cells. It often appears as a slightly transparent bump on the skin.",
+    'Benign keratosis': "Benign keratosis is a noncancerous skin growth that often appears as a waxy, brown, or black bump.",
+    'Dermatofibroma': "Dermatofibroma is a common, harmless skin growth that typically appears as a small, firm, reddish-brown bump.",
+    'Melanoma': "Melanoma is the most serious type of skin cancer. It develops in the cells that produce melanin.",
+    'Melanocytic nevi': "Melanocytic nevi are common moles, which are growths on the skin that are usually brown or black.",
+    'Vascular lesions': "Vascular lesions are relatively common abnormalities of the skin and underlying tissues, more commonly known as birthmarks."
+}
+
+# --- ৩. এআই ফাংশন ---
 def get_intelligent_response(query, res):
-    system_instruction = f"Analyze the user's query: '{query}' based on medical result: '{res}'. Answer in the same language as the user."
+    system_instruction = f"""
+    You are a professional Medical AI Assistant.
+    Analyze the user's query: '{query}' based on the medical result: '{res}'.
+    If the user asks for details about the disease, provide information from the medical context.
+    Always prioritize safety and advise the user to consult a doctor.
+    Respond to the user in the language they used (Bengali or English).
+    """
     try:
-        response = chat_model.generate_content(system_instruction + "\n\nQuery: " + query)
+        response = chat_model.generate_content(system_instruction + "\n\nUser Query: " + query)
         return response.text
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"এআই রেসপন্স এরর: {str(e)}"
+
+# --- ৪. সেশন স্টেট ---
+if 'messages' not in st.session_state: st.session_state.messages = []
+if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+
+# --- ৫. মেইন চ্যাট ইন্টারফেস ---
+st.title("SkinAI Assistant")
+
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
+
+if file:
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    st.session_state.last_res = list(disease_details.keys())[np.argmax(pred)]
+    st.write(f"Detected: {st.session_state.last_res}")
+
+# চ্যাট লজিক
+for m in st.session_state.messages:
+    with st.chat_message(m["role"]): st.markdown(m["content"])
+
+if prompt := st.chat_input("Ask me anything..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"): st.markdown(prompt)
+    
+    with st.chat_message("assistant"):
+        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        st.markdown(reply)
+        st.session_state.messages.append({"role": "assistant", "content": reply})
 
 # ৩. অ্যাপের বাকি কোড...
 
