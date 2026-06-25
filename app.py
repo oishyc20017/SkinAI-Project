@@ -572,9 +572,9 @@ def doctor_booking_popup():
                 time.sleep(15) 
                 st.rerun()
 
-          except Exception as e:
-              # সব এরর এই একটি ব্লকেই ধরা পড়বে
-              st.error(f"Error: {e}")
+           except Exception as e:
+               # সব এরর এই একটি ব্লকেই ধরা পড়বে
+               st.error(f"Error: {e}")
 
         user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
         phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
