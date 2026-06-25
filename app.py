@@ -587,8 +587,7 @@ def doctor_booking_popup():
             time.sleep(1)
             st.rerun()
         # Ensure this button is aligned correctly with the previous code block
-    if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
-        # ইনপুটগুলো সেশন স্টেট থেকে নেওয়া
+    
         user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
         phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
         doctor = st.session_state.doc_f
