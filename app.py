@@ -16,7 +16,8 @@ import numpy as np
 import os
 import gdown
 
-
+genai.configure(api_key="AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA")
+model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 # --- ১. ডাটাবেস ও সিকিউরিটি ---
 conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
 c = conn.cursor()
