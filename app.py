@@ -339,35 +339,40 @@ with st.sidebar:
         st.markdown("---")
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
-            e = st.text_input("Gmail Address", key="l_e")
-            p = st.text_input("Password", type="password", key="l_p")
-            if st.button("Log In", use_container_width=True):
+            e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
+            p = st.text_input("🔑 Password", type="password", key="l_p", placeholder="••••••••")
+            if st.button("Log In", use_container_width=True, key="unique_login_submit"):
                 c.execute('SELECT password FROM users WHERE email=?', (e,))
                 data = c.fetchone()
                 if data and check_hash(p, data[0]):
-                    st.session_state.logged_in, st.session_state.user = True, e
-                    # ডাটাবেস থেকে পুরনো হিস্ট্রি নিয়ে আসা
+                    st.session_state.logged_in = True
+                    st.session_state.user = e
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
                     st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
-                    st.success("Welcome back! History Loaded.")
-                    time.sleep(0.5); st.rerun()
-                else: st.error("Invalid Login Details.")
+                    st.success("Welcome back!")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error("Invalid Login Details.")
         with t2:
-            re = st.text_input("New Gmail", key="r_e")
-            rp = st.text_input("New Password", type="password", key="r_p")
-            if st.button("Create Account", use_container_width=True):
-                if "@" in re and len(rp) > 3:
+            r_name = st.text_input("👤 Full Name", key="r_name", placeholder="John Doe")
+            re = st.text_input("✉️ New Gmail", key="r_e", placeholder="newuser@gmail.com")
+            rp = st.text_input("🔑 New Password", type="password", key="r_p", placeholder="••••••••")
+            
+            if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
+                if r_name == "":
+                    st.warning("Please fill in your Full Name!")
+                elif "@" in re and len(rp) > 3:
                     try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
-                        st.success("Account Created! Now Login.")
-                    except: st.error("User already exists.")
-                else: st.warning("Enter valid details.")
-    else:
-        st.success(f"Logged in as: {st.session_state.user}")
-        if st.button("Logout", use_container_width=True):
-            st.session_state.logged_in = False
-            st.session_state.messages = []
-            st.rerun()
+                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
+                        conn.commit()
+                        st.success(f"Account Created for {r_name}! Now Login.")
+                    except:
+                        st.error("User already exists.")
+                else:
+                    st.warning("Enter valid details.")
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
     st.markdown("---")
     with st.expander("❓ Help & Information"):
