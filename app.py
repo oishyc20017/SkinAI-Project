@@ -98,8 +98,7 @@ if file:
             st.write(prompt)
         with st.chat_message("assistant"):
             response = get_intelligent_response(prompt, detected_disease)
-            st.write(response), 'This is a skin condition.')}"
-
+            st.write(response)
 # ৫. বাকি ইউজার ইন্টারফেস ও চ্যাট লজিক (আপনার আগের কোড থেকে নিচে বসান)
 # চ্যাটবক্স এবং ফাইল আপলোডার এর অংশগুলো এখানে নিচে বসিয়ে দিন
 
