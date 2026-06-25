@@ -457,49 +457,68 @@ if file:
 st.markdown("---")
 
 # --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
+# --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
-    try:
-        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-        c = conn.cursor()
-        c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
-        doctor_list = c.fetchall()
-        
-        st.markdown("### Book Your Appointment")
+    st.write("Please fill in your details to book an appointment.")
 
-        with st.form(key="popup_booking_form_final"):
-            patient_name = st.text_input("Patient Name")
-            phone_number = st.text_input("Phone Number")
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                age = st.number_input("Age", min_value=0, max_value=100)
-            with col2:
-                gmail_address = st.text_input("Gmail Address")
-            
-            doctor_names = [d[0] for d in doctor_list]
-            selected_name = st.selectbox("Select Specialist", doctor_names)
-            preferred_date = st.date_input("Preferred Date")
-            symptoms = st.text_area("Brief description of symptoms/issues")
-            
-            payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
-            
-            submit_button = st.form_submit_button("Confirm Appointment")
-
-        if submit_button:
-            st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
-            # SMS API লজিক আপাতত এখানে যুক্ত করবেন না, আগে এটি রান করে চেক করুন
+    col1, col2 = st.columns(2)
+    with col1:
+        patient_name = st.text_input("Patient Name", key="name_f")
+        patient_age = st.number_input("Age", min_value=0, max_value=120, key="age_f")
+        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"], key="doc_f")
         
-        conn.close()
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
+    with col2:
+        phone_number = st.text_input("Phone Number", key="phone_f")
+        user_email = st.text_input("Gmail Address", key="email_f")
+        pref_date = st.date_input("Preferred Date", key="date_f")
+
+    # অ্যাপয়েন্টমেন্টের জন্য বাড়তি অপশন
+    symptoms = st.text_area("Brief description of symptoms/issues", key="symptoms_f")
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_f")
+    
+    st.divider()
+    payment_method = st.radio("Select Payment Method", 
+                             ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"], 
+                             key="pay_f")
+    
+    st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
+    # কনফার্ম বাটন
+    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_date}_{pref_time}"):
+        
+        user_email_str = str(st.session_state.get('email_f', ''))
+        phone_number_str = str(st.session_state.get('phone_f', ''))
+        
+        if not phone_number_str or not user_email_str:
+            st.error("Please fill up both Phone Number and Gmail Address!")
+        else:
+            try:
+                # ডাটাবেস অপারেশান
+                conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+                c = conn.cursor()
+                c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                          (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+                conn.commit()
+                conn.close()
+                
+                # সাকসেস মেসেজ
+                st.success("Appointment successfully confirmed!")
+                st.info("Booking details have been sent to your provided email and phone number.")
+                st.balloons() 
+                
+                time.sleep(10) # ১০ সেকেন্ড বিরতি
+                st.rerun()
+
+            except Exception as e:
+                # এটিই একমাত্র এবং সর্বশেষ এক্সেপশন হ্যান্ডলার
+                st.error(f"An unexpected error occurred: {e}")
+            # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
+            sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
             params = {
                 "api_key": "YOUR_API_KEY",
                 "phone": phone_number_str,
                 "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
             }
-    
             # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
     # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
         
