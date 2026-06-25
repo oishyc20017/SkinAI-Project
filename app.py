@@ -231,14 +231,14 @@ def get_intelligent_response(query, res):
 
     data = disease_details.get(res, {})
     # Function er vitore eta add koro
-selected_lang = st.session_state.get('user_language', 'English')
-system_prompt = f"You are a helpful medical assistant. You MUST respond in {selected_lang}. If the user asks in {selected_lang}, answer in {selected_lang}."
+    selected_lang = st.session_state.get('user_language', 'English')
+    system_prompt = f"You are a helpful medical assistant. You MUST respond in {selected_lang}. If the user asks in {selected_lang}, answer in {selected_lang}."
 
-# Messages list-e eta bosao
-messages = [
-    {"role": "system", "content": system_prompt},
-    {"role": "user", "content": user_input}
-]
+    # Messages list-e eta bosao
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_input}
+    ]
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar", "valo", "daktar"]
