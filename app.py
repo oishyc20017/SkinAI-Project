@@ -14,20 +14,6 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
-import google.generativeai as genai
-
-# স্কিন মডেল লোড করুন
-@st.cache_resource
-def load_skin_model():
-    path = 'skin_cancer_model.h5'
-    if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
-    return tf.keras.models.load_model(path, compile=False)
-
-# জেমিনি মডেল কনফিগার করুন
-genai.configure(api_key="YOUR_GEMINI_API_KEY") # এখানে আপনার আসল API Key দিন
-chat_model = genai.GenerativeModel('gemini-1.5-flash')
-
-skin_model = load_skin_model() # স্কিন মডেলের জন্য আলাদা নাম
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -234,16 +220,15 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query, res):
-    # ল্যাঙ্গুয়েজ ডিটেকশন
-    is_bn = any('\u0980' <= char <= '\u09FF' for char in query)
-    system_instruction = "You are a professional medical assistant for skin analysis. Keep answers concise."
+    with st.status("Analyzing your question...", expanded=False) as status:
+        time.sleep(1.0)
+        status.update(label="Response Ready!", state="complete")
     
-    try:
-        # জেমিনি মডেল দিয়ে চ্যাট রেসপন্স জেনারেট করা
-        response = chat_model.generate_content(f"{system_instruction}. Context: Disease is {res}. Query: {query}")
-        return response.text
-    except Exception as e:
-        return f"Error: {str(e)}"
+    q = query.lower()
+    if res == "None":
+        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+
     data = disease_details.get(res, {})
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
@@ -658,13 +643,12 @@ for m in st.session_state.messages:
 
 if prompt := st.chat_input("Ask me anything about your skin..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
+    if st.session_state.get('logged_in', False):
+        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
+        conn.commit()
     with st.chat_message("user"):
         st.markdown(prompt)
-        
     with st.chat_message("assistant"):
-        # এখন এই ফাংশনটি আপনার তৈরি করা নতুন জেমিনি লজিক ব্যবহার করবে
         reply = get_intelligent_response(prompt, st.session_state.last_res)
         st.markdown(reply)
-        
-    st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.session_state.messages.append({"role": "assistant", "content": reply})
