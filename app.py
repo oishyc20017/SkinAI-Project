@@ -5,15 +5,12 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
-import sqlite3
 
-# --- কনফিগারেশন ---
-# আপনার API Key টি এখানে বসান
-API_KEY = "AIzaSyB8TiUefoefZeoyhQ3J_k_w9jes-noZkCc" 
-genai.configure(api_key=API_KEY)
+# --- Configuration ---
+genai.configure(api_key="AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA")
 model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 
-# --- মডেল লোড ---
+# --- Model Loading ---
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
@@ -24,10 +21,11 @@ def load_skin_model():
 model = load_skin_model()
 disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# --- UI ---
+# --- UI Setup ---
 st.title("SkinAI Assistant")
 
-uploaded_file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="main_uploader")
+# ইউনিক কী দিয়ে আপলোডার সেট করা হয়েছে
+uploaded_file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="my_unique_uploader")
 
 if uploaded_file:
     img = Image.open(uploaded_file).convert('RGB').resize((100, 75))
@@ -36,24 +34,15 @@ if uploaded_file:
     detected_disease = disease_classes[np.argmax(pred)]
     st.write(f"### Detection Result: {detected_disease}")
 
-    # চ্যাট সেকশন (পেশাদার ইংরেজি উত্তরের জন্য)
-    prompt = st.chat_input("Ask about your skin condition...")
+    # চ্যাট ইনপুট (ইউনিক কী)
+    prompt = st.chat_input("Ask about your skin condition...", key="my_unique_chat")
     if prompt:
         with st.chat_message("user"):
             st.write(prompt)
         with st.chat_message("assistant"):
-            # পেশাদার ইনস্ট্রাকশন সেট করা হলো
-            instruction = f"""You are a helpful and professional dermatology assistant. 
-            The user's skin scan analysis shows: {detected_disease}. 
-            Please answer the user's question in professional English. 
-            Always advise the user to see a doctor if they are concerned. 
-            Question: {prompt}"""
-            
-            try:
-                response = model_gemini.generate_content(instruction)
-                st.write(response.text)
-            except Exception as e:
-                st.error("Could not generate a response. Please check your API Key.")
+            instruction = f"The user has {detected_disease}. Answer professionally in English: {prompt}"
+            response = model_gemini.generate_content(instruction)
+            st.write(response.text)
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
 <style>
