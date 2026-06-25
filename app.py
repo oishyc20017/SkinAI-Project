@@ -461,28 +461,26 @@ st.markdown("---")
 def doctor_booking_popup():
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
-    
-    # ১. ডাটাবেস থেকে সব ডাটা নিন
     c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
     doctor_list = c.fetchall()
     
     st.markdown("### Book Your Appointment")
 
     with st.form(key="popup_booking_form_final"):
-        # ড্রপডাউনে ডাক্তারদের নাম
+        # ১. ড্রপডাউন
         doctor_names = [d[0] for d in doctor_list] 
         selected_name = st.selectbox("Select Specialist", doctor_names)
         
-        # সিলেক্ট করা ডাক্তারের তথ্য ফিল্টার করা
+        # ২. সিলেক্ট করা ডাক্তারের তথ্য
         selected_doctor = next(d for d in doctor_list if d[0] == selected_name)
-        
-        # সিলেক্ট করা ডাক্তারের তথ্য অটোমেটিক দেখানো
         st.info(f"📍 **Hospital:** {selected_doctor[4]}  \n💰 **Fee:** {selected_doctor[2]}  \n⏰ **Available:** {selected_doctor[3]}")
         
-        # অন্যান্য ফিল্ড
+        # ৩. অন্যান্য ফিল্ড (এখানেই সব ফিল্ড আনুন)
         patient_name = st.text_input("Patient Name")
+        phone_number = st.text_input("Phone Number")
         preferred_date = st.date_input("Preferred Date")
         
+        # ৪. কনফার্ম বাটন (এটিই একমাত্র বাটন হবে)
         submit_booking = st.form_submit_button("Confirm Appointment")
 
     if submit_booking:
