@@ -528,6 +528,7 @@ def doctor_booking_popup():
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         phone_pattern = r'^\+?[0-9]{11,14}$'
         
+        # এখানে সরাসরি ইনপুট থেকে ভ্যালু নিয়ে চেক করছি
         user_email_str = str(user_email)
         phone_number_str = str(phone_number)
         
@@ -542,10 +543,7 @@ def doctor_booking_popup():
             conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
             c = conn.cursor()
             c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-          (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
-            conn.commit()
-            conn.close()
-            # ... (তোমার আগের ডাটাবেস কোড)
+                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
             conn.commit()
             conn.close()
             st.success("Appointment successfully committed!")
