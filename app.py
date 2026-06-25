@@ -220,25 +220,19 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query):
-    # এআই-কে তার মূল ভূমিকা বুঝিয়ে দিন
-    # এআই এখন স্বয়ংক্রিয়ভাবে প্রশ্নের ভাষা শনাক্ত করবে এবং সেই ভাষাতেই উত্তর দেবে
+    # এআই-এর সিস্টেম ইনস্ট্রাকশন সেট করুন
     system_instruction = """
-    You are a professional Medical AI Assistant. 
-    1. Detect the language of the user's input query.
-    2. Respond to the user in the exact same language they used to ask the question.
-    3. Be natural, helpful, and concise like ChatGPT or Gemini.
+    You are an intelligent Medical AI Assistant.
+    1. Detect the language of the user's query.
+    2. Respond to the user in the EXACT SAME language they used to ask the question.
+    3. Be natural, helpful, and concise like ChatGPT.
     """
     
-    # আপনার মডেল কলের অংশ (এটি আপনার কোডের সাথে মিলিয়ে নিন):
-    # যদি আপনার মডেলে 'system_instruction' দেওয়ার অপশন থাকে, তবে সেখানে এটি পাঠান।
-    # যদি না থাকে, তবে প্রম্পটের শুরুতেই এটি বসিয়ে দিন:
+    # এরপর আপনার মডেল কল করার সময় query-এর সাথে এই instruction টি পাঠান।
+    # উদাহরণ: 
+    # response = model.generate_content(system_instruction + "\n\nUser Question: " + query)
     
-    full_prompt = f"{system_instruction}\n\nUser Question: {query}"
-    
-    # এখানে আপনার মডেলের রেসপন্স জেনারেশন কোডটি বসান
-    # response = model.generate_content(full_prompt)
-    
-    return response # বা আপনার উত্তরের ভেরিয়েবল
+    return response.text
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
         status.update(label="Response Ready!", state="complete")
@@ -668,6 +662,6 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
     with st.chat_message("user"):
         st.markdown(prompt)
     with st.chat_message("assistant"):
-        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        reply = get_intelligent_response(prompt)
         st.markdown(reply)
         st.session_state.messages.append({"role": "assistant", "content": reply})
