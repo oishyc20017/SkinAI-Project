@@ -476,7 +476,7 @@ def doctor_booking_popup():
                 age = st.number_input("Age", min_value=0, max_value=100)
             with col2:
                 gmail_address = st.text_input("Gmail Address")
-                
+            
             doctor_names = [d[0] for d in doctor_list]
             selected_name = st.selectbox("Select Specialist", doctor_names)
             preferred_date = st.date_input("Preferred Date")
@@ -484,21 +484,13 @@ def doctor_booking_popup():
             
             payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
             
-            submit_booking = st.form_submit_button("Confirm Appointment")
+            submit_button = st.form_submit_button("Confirm Appointment")
 
-        if submit_booking:
-            # সবকিছু যেন একদম সমান দূরত্বে থাকে (৪টি স্পেস)
-            sms_url = "http://api.smsgateway.com/send" 
-            params = {
-                "api_key": "your_api_key",
-                "phone": phone_number,
-                "message": f"Appointment confirmed with {selected_name}"
-            }
-            
+        if submit_button:
             st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
-            
+            # SMS API লজিক আপাতত এখানে যুক্ত করবেন না, আগে এটি রান করে চেক করুন
+        
         conn.close()
-
     except Exception as e:
         st.error(f"An error occurred: {e}")
         sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
