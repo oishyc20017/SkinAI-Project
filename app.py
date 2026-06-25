@@ -230,15 +230,6 @@ def get_intelligent_response(query, res):
         return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
 
     data = disease_details.get(res, {})
-    # Function er vitore eta add koro
-    selected_lang = st.session_state.get('user_language', 'English')
-    system_prompt = f"You are a helpful medical assistant. You MUST respond in {selected_lang}. If the user asks in {selected_lang}, answer in {selected_lang}."
-
-    # Messages list-e eta bosao
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_input}
-    ]
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar", "valo", "daktar"]
@@ -296,46 +287,39 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_details.keys())
 
-# --- সেশন ম্যানেজমেন্ট (এগুলো একদম বাম দিকে থাকবে, কোনো স্পেস ছাড়া) ---
-# --- সেশন ম্যানেজমেন্ট ---
+# --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (সম্পূর্ণ ইউনিক ও গোছানো) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
-# --- সাইডবার ---
 with st.sidebar:
-    st.markdown("### 🌐 Language Settings")
-    language = st.selectbox("Select Language", ["English", "Bangla", "Banglish"], key="lang_select")
-    st.session_state['user_language'] = language
-    st.markdown("---")
-    
-    # লোগো
+    # ১. লোগো এরিয়া
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
-    
-    st.markdown("---")
-    
-    # নিউ চ্যাট বাটন (এটি সাইডবারের ভেতরে, তাই ৪টি স্পেস ডানে)
-    if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"):
-        st.session_state.messages = []
-        st.session_state.last_res = "None"
-        st.rerun()
-    
-    st.markdown("---")
-    
-    with st.expander("❓ Help & Information"):
-        st.write("১. স্পষ্ট ছবি আপলোড করুন")
-        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
-        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
 
-# --- সাইডবারের বাইরের অংশ (এটি একদম বাম দিকে থাকবে) ---
-st.markdown("""
-<div style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); padding: 15px; border-radius: 10px; text-align: center;">
-    <h3 style="color: white;">🔒 Secure Gateway</h3>
-</div>
-""", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("---")
+    with st.expander("❓ Help & Information"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
+        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
+        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
+
+    # ২. সিকিউরিটি গেটওয়ে কার্ড
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+        padding: 15px; 
+        border-radius: 10px; 
+        border: 1px solid #4338ca; 
+        text-align: center; 
+        margin-bottom: 15px;">
+        <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
+        <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
+    </div>
+    """, unsafe_allow_html=True)
+
     # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
     if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
         st.session_state.messages = []
@@ -524,29 +508,11 @@ def doctor_booking_popup():
     st.write("Please fill in your details to book an appointment.")
 
     col1, col2 = st.columns(2)
-    
-    # col1 এর কোডগুলো
     with col1:
         patient_name = st.text_input("Patient Name", key="name_f")
         patient_age = st.number_input("Age", min_value=0, max_value=120, key="age_f")
-        doctor_list = [
-            "Dr. Sabina Yasmin (1200 BDT)",
-            "Dr. Rayhan Ahmed (1000 BDT)",
-            "Dr. Anika Rahman (1500 BDT)",
-            "Dr. Karim Ahmed (1100 BDT)",
-            "Dr. Fahim Shahriar (900 BDT)"
-        ]
-        # ডক্টরের নামের নিচে হসপিটালের অপশন
-        hospital_list = [
-            "City Care Hospital",
-            "Modern Diagnostic Center",
-            "Green Life Clinic",
-            "Central Hospital"
-        ]
-        hospital = st.selectbox("Select Hospital/Clinic", hospital_list, key="hosp_f")
-        doctor = st.selectbox("Select Specialist", doctor_list, key="doc_f")
-
-    # col2 এর কোডগুলো (col1 এর সাথে একদম সমান লাইনে থাকবে)
+        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"], key="doc_f")
+        
     with col2:
         phone_number = st.text_input("Phone Number", key="phone_f")
         user_email = st.text_input("Gmail Address", key="email_f")
