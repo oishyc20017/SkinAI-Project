@@ -459,42 +459,42 @@ st.markdown("---")
 # --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
-    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-    c = conn.cursor()
-    c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
-    doctor_list = c.fetchall()
-    
-    st.markdown("### Book Your Appointment")
-
-    # আপনার পছন্দের নিচের ডিটেইলড ফর্মটি
-    with st.form(key="popup_booking_form_final"):
-        patient_name = st.text_input("Patient Name")
-        phone_number = st.text_input("Phone Number")
+    try:
+        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+        c = conn.cursor()
+        c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
+        doctor_list = c.fetchall()
         
-        col1, col2 = st.columns(2)
-        with col1:
-            age = st.number_input("Age", min_value=0, max_value=100)
-        with col2:
-            gmail_address = st.text_input("Gmail Address")
+        st.markdown("### Book Your Appointment")
+
+        with st.form(key="popup_booking_form_final"):
+            # আপনার ইনপুট ফিল্ডগুলো
+            patient_name = st.text_input("Patient Name")
+            phone_number = st.text_input("Phone Number")
             
-        doctor_names = [d[0] for d in doctor_list]
-        selected_name = st.selectbox("Select Specialist", doctor_names)
-        preferred_date = st.date_input("Preferred Date")
-        symptoms = st.text_area("Brief description of symptoms/issues")
-        
-        # পেমেন্ট মেথড
-        payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
-        
-        # সাবমিট বাটন
-        submit_booking = st.form_submit_button("Confirm Appointment")
+            col1, col2 = st.columns(2)
+            with col1:
+                age = st.number_input("Age", min_value=0, max_value=100)
+            with col2:
+                gmail_address = st.text_input("Gmail Address")
+                
+            doctor_names = [d[0] for d in doctor_list]
+            selected_name = st.selectbox("Select Specialist", doctor_names)
+            preferred_date = st.date_input("Preferred Date")
+            symptoms = st.text_area("Brief description of symptoms/issues")
+            
+            payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
+            
+            submit_booking = st.form_submit_button("Confirm Appointment")
 
-    if submit_booking:
-        st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
-        
-    conn.close()
+        if submit_booking:
+            st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
+            
+        conn.close()
+
     except Exception as e:
-                # এটিই একমাত্র এবং সর্বশেষ এক্সেপশন হ্যান্ডলার
-                st.error(f"An unexpected error occurred: {e}")
+        # এখানে এডার হ্যান্ডেল করা হচ্ছে
+        st.error(f"An error occurred: {e}")
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
             sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
             params = {
