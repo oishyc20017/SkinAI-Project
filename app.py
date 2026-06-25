@@ -16,21 +16,15 @@ import os
 import gdown
 import streamlit as st
 import google.generativeai as genai
-import os
-import time
+# অন্যান্য সব import...
 
-# ১. প্রথমেই জেমিনি কনফিগার করুন এবং মডেলটি ডিফাইন করুন
-genai.configure(api_key="আপনার_এপিআই_কি")
+# একদম শুরুতেই API Key এবং মডেল ডিফাইন করে দিন (কোনো ফাংশনের ভেতরে নয়)
+genai.configure(api_key="আপনার_API_KEY")
 chat_model = genai.GenerativeModel('gemini-1.5-flash')
 
-# অন্যান্য মডেল লোডিং ফাংশনগুলো এখানে থাকবে
-# ...
-
-# ২. আপনার ফাংশনটি এভাবে লিখুন
+# এরপর আপনার ফাংশন দিন
 def get_intelligent_response(query, res):
-    # কোনো গ্লোবাল এরর যেন না হয়, সেজন্য এটি ব্যবহার করুন
     system_instruction = f"Analyze the user's query: '{query}' based on medical result: '{res}'. Answer in the same language as the user."
-    
     try:
         response = chat_model.generate_content(system_instruction + "\n\nQuery: " + query)
         return response.text
