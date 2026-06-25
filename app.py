@@ -237,6 +237,15 @@ def get_intelligent_response(query, res):
         return response.text
     except Exception as e:
         return f"এআই রেসপন্স এরর: {str(e)}"
+    with st.status("Analyzing your question...", expanded=False) as status:
+        time.sleep(1.0)
+        status.update(label="Response Ready!", state="complete")
+    
+    q = query.lower()
+    if res == "None":
+        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+
     data = disease_details.get(res, {})
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
