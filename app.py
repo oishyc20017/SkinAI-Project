@@ -296,48 +296,46 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_details.keys())
 
-# ২৯৬ নম্বর লাইনের পর থেকে এই কোডটুকু বসান:
-
-# সেশন ম্যানেজমেন্ট (সবকিছু বাম ঘেঁষে)
+# --- সেশন ম্যানেজমেন্ট (এগুলো একদম বাম দিকে থাকবে, কোনো স্পেস ছাড়া) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
-# সাইডবার (একদম বামে)
+# --- সাইডবার (এগুলো বাম দিকে থাকবে) ---
 with st.sidebar:
     st.markdown("### 🌐 Language Settings")
     language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
     language = st.selectbox("Select Language", language_list, key="lang_select")
     st.session_state['user_language'] = language
     st.markdown("---")
-
-    # লোগো এরিয়া
+    
+    # লোগো
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
-
+    
     st.markdown("---")
     
-    # নিউ চ্যাট বাটন (সাইডবারের ভেতরে, তাই এটি ৪টি স্পেস ডানে থাকবে)
+    # নিউ চ্যাট বাটন (এটি সাইডবারের ভেতরে, তাই ৪টি স্পেস ডানে)
     if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"):
         st.session_state.messages = []
         st.session_state.last_res = "None"
         st.rerun()
-
+    
     st.markdown("---")
+    
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
 
-# সাইডবারের বাইরে কোড থাকলে তা একদম বামে থাকবে
+# --- সাইডবারের বাইরের অংশ (এটি একদম বাম দিকে থাকবে) ---
 st.markdown("""
 <div style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); padding: 15px; border-radius: 10px; text-align: center;">
     <h3 style="color: white;">🔒 Secure Gateway</h3>
 </div>
 """, unsafe_allow_html=True)
-
     # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
     if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
         st.session_state.messages = []
