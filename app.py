@@ -1,16 +1,27 @@
-import datetime
-import re
+# --- ১. ইমপোর্টসমূহ (সবার উপরে) ---
 import streamlit as st
 import google.generativeai as genai
+import sqlite3
+import hashlib
+import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
 
-# --- 1. Global Setup (Ekhane kono bhul hobe na) ---
-genai.configure(api_key="YOUR_API_KEY") 
+# --- ২. কনফিগারেশন ---
+# আপনার API Key টি এখানে আবার চেক করে বসান
+genai.configure(api_key="YOUR_ACTUAL_API_KEY_HERE") 
 chat_model = genai.GenerativeModel('gemini-1.5-flash')
+
+# ডাটাবেস কানেকশন
+conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+c = conn.cursor()
+
+# --- ৩. বাকি সব ফাংশন ---
+# এখানে আপনার আগের মডেল লোডিং এবং চ্যাট ফাংশনগুলো বসান
+# ... (অন্য সব কোড আগে যেভাবে ছিল) ...
 
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
