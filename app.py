@@ -492,8 +492,7 @@ def doctor_booking_popup():
         st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
         
     conn.close()
-    # ... বাকি ফর্ম কোড এখানে থাকবে ...
-            except Exception as e:
+    except Exception as e:
                 # এটিই একমাত্র এবং সর্বশেষ এক্সেপশন হ্যান্ডলার
                 st.error(f"An unexpected error occurred: {e}")
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
