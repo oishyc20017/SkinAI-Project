@@ -1,4 +1,4 @@
-# --- ১. ইমপোর্টসমূহ (সবার উপরে) ---
+# --- ১. সব ইমপোর্ট লাইন (সবার উপরে থাকতে হবে) ---
 import streamlit as st
 import google.generativeai as genai
 import sqlite3
@@ -10,10 +10,51 @@ import numpy as np
 import os
 import gdown
 
-# --- ২. কনফিগারেশন ---
-# আপনার API Key টি এখানে আবার চেক করে বসান
+# --- ২. কনফিগারেশন (সঠিকভাবে সাজানো) ---
+# আপনার API Key টি এখানে বসান
 genai.configure(api_key="YOUR_ACTUAL_API_KEY_HERE") 
 chat_model = genai.GenerativeModel('gemini-1.5-flash')
+
+# ডাটাবেস কানেকশন (sqlite3 এখন কাজ করবে)
+conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+c = conn.cursor()
+
+# --- ৩. বাকি অংশ (মডেল ও ইন্টারফেস) ---
+st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+
+@st.cache_resource
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path): 
+        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
+
+model = load_skin_model()
+disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
+
+# এআই ফাংশন
+def get_intelligent_response(query, res):
+    system_instruction = "You are a professional Medical AI. If user writes in Bangla, reply in Bangla. If English, reply in English. Do not mix languages."
+    try:
+        response = chat_model.generate_content(system_instruction + "\nUser: " + query)
+        return response.text
+    except Exception as e:
+        return f"এআই এরর: {str(e)}"
+
+# ইন্টারফেস
+st.title("SkinAI Assistant")
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="unique_uploader_1")
+
+if file:
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    st.write(f"Detected: {disease_classes[np.argmax(pred)]}")
+
+if prompt := st.chat_input("Ask me anything..."):
+    with st.chat_message("assistant"):
+        st.write(get_intelligent_response(prompt, "Unknown"))
 
 # ডাটাবেস কানেকশন
 conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
