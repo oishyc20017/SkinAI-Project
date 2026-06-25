@@ -511,7 +511,17 @@ def doctor_booking_popup():
     with col1:
         patient_name = st.text_input("Patient Name", key="name_f")
         patient_age = st.number_input("Age", min_value=0, max_value=120, key="age_f")
-        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"], key="doc_f")
+        # বর্তমান লিস্টের সাথে নতুন নামগুলো যোগ করে দিন
+doctor_list = [
+    "Dr. Sabina Yasmin (1200 BDT)", 
+    "Dr. Rayhan Ahmed (1000 BDT)",
+    "Dr. Anika Rahman (1500 BDT)",  # নতুন ডাক্তার ১
+    "Dr. Karim Ahmed (1100 BDT)",   # নতুন ডাক্তার ২
+    "Dr. Fahim Shahriar (900 BDT)"  # নতুন ডাক্তার ৩
+]
+
+# এরপর ডক্টরের সিলেকশন বক্সে লিস্টটি পাস করুন
+doctor = st.selectbox("Select Specialist", doctor_list, key="doc_f")
         
     with col2:
         phone_number = st.text_input("Phone Number", key="phone_f")
