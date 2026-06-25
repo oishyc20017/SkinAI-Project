@@ -220,15 +220,23 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query, res):
-    with st.status("Analyzing your question...", expanded=False) as status:
-        time.sleep(1.0)
-        status.update(label="Response Ready!", state="complete")
+    # ১. প্রম্পট তৈরি করুন যেখানে ভাষাগত নির্দেশনা থাকবে
+    prompt = f"""
+    You are a professional medical assistant. 
+    Analyze the user's query: '{query}' based on the medical result: '{res}'.
     
-    q = query.lower()
-    if res == "None":
-        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
-
+    Instruction:
+    - If the user asks in Bengali, answer in Bengali.
+    - If the user asks in English, answer in English.
+    - Keep the tone professional and helpful.
+    """
+    
+    try:
+        # ২. জেমিনি মডেলকে ইনস্ট্রাকশনসহ প্রম্পট পাঠান
+        response = chat_model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Error: {str(e)}"
     data = disease_details.get(res, {})
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
