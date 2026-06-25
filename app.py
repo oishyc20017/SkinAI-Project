@@ -546,16 +546,12 @@ def doctor_booking_popup():
                 st.info("Booking details have been sent to your provided email and phone number.")
                 st.balloons() 
                 
-                time.sleep(10)
+                time.sleep(10) # ১০ সেকেন্ড বিরতি
                 st.rerun()
 
-            except sqlite3.Error as e:
-                # নির্দিষ্ট ডাটাবেস এরর হ্যান্ডলিং
-                st.error(f"Database error: {e}")
             except Exception as e:
-                # সবশেষে সাধারণ এক্সেপশন হ্যান্ডলিং (default)
+                # এটিই একমাত্র এবং সর্বশেষ এক্সেপশন হ্যান্ডলার
                 st.error(f"An unexpected error occurred: {e}")
-            # ৩. SMS পাঠানো (লোকাল API এর মাধ্যমে)
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
             sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
             params = {
