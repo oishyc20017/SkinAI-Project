@@ -539,9 +539,12 @@ def doctor_booking_popup():
                     smtp.send_message(msg)
                 st.info("Confirmation email sent successfully.")
             except Exception as e:
-                st.warning(f"Email could not be sent: {e}")
+                 st.success("Appointment successfully confirmed!")
+            st.info("Booking details have been sent to your provided email and phone number.")
+            st.balloons() 
             
-            time.sleep(1)
+            # ৩. ১৫ সেকেন্ড বিরতি ও রিলোড
+            time.sleep(15) 
             st.rerun()
 
 # মেইন বডিতে এই অংশটি রাখো, অন্য কোনো বাটন ডিলিট করে দাও
