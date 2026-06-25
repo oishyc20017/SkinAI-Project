@@ -269,7 +269,19 @@ def load_skin_model():
     return tf.keras.models.load_model(path, compile=False)
 model = load_skin_model()
 classes = list(disease_details.keys())
+# --- ২. মডেল লোড ফাংশন ---
+@st.cache_resource
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path):
+        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
 
+# --- নতুন ফাংশনটি এখানে যোগ করুন ---
+def get_intelligent_response(prompt, detected_disease):
+    instruction = f"The user has {detected_disease}. Answer professionally in English: {prompt}"
+    response = model_gemini.generate_content(instruction)
+    return response.text
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (Buttons & History Fixed) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
