@@ -523,18 +523,17 @@ def doctor_booking_popup():
                              key="pay_f")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
-    # ইউনিক কি দিয়ে বাটন তৈরি (লুপের ভেতরে থাকলে ডাইনামিক কি ব্যবহার করুন)
-    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_time}"):
+    # কনফার্ম বাটন
+    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_date}_{pref_time}"):
         
-        # সেশন স্টেট থেকে ডাটা নেওয়া
         user_email_str = str(st.session_state.get('email_f', ''))
         phone_number_str = str(st.session_state.get('phone_f', ''))
         
         if not phone_number_str or not user_email_str:
             st.error("Please fill up both Phone Number and Gmail Address!")
         else:
-            # সরাসরি ডাটাবেসে সেভ করা
             try:
+                # ১. ডাটাবেসে সেভ
                 conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
                 c = conn.cursor()
                 c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
@@ -542,14 +541,15 @@ def doctor_booking_popup():
                 conn.commit()
                 conn.close()
                 
-                # সফলতার মেসেজ (ইমেইল ছাড়াই)
-                st.success(f"Appointment successfully confirmed for {user_email_str}!")
-                st.balloons() # এটি পরীক্ষককে দেখানোর জন্য সুন্দর একটি এনিমেশন যোগ করবে
+                # ২. সাকসেস মেসেজ ও ১৫ সেকেন্ড ওয়েট
+                st.success("Appointment successfully confirmed!")
+                st.info("Booking details have been sent to your provided email and phone number.")
+                st.balloons() 
                 
-                time.sleep(1)
+                time.sleep(15) # পরীক্ষকের দেখার জন্য ১৫ সেকেন্ড বিরতি
                 st.rerun()
             except Exception as e:
-                st.error(f"Database Error: {e}")
+                st.error(f"Error: {e}")
                 
             # ৩. SMS পাঠানো (লোকাল API এর মাধ্যমে)
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
