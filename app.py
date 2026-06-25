@@ -520,6 +520,14 @@ def doctor_booking_popup():
             "Dr. Karim Ahmed (1100 BDT)",
             "Dr. Fahim Shahriar (900 BDT)"
         ]
+        # ডক্টরের নামের নিচে হসপিটালের অপশন
+        hospital_list = [
+            "City Care Hospital",
+            "Modern Diagnostic Center",
+            "Green Life Clinic",
+            "Central Hospital"
+        ]
+        hospital = st.selectbox("Select Hospital/Clinic", hospital_list, key="hosp_f")
         doctor = st.selectbox("Select Specialist", doctor_list, key="doc_f")
 
     # col2 এর কোডগুলো (col1 এর সাথে একদম সমান লাইনে থাকবে)
