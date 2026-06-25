@@ -303,30 +303,26 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-        # ২৯৬ নম্বর লাইনের ঠিক নিচে এইটুকু যোগ করুন:
-        st.markdown("---") 
+        # ল্যাঙ্গুয়েজ সিলেক্টর
         st.markdown("### 🌐 Language Settings")
-        language_list = [
-            "English", "Bangla", "Banglish", "Hindi", "Spanish", 
-            "French", "German", "Arabic", "Chinese", "Japanese"
-        ]
+        language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
         language = st.selectbox("Select Language", language_list, key="lang_select")
         st.session_state['user_language'] = language
+        
         st.markdown("---")
         
-        # আপনার আগের কোড (২৯৮ নম্বর লাইন থেকে শুরু হবে)
+        # ১. লোগো এরিয়া
         col1, col2, col3 = st.columns([1, 2, 1])
-        # ... বাকি কোড
-    with col2:
-        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+        with col2:
+            st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("---")
-    with st.expander("❓ Help & Information"):
-        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
-        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
-        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
-
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("---")
+        
+        with st.expander("❓ Help & Information"):
+            st.write("১. স্পষ্ট ছবি আপলোড করুন")
+            st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
+            st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
     # ২. সিকিউরিটি গেটওয়ে কার্ড
     st.markdown("""
     <div style="
