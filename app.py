@@ -567,8 +567,7 @@ def doctor_booking_popup():
             
             time.sleep(1)
             st.rerun()
-                st.warning("Email could not be sent.")
-
+                
             # ৩. SMS পাঠানো (লোকাল API এর মাধ্যমে)
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
             sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
