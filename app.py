@@ -14,6 +14,10 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
+# জেমিনি মডেল লোড করুন
+import google.generativeai as genai
+genai.configure(api_key="YOUR_API_KEY")
+chat_model = genai.GenerativeModel('gemini-1.5-flash')
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -221,19 +225,20 @@ disease_details = {
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 # ফাংশনের একদম শুরুতে 'model' কে গ্লোবাল হিসেবে ডাকুন
 def get_intelligent_response(query):
-    global model  # এটিই সবচেয়ে জরুরি লাইন
+    # গ্লোবাল এআই মডেলটিকে আলাদা নামে ডাকুন (যেমন gemini_model)
+    # খেয়াল করবেন যেন এই gemini_model আপনার কোডের শুরুতে কনফিগার করা থাকে
     
-    # এরর হ্যান্ডলিং যোগ করুন যেন অ্যাপ ক্র্যাশ না করে
-    if 'model' not in globals() or model is None:
-        return "Error: Model is not initialized properly."
-        
     target_lang = st.session_state.get('user_language', 'English')
-    system_instruction = f"Answer in {target_lang}."
+    system_instruction = f"You are a medical assistant. Answer in {target_lang}."
+    full_prompt = f"{system_instruction}\n\nUser Question: {query}"
     
-    # এবার মডেল কল করুন
     try:
-        response = model.generate_content(system_instruction + "\n" + query)
+        # এখানে 'model' এর বদলে আপনার Gemini এআই মডেল ভেরিয়েবলটি ব্যবহার করুন
+        # ধরুন আপনার এআই মডেলের নাম 'chat_model'
+        response = chat_model.generate_content(full_prompt)
         return response.text
+    except Exception as e:
+        return f"এআই রেসপন্স এরর: {str(e)}"
     except Exception as e:
         return f"Error: {str(e)}"
     with st.status("Analyzing your question...", expanded=False) as status:
