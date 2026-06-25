@@ -561,7 +561,6 @@ def doctor_booking_popup():
             }
             # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
     # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
-    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_time}"):
         
         # এখানে আপনার আগের ডাটাবেস কোড থাকবে...
         
