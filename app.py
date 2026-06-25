@@ -213,14 +213,35 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
-    st.write("") 
-    col1, col2, col3 = st.columns([1, 2, 1]) 
-    with col2:
-        # এটি একটি রঙিন 'Skin Scan' বা 'Healthy Skin' আইকন
-        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+    # ১. লোগো বা হেডার
+    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=80) 
+    st.title("SkinAI Pro")
     
-    st.markdown("<br>", unsafe_allow_html=True) 
+    # ২. নতুন চ্যাট বাটন
+    if st.button("➕ New Chat"):
+        st.rerun()
+        
+    st.markdown("---")
+    
+    # ৩. সিকিউরিটি গেটওয়ে (আপনার চাহিদামতো)
+    st.subheader("🔒 Secure Gateway")
+    st.caption("SHA-256 Encrypted Session")
+    
+    st.markdown("---")
+    
+    # ৪. লগইন এবং রেজিস্টার সেকশন
+    st.subheader("Account")
+    # এখানে আপনি আপনার বর্তমান লগইন লজিক বা বাটন বসাতে পারেন
+    if st.button("Login"):
+        st.write("Redirecting to Login...")
+    if st.button("Register"):
+        st.write("Redirecting to Registration...")
+        
+    st.markdown("---")
+    
+    # ৫. হেল্প অপশন
+    with st.expander("❓ Help & Information"):
+        st.write("আপনার ত্বকের সমস্যার ছবি আপলোড করুন এবং AI এর পরামর্শ নিন।")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
     <div style="
