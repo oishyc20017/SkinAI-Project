@@ -1,57 +1,61 @@
 import streamlit as st
-import datetime
-import re
+import google.generativeai as genai
 import sqlite3
-import smtplib
-import requests
-import hashlib
-import time
 import tensorflow as tf
+from PIL import Image
 import numpy as np
 import os
 import gdown
-import random
-from PIL import Image
 
-# ১. পেজ কনফিগারেশন (একদম উপরে)
-st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+# --- ১. Configuration (সবার উপরে) ---
+# আপনার API Key টি এখানে নিশ্চিত করুন
+API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA" 
+genai.configure(api_key=API_KEY)
+chat_model = genai.GenerativeModel('gemini-1.5-flash')
 
-# ২. ডাটাবেস (আপনার আগের ডিকশনারিটি এখানে বসান)
-disease_details = {
-    # আপনার আগের disease_details ডিকশনারিটি ঠিক এই ব্র্যাকেটের ভেতরে বসান
-}
-
-# ৩. মডেল লোড করা
+# --- ২. Model Loading (ক্যাশিং এর মাধ্যমে) ---
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
-    if not os.path.exists(path):
+    if not os.path.exists(path): 
         gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
     return tf.keras.models.load_model(path, compile=False)
 
 model = load_skin_model()
+disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# ৪. বুদ্ধিমান রেসপন্স ফাংশন (ফিক্সড ভার্সন)
+# --- ৩. AI Function ---
 def get_intelligent_response(query, res):
-    is_bn = any('\u0980' <= char <= '\u09FF' for char in query)
+    # ল্যাঙ্গুয়েজ মিক্সিং রোধ করতে ক্লিয়ার ইনস্ট্রাকশন
+    system_instruction = "You are a professional Medical AI. If the user writes in Bangla, reply in Bangla. If English, reply in English. Do not mix languages. Always advise consulting a doctor."
+    try:
+        response = chat_model.generate_content(system_instruction + "\nUser Query: " + query + "\nContext: " + res)
+        return response.text
+    except Exception as e:
+        return f"এআই এরর: {str(e)}"
+
+# --- ৪. Main Interface ---
+st.title("SkinAI Assistant")
+
+# ইউনিক কি (key) ব্যবহার করা হয়েছে যাতে ডুপ্লিকেট এরর না আসে
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="unique_skin_uploader")
+
+if file:
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    detected_disease = disease_classes[np.argmax(pred)]
+    st.write(f"Detected: {detected_disease}")
     
-    if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
-
-    data = disease_details.get(res, {})
-    q = query.lower()
-    
-    if any(word in q for word in ["doctor", "daktar", "specialist", "consult"]):
-        return f"যেহেতু বিশ্লেষণে **{res}** এসেছে, আপনাকে একজন চর্মরোগ বিশেষজ্ঞ দেখাতে হবে।" if is_bn else f"Since the analysis indicates **{res}**, you should consult a Dermatologist."
-            
-    elif any(word in q for word in ["keno", "ken", "cause", "why"]):
-        return f"{res} সাধারণত {data.get('cause', 'বিভিন্ন কারণে')} হয়ে থাকে।" if is_bn else f"{res} is usually caused by {data.get('cause', 'various factors')}."
-
-    elif any(word in q for word in ["home", "tips", "bashay"]):
-        return f"এর জন্য ঘরোয়া পরামর্শ: {data.get('home', 'ত্বক পরিষ্কার রাখুন।')}" if is_bn else f"Home care tips: {data.get('home', 'Keep the skin clean.')}"
-
-    else:
-        return f"আপনার ছবিতে **{res}** এর লক্ষণ দেখা যাচ্ছে। {data.get('desc', 'এটি একটি ত্বকের সমস্যা')}" if is_bn else f"Based on the analysis, it is **{res}**. {data.get('desc', 'This is a skin condition.')}"
+    # চ্যাট ইনপুট
+    prompt = st.chat_input("Ask me anything about your skin...")
+    if prompt:
+        with st.chat_message("user"):
+            st.write(prompt)
+        with st.chat_message("assistant"):
+            response = get_intelligent_response(prompt, detected_disease)
+            st.write(response), 'This is a skin condition.')}"
 
 # ৫. বাকি ইউজার ইন্টারফেস ও চ্যাট লজিক (আপনার আগের কোড থেকে নিচে বসান)
 # চ্যাটবক্স এবং ফাইল আপলোডার এর অংশগুলো এখানে নিচে বসিয়ে দিন
