@@ -220,17 +220,21 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query):
-    # এআই-এর সিস্টেম ইনস্ট্রাকশন সেট করুন
-    system_instruction = """
-    You are an intelligent Medical AI Assistant.
-    1. Detect the language of the user's query.
-    2. Respond to the user in the EXACT SAME language they used to ask the question.
-    3. Be natural, helpful, and concise like ChatGPT.
-    """
+    # ইউজার কোন ভাষা সিলেক্ট করেছে তা নিন (সাইডবার থেকে)
+    target_lang = st.session_state.get('user_language', 'English')
     
-    # এরপর আপনার মডেল কল করার সময় query-এর সাথে এই instruction টি পাঠান।
-    # উদাহরণ: 
-    # response = model.generate_content(system_instruction + "\n\nUser Question: " + query)
+    # ইনস্ট্রাকশন তৈরি
+    system_instruction = f"You are a medical assistant. Answer in {target_lang}."
+    
+    # আপনার মডেল কল করার অংশ (আপনার আগের কোড অনুযায়ী এটি দেখুন)
+    # আমি এখানে একটি উদাহরণ দিচ্ছি, আপনার মডেলে যা ছিল সেটিই বসাবেন
+    # যেমন: response = model.generate_content(system_instruction + query)
+    
+    # ধরুন আপনার মডেলের আউটপুট ভেরিয়েবলটি 'response'
+    # আপনার কোডে যদি 'response' না থেকে অন্য কিছু থাকে, তবে নিচের লাইনে সেটি লিখুন
+    
+    # যদি আপনার মডেলে 'model.generate_content' থাকে, তবে এভাবে লিখুন:
+    response = model.generate_content(system_instruction + "\n" + query)
     
     return response.text
     with st.status("Analyzing your question...", expanded=False) as status:
