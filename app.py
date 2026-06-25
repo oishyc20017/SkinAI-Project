@@ -14,19 +14,6 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
-import streamlit as st
-import sqlite3
-import os
-
-# ডাটাবেস কানেকশন (ফাইলটি যেখানে app.py আছে সেখানেই রাখুন)
-def save_appointment(name, age, email, phone, doctor, date, symptoms):
-    conn = sqlite3.connect('my.db')
-    cursor = conn.cursor()
-    # আপনার ডেটাবেসের কলাম অনুযায়ী এই লাইনটি ঠিক করবেন
-    cursor.execute("INSERT INTO bookings (patient_name, age, email, phone, doctor, date, symptoms) VALUES (?, ?, ?, ?, ?, ?, ?)", 
-                   (name, age, email, phone, doctor, date, symptoms))
-    conn.commit()
-    conn.close()
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -539,17 +526,8 @@ def doctor_booking_popup():
     # কনফার্ম বাটন
     if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_date}_{pref_time}"):
         
-        name = "Patient Name" # যেহেতু আপনার ফর্মে নামের ইনপুট নেই, আপাতত এটা ডামি হিসেবে থাকবে
-        age = 0 
-        email = st.session_state.get('email_f', '')
-        phone = st.session_state.get('phone_f', '')
-        doctor = st.session_state.get('doc_f', '')
-        date = str(st.session_state.get('date_f', ''))
-        symptoms = "Not provided" 
-
-        # ডাটাবেসে সেভ করার ফাংশন কল করা
-        save_appointment(name, age, email, phone, doctor, date, symptoms)
-        st.success("আপনার অ্যাপয়েন্টমেন্ট ডাটাবেসে সেভ হয়েছে!")
+        user_email_str = str(st.session_state.get('email_f', ''))
+        phone_number_str = str(st.session_state.get('phone_f', ''))
         
         if not phone_number_str or not user_email_str:
             st.error("Please fill up both Phone Number and Gmail Address!")
