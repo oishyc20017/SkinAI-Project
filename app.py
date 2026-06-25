@@ -566,11 +566,12 @@ def doctor_booking_popup():
 
             # ডাটাবেসে সফলভাবে ডাটা সেভ হওয়ার পর এই মেসেজটি দেখান
                 st.success("Appointment successfully confirmed!")
-                st.info("Booking details have been sent to your provided email and phone number.")
-                st.balloons() 
-                
-                time.sleep(2)
-                st.rerun()
+            st.info("Booking details have been sent to your provided email and phone number.")
+            st.balloons() 
+            
+            # ৩ সেকেন্ড অপেক্ষা করার পর রিফ্রেশ হবে, যাতে ইউজার মেসেজটি পড়তে পারেন
+            time.sleep(5) 
+            st.rerun()
         # Ensure this button is aligned correctly with the previous code block
     
         user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
