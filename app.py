@@ -297,12 +297,14 @@ model = load_skin_model()
 classes = list(disease_details.keys())
 
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (সম্পূর্ণ ইউনিক ও গোছানো) ---
-if 'logged_in' not in st.session_state: st.session_state.logged_in = False
-if 'messages' not in st.session_state: st.session_state.messages = []
-if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-if 'user' not in st.session_state: st.session_state.user = None
+# ৩. সেশন ও সাইডবার ম্যানেজমেন্ট
+    if 'logged_in' not in st.session_state: st.session_state.logged_in = False
+    if 'messages' not in st.session_state: st.session_state.messages = []
+    if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+    if 'user' not in st.session_state: st.session_state.user = None
+
+    # সাইডবার শুরু (কোনো বাড়তি স্পেস দেবেন না বাম দিকে)
     with st.sidebar:
-        # Language Settings
         st.markdown("### 🌐 Language Settings")
         language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
         language = st.selectbox("Select Language", language_list, key="lang_select")
