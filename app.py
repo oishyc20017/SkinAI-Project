@@ -219,7 +219,15 @@ disease_details = {
 }
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
-def get_intelligent_response(query, res):
+def get_intelligent_response(query):
+    # ইউজার কোন ভাষা বেছে নিয়েছে তা নেয়া
+    target_lang = st.session_state.get('user_language', 'English')
+    
+    # এআই-কে নির্দেশ দেওয়া
+    prompt = f"Answer the following question in {target_lang}: {query}"
+    
+    # এই prompt টি আপনার এআই মডেলে পাঠিয়ে দিন
+    # ... আপনার মডেল কলের কোড ...
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
         status.update(label="Response Ready!", state="complete")
@@ -294,7 +302,12 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # ১. লোগো এরিয়া
+    # অনেকগুলো ভাষার লিস্ট
+    languages = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French", "German", "Arabic", "Chinese", "Japanese"]
+    selected_lang = st.selectbox("Select Your Preferred Language", languages)
+    
+    # এটি সেশনে সেভ হয়ে থাকবে
+    st.session_state['user_language'] = selected_lang
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
