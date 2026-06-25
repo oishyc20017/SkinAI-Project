@@ -233,31 +233,41 @@ def get_intelligent_response(query, res):
     # ভাষা শনাক্তকরণ
     is_bn = any('\u0980' <= char <= '\u09FF' for char in query)
     
-    # ডাটাবেস থেকে তথ্য নেওয়া
+    # যদি রোগ শনাক্ত না হয়
+    if res == "None":
+        if is_bn:
+            return "দয়া করে আগে একটি ছবি আপলোড করুন।"
+        else:
+            return "Please upload a photo first."
+
     data = disease_details.get(res, {})
     q = query.lower()
-
-    # ১. বাংলা হলে শুধুমাত্র বাংলা উত্তর
-    if is_bn:
-        if any(word in q for word in ["ডাক্তার", "daktar", "doctor", "specialist"]):
-            return f"যেহেতু বিশ্লেষণে **{res}** এসেছে, আপনাকে একজন চর্মরোগ বিশেষজ্ঞ দেখাতে হবে। আপনি কি নির্দিষ্ট কোনো ডাক্তারের নাম জানতে চান?"
-        elif any(word in q for word in ["কেন", "keno", "cause", "caron"]):
-            return f"{res} সাধারণত {data.get('cause', 'বিভিন্ন কারণে')} হয়ে থাকে। ত্বক রোদে পোড়া থেকে বাঁচান।"
-        elif any(word in q for word in ["ঘরোয়া", "tips", "bashay", "upai"]):
-            return f"এর জন্য ঘরোয়া পরামর্শ: {data.get('home', 'ত্বক পরিষ্কার রাখুন।')}। তবে অবশ্যই ডাক্তার দেখানো ভালো।"
-        else:
-            return f"আপনার ছবিতে **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এটি সম্পর্কে আরও কিছু জানতে চান?"
     
-    # ২. ইংরেজি হলে শুধুমাত্র ইংরেজি উত্তর
-    else:
-        if any(word in q for word in ["doctor", "specialist", "consult"]):
-            return f"Since the analysis indicates **{res}**, you should consult a Dermatologist. Would you like to know any specific doctor names?"
-        elif any(word in q for word in ["why", "cause", "reason"]):
-            return f"{res} is usually caused by {data.get('cause', 'various factors')}. Keep your skin shielded from UV rays."
-        elif any(word in q for word in ["home", "tips", "treatment"]):
-            return f"Home care tips: {data.get('home', 'Keep the skin clean.')} However, professional advice is recommended."
+    # লজিক অনুযায়ী উত্তর (বাংলা এবং ইংরেজি পুরোপুরি আলাদা)
+    if any(word in q for word in ["doctor", "daktar", "specialist", "consult"]):
+        if is_bn:
+            return f"যেহেতু বিশ্লেষণে {res} এসেছে, আপনাকে একজন চর্মরোগ বিশেষজ্ঞ দেখাতে হবে।"
         else:
-            return f"Based on the analysis, it is **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know more about it?"
+            return f"Since the analysis indicates {res}, you should consult a Dermatologist."
+            
+    elif any(word in q for word in ["keno", "ken", "cause", "caron"]):
+        if is_bn:
+            return f"{res} সাধারণত {data.get('cause', 'বিভিন্ন কারণে')} হয়ে থাকে।"
+        else:
+            return f"{res} is usually caused by {data.get('cause', 'various factors')}."
+
+    elif any(word in q for word in ["home", "tips", "bashay", "upai"]):
+        if is_bn:
+            return f"এর জন্য ঘরোয়া পরামর্শ: {data.get('home', 'ত্বক পরিষ্কার রাখুন।')}"
+        else:
+            return f"Home care tips: {data.get('home', 'Keep the skin clean.')}"
+
+    # ডিফল্ট উত্তর
+    else:
+        if is_bn:
+            return f"আপনার ছবিতে {res} এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}।"
+        else:
+            return f"Based on the analysis, it is {res}. {data.get('desc', 'This is a skin condition.')}"
     data = disease_details.get(res, {})
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
