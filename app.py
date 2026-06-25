@@ -14,6 +14,11 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
+import sqlite3
+
+# ডেটাবেসের সাথে কানেকশন তৈরি করা
+conn = sqlite3.connect('C:/Users/IT COMPLEX/OneDrive/Documents/my.db')
+cursor = conn.cursor()
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
