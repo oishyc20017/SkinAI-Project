@@ -546,7 +546,7 @@ def doctor_booking_popup():
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
             sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
             params = {
-                "api_key": "YOUR_API_KEY",
+                "api_key": "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA",
                 "phone": phone_number_str,
                 "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
             }
