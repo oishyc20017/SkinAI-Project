@@ -524,31 +524,36 @@ def doctor_booking_popup():
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
     if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
-        # বাটন ক্লিকের পর ইনপুটগুলো সেশন স্টেট থেকে নিন
-        user_email_str = str(st.session_state.email_f)
-        phone_number_str = str(st.session_state.phone_f)
-    
+        # ১. সেশন স্টেট থেকে ডাটা আনা (এই পদ্ধতিতে কোনোভাবেই UnboundLocalError আসবে না)
+        user_email_str = str(st.session_state.get('email_f', ''))
+        phone_number_str = str(st.session_state.get('phone_f', ''))
+        doctor = st.session_state.get('doc_f', 'Unknown')
+        pref_date = st.session_state.get('date_f', '')
+        pref_time = st.session_state.get('time_f', '')
+
+        import re
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         phone_pattern = r'^\+?[0-9]{11,14}$'
-
-    if phone_number_str == "" or user_email_str == "":
-        st.error("Please fill up both Phone Number and Gmail Address!")
-    elif not re.match(email_pattern, user_email_str):
-        st.error("Please enter a valid Gmail address!")
-    elif not re.match(phone_pattern, phone_number_str):
-        st.error("Please enter a valid 11-digit Phone Number!")
-    else:
-            # ১. ডাটাবেস সেভ লজিক
-            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-            c = conn.cursor()
-            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
-            conn.commit()
-            conn.close()
-            st.success("Appointment successfully committed!")
-
-            # ২. ইমেইল পাঠানো (এটিকে ডাটাবেস সেভের ঠিক নিচে, একই লেভেলে রাখুন)
+        
+        # ২. ভ্যালিডেশন চেক
+        if not phone_number_str or not user_email_str:
+            st.error("Please fill up both Phone Number and Gmail Address!")
+        elif not re.match(email_pattern, user_email_str):
+            st.error("Please enter a valid Gmail address!")
+        elif not re.match(phone_pattern, phone_number_str):
+            st.error("Please enter a valid 11-digit Phone Number!")
+        else:
+            # ৩. ডাটাবেস সেভ
             try:
+                conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+                c = conn.cursor()
+                c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                          (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+                conn.commit()
+                conn.close()
+                st.success("Appointment successfully committed!")
+
+                # ৪. ইমেইল কনফার্মেশন
                 msg = EmailMessage()
                 msg['Subject'] = 'Appointment Confirmation - SkinAI'
                 msg['From'] = 'your_email@gmail.com'
@@ -559,11 +564,11 @@ def doctor_booking_popup():
                     smtp.login('your_email@gmail.com', 'your_app_password')
                     smtp.send_message(msg)
                 st.info("Confirmation email sent successfully.")
+                
+                time.sleep(1)
+                st.rerun()
             except Exception as e:
-                st.warning(f"Email could not be sent: {e}")
-            
-            time.sleep(1)
-            st.rerun()
+                st.error(f"Error: {e}")
                 
             # ৩. SMS পাঠানো (লোকাল API এর মাধ্যমে)
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
