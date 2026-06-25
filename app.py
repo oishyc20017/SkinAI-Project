@@ -487,8 +487,13 @@ def doctor_booking_popup():
             submit_booking = st.form_submit_button("Confirm Appointment")
 
         if submit_booking:
-            # এখানে আপনার SMS বা API এর লজিক থাকবে, খেয়াল করুন এটি if ব্লকের ভেতরে আছে
+            # সবকিছু যেন একদম সমান দূরত্বে থাকে (৪টি স্পেস)
             sms_url = "http://api.smsgateway.com/send" 
+            params = {
+                "api_key": "your_api_key",
+                "phone": phone_number,
+                "message": f"Appointment confirmed with {selected_name}"
+            }
             
             st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
             
