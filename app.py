@@ -296,20 +296,22 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_details.keys())
 
-# --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (সম্পূর্ণ ইউনিক ও গোছানো) ---
-# ৩. সেশন ও সাইডবার ম্যানেজমেন্ট
-    if 'logged_in' not in st.session_state: st.session_state.logged_in = False
-    if 'messages' not in st.session_state: st.session_state.messages = []
-    if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-    if 'user' not in st.session_state: st.session_state.user = None
+# সেশন ও সাইডবার ম্যানেজমেন্ট (এগুলো একদম বাম দিকে থাকবে)
+if 'logged_in' not in st.session_state: 
+    st.session_state.logged_in = False
+if 'messages' not in st.session_state: 
+    st.session_state.messages = []
+if 'last_res' not in st.session_state: 
+    st.session_state.last_res = "None"
+if 'user' not in st.session_state: 
+    st.session_state.user = None
 
-    # সাইডবার শুরু (কোনো বাড়তি স্পেস দেবেন না বাম দিকে)
-    with st.sidebar:
-        st.markdown("### 🌐 Language Settings")
-        language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
-        language = st.selectbox("Select Language", language_list, key="lang_select")
-        st.session_state['user_language'] = language
-        st.markdown("---")
+with st.sidebar:
+    st.markdown("### 🌐 Language Settings")
+    language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
+    language = st.selectbox("Select Language", language_list, key="lang_select")
+    st.session_state['user_language'] = language
+    st.markdown("---")
         
         # Logo Area
         col1, col2, col3 = st.columns([1, 2, 1])
