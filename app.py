@@ -610,7 +610,7 @@ with col2:
 
 st.markdown("---")
 
-# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট ---
+# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট (আগের মেইন কোড - সম্পূর্ণ নিরাপদ) ---
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): 
         st.markdown(m["content"])
