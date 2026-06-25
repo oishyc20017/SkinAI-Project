@@ -301,7 +301,7 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
-    with st.sidebar:
+ with st.sidebar:
         # Language Settings
         st.markdown("### 🌐 Language Settings")
         language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
@@ -322,14 +322,13 @@ if 'user' not in st.session_state: st.session_state.user = None
             st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
             st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
 
-    # Secure Gateway
+    # Secure Gateway - এটি সাইডবারের বাইরে, তাই একদম বাম ঘেঁষে থাকবে
     st.markdown("""
 <div style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); padding: 20px; border-radius: 10px; border: 1px solid #4338ca; text-align: center;">
     <h3 style="color: white;">🔒 Secure Gateway</h3>
     <p style="color: #cbd5e1; font-size: 12px;">SHA-256 Encrypted Session</p>
 </div>
 """, unsafe_allow_html=True)
-
     # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
     if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
         st.session_state.messages = []
