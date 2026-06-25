@@ -9,7 +9,7 @@ import sqlite3
 
 # --- কনফিগারেশন ---
 # আপনার API Key টি এখানে বসান
-API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA" 
+API_KEY = "AIzaSyB8TiUefoefZeoyhQ3J_k_w9jes-noZkCc" 
 genai.configure(api_key=API_KEY)
 model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 
