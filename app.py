@@ -1,23 +1,59 @@
-import datetime
-import re
 import streamlit as st
-import sqlite3
-import smtplib
-from email.message import EmailMessage
-import requests # API দিয়ে SMS পাঠানোর জন্য
-import hashlib
-import requests
-from streamlit_lottie import st_lottie
-import time
+import google.generativeai as genai
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
+import sqlite3
 
-# --- পেজ কনফিগারেশন (একটিই থাকবে) ---
-st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+# --- কনফিগারেশন ---
+# আপনার API Key টি এখানে বসান
+API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA" 
+genai.configure(api_key=API_KEY)
+model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 
+# --- মডেল লোড ---
+@st.cache_resource
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path):
+        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
+
+model = load_skin_model()
+disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
+
+# --- UI ---
+st.title("SkinAI Assistant")
+
+uploaded_file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="main_uploader")
+
+if uploaded_file:
+    img = Image.open(uploaded_file).convert('RGB').resize((100, 75))
+    x = np.expand_dims(np.asarray(img) / 255.0, axis=0)
+    pred = model.predict(x, verbose=0)
+    detected_disease = disease_classes[np.argmax(pred)]
+    st.write(f"### Detection Result: {detected_disease}")
+
+    # চ্যাট সেকশন (পেশাদার ইংরেজি উত্তরের জন্য)
+    prompt = st.chat_input("Ask about your skin condition...")
+    if prompt:
+        with st.chat_message("user"):
+            st.write(prompt)
+        with st.chat_message("assistant"):
+            # পেশাদার ইনস্ট্রাকশন সেট করা হলো
+            instruction = f"""You are a helpful and professional dermatology assistant. 
+            The user's skin scan analysis shows: {detected_disease}. 
+            Please answer the user's question in professional English. 
+            Always advise the user to see a doctor if they are concerned. 
+            Question: {prompt}"""
+            
+            try:
+                response = model_gemini.generate_content(instruction)
+                st.write(response.text)
+            except Exception as e:
+                st.error("Could not generate a response. Please check your API Key.")
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
 <style>
