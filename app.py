@@ -523,14 +523,16 @@ def doctor_booking_popup():
                              key="pay_f")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
-    # বাটনটি পপআপের ভেতরেই আছে
     if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
+        # ইনপুটগুলো সেশন স্টেট থেকে নিন, যাতে এরর না হয়
+        user_email_str = str(st.session_state.email_f)
+        phone_number_str = str(st.session_state.phone_f)
+        doctor = st.session_state.doc_f
+        pref_date = st.session_state.date_f
+        pref_time = st.session_state.time_f
+
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         phone_pattern = r'^\+?[0-9]{11,14}$'
-        
-        # এখানে সরাসরি ইনপুট থেকে ভ্যালু নিয়ে চেক করছি
-        user_email_str = str(user_email)
-        phone_number_str = str(phone_number)
         
         if phone_number_str == "" or user_email_str == "":
             st.error("Please fill up both Phone Number and Gmail Address!")
@@ -539,7 +541,7 @@ def doctor_booking_popup():
         elif not re.match(phone_pattern, phone_number_str):
             st.error("Please enter a valid 11-digit Phone Number!")
         else:
-            # ডাটাবেস সেভ লজিক
+            # ১. ডাটাবেস সেভ লজিক
             conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
             c = conn.cursor()
             c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
@@ -548,7 +550,7 @@ def doctor_booking_popup():
             conn.close()
             st.success("Appointment successfully committed!")
 
-            # ২. ইমেইল পাঠানো (এটিকে ডাটাবেস সেভের পরেই রাখো)
+            # ২. ইমেইল পাঠানো
             try:
                 msg = EmailMessage()
                 msg['Subject'] = 'Appointment Confirmation - SkinAI'
