@@ -464,12 +464,11 @@ def doctor_booking_popup():
     c = conn.cursor()
     
     st.markdown("### Choose a Specialist & Book Your Appointment")
-    # বুকিং ফর্মের ভেতরের ড্রপডাউনটি এইভাবে সাজান:
-c.execute("SELECT name, specialty, fee FROM doctors")
-all_doctors = c.fetchall()
-doctor_names = [f"{d[0]} ({d[2]})" for d in all_doctors] # নাম এবং ফি দেখাবে
+    c.execute("SELECT name, specialty, fee FROM doctors")
+    all_doctors = c.fetchall()
+    doctor_names = [f"{d[0]} ({d[2]})" for d in all_doctors] # নাম এবং ফি দেখাবে
 
-selected_doc = st.selectbox("Select Specialist", doctor_names)
+    selected_doc = st.selectbox("Select Specialist", doctor_names)
     
     
     if doctor_list:
