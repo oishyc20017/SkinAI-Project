@@ -468,6 +468,7 @@ def doctor_booking_popup():
         st.markdown("### Book Your Appointment")
 
         with st.form(key="popup_booking_form_final"):
+            # ১. পেশেন্ট ডিটেইলস (উপরে)
             patient_name = st.text_input("Patient Name")
             phone_number = st.text_input("Phone Number")
             
@@ -477,49 +478,28 @@ def doctor_booking_popup():
             with col2:
                 gmail_address = st.text_input("Gmail Address")
             
-            doctor_names = [d[0] for d in doctor_list]
+            # ২. ডাক্তার সিলেক্ট (মাঝখানে)
+            doctor_names = [f"{d[0]} ({d[2]})" for d in doctor_list]
             selected_name = st.selectbox("Select Specialist", doctor_names)
+            
+            # ডাক্তারের ডিটেইলস অটোমেটিক দেখানো
+            selected_doctor = next(d for d in doctor_list if f"{d[0]} ({d[2]})" == selected_name)
+            st.info(f"🏥 **Hospital:** {selected_doctor[4]} | ⏰ **Available:** {selected_doctor[3]}")
+            
+            # ৩. ডেট এবং সিম্পটমস
             preferred_date = st.date_input("Preferred Date")
             symptoms = st.text_area("Brief description of symptoms/issues")
             
+            # ৪. পেমেন্ট এবং বাটন (নিচে)
             payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
-            
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-            st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
-            # SMS API লজিক আপাতত এখানে যুক্ত করবেন না, আগে এটি রান করে চেক করুন
+            st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_doctor[0]}!")
         
         conn.close()
     except Exception as e:
-        st.error(f"An error occurred: {e}")
-        sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
-            params = {
-                "api_key": "YOUR_API_KEY",
-                "phone": phone_number_str,
-                "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
-            }
-    
-            # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
-    # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
-        
-        # এখানে আপনার আগের ডাটাবেস কোড থাকবে...
-        
-        try:
-            # ১. এসএমএস এপিআই রিকোয়েস্ট
-            requests.get(sms_url, params=params)
-            
-            # ২. সাকসেস মেসেজ
-            st.success("Appointment successfully confirmed!")
-            st.info("Booking details have been sent to your provided email and phone number.")
-            st.balloons() 
-            
-            # ৩. ১৫ সেকেন্ড বিরতি ও রিলোড
-            time.sleep(15) 
-            st.rerun()
-
-        except Exception as e:
-            st.error(f"Error: {e}")
+        st.error(f"Error: {e}")
         user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
         phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
         doctor = st.session_state.doc_f
