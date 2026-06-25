@@ -1,34 +1,16 @@
 import streamlit as st
 import google.generativeai as genai
-import sqlite3
-import hashlib
-import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
-from streamlit_lottie import st_lottie
-import requests
 
-# --- ১. Configuration ---
-API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA"  # আপনার এপিআই কি এখানে বসান
-genai.configure(api_key=API_KEY)
+# --- কনফিগারেশন ---
+genai.configure(api_key="YOUR_API_KEY_HERE")
 model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 
-# --- ২. Database Initialization ---
-def init_db():
-    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-    c = conn.cursor()
-    c.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY, password TEXT)')
-    c.execute('''CREATE TABLE IF NOT EXISTS bookings (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                 user_email TEXT, phone_number TEXT, doctor_name TEXT, date TEXT, time TEXT, status TEXT)''')
-    conn.commit()
-    conn.close()
-
-init_db()
-
-# --- ৩. Model Loading ---
+# --- মডেল লোড ---
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
@@ -39,25 +21,24 @@ def load_skin_model():
 model = load_skin_model()
 disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# --- ৪. UI & Logic ---
-st.set_page_config(page_title="SkinAI Assistant", layout="wide")
+# --- UI লজিক ---
 st.title("SkinAI Assistant")
 
-# ফাইল আপলোডার
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="main_uploader")
+# এখানে একটি মাত্র ফাইল আপলোডার আছে
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 if file:
-    img_res = Image.open(file).convert('RGB').resize((100, 75))
-    x = np.asarray(img_res) / 255.0
-    x = np.expand_dims(x, axis=0)
+    img = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.expand_dims(np.asarray(img) / 255.0, axis=0)
     pred = model.predict(x, verbose=0)
     detected = disease_classes[np.argmax(pred)]
-    st.write(f"Detected: {detected}")
+    st.write(f"### Detected: {detected}")
 
-    prompt = st.chat_input("Ask me anything...")
+    # চ্যাট ইনপুট
+    prompt = st.chat_input("Ask me anything about your skin...")
     if prompt:
         with st.chat_message("assistant"):
-            instruction = f"Medical Result: {detected}. Answer: {prompt}. If Bangla, answer in Bangla. If English, answer in English."
+            instruction = f"Skin condition detected: {detected}. Question: {prompt}"
             response = model_gemini.generate_content(instruction)
             st.write(response.text)
 
