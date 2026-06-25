@@ -3,17 +3,21 @@ import datetime
 import re
 import sqlite3
 import smtplib
-from email.message import EmailMessage
 import requests
 import hashlib
-from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
-from PIL import Image
 import numpy as np
 import os
 import gdown
-import random # এটা জরুরি, কারণ আপনার কোডে random.choice আছে
+import random # এই ইম্পোর্টটি থাকা জরুরি
+
+# এর পরে আপনার অন্যান্য ফাংশনগুলো বসান (load_skin_model, disease_details ইত্যাদি)
+
+# সবার শেষে এই ফাংশনটি বসান:
+def get_intelligent_response(query, res):
+    # আমার আগের দেওয়া "স্থায়ী সমাধান" কোডটি এখানে বসান
+    # নিশ্চিত করুন যেন কোনো বাংলা লাইনের ভেতরে ইংরেজি অক্ষর বা উল্টোটা না থাকে।ে
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
