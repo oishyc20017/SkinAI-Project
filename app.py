@@ -570,7 +570,7 @@ def doctor_booking_popup():
             st.balloons() 
             
             # ৩ সেকেন্ড অপেক্ষা করার পর রিফ্রেশ হবে, যাতে ইউজার মেসেজটি পড়তে পারেন
-            time.sleep(5) 
+            time.sleep(10) 
             st.rerun()
         # Ensure this button is aligned correctly with the previous code block
     
