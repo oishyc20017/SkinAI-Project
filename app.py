@@ -559,23 +559,27 @@ def doctor_booking_popup():
                 "phone": phone_number_str,
                 "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
             }
-            try:
-                # ১. এপিআই রিকোয়েস্ট (এসএমএস এর জন্য)
-                requests.get(sms_url, params=params)
+            # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
+    # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
+    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_time}"):
         
-                # ২. সাকসেস মেসেজ
-                st.success("Appointment successfully confirmed!")
-                st.info("Booking details have been sent to your provided email and phone number.")
-                st.balloons() 
+        # এখানে আপনার আগের ডাটাবেস কোড থাকবে...
         
-                # ৩. ১৫ সেকেন্ড বিরতি ও রিলোড
-                time.sleep(15) 
-                st.rerun()
+        try:
+            # ১. এসএমএস এপিআই রিকোয়েস্ট
+            requests.get(sms_url, params=params)
+            
+            # ২. সাকসেস মেসেজ
+            st.success("Appointment successfully confirmed!")
+            st.info("Booking details have been sent to your provided email and phone number.")
+            st.balloons() 
+            
+            # ৩. ১৫ সেকেন্ড বিরতি ও রিলোড
+            time.sleep(15) 
+            st.rerun()
 
-           except Exception as e:
-               # সব এরর এই একটি ব্লকেই ধরা পড়বে
-               st.error(f"Error: {e}")
-
+        except Exception as e:
+            st.error(f"Error: {e}")
         user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
         phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
         doctor = st.session_state.doc_f
