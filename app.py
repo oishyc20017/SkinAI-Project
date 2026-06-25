@@ -137,21 +137,23 @@ def init_db():
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
     
-    # যদি আগে থেকে ডাটাবেস ফাইল থাকে, তবে সেটি ডিলিট করে দিন যাতে নতুন কলাম যোগ হতে পারে
-    c.execute('DROP TABLE IF EXISTS doctors') 
-    
-    # নতুন টেবিল স্ট্রাকচার (hospital_name কলাম যুক্ত হয়েছে)
+    # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
+    c.execute('DROP TABLE IF EXISTS doctors')
     c.execute('''CREATE TABLE IF NOT EXISTS doctors
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  name TEXT, 
-                  specialty TEXT, 
-                  fee TEXT, 
-                  available_time TEXT,
-                  hospital_name TEXT)''')
+                  name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
                   
-    # নতুন ডাক্তার এবং হাসপাতালের নাম এন্ট্রি করুন
-    c.execute("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", 
-              ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM', 'Dhaka Medical Center'))
+    # একাধিক ডাক্তার যোগ করার তালিকা
+    doctors_list = [
+        ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM', 'Dhaka Medical Center'),
+        ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM', 'City Skin Hospital'),
+        ('Dr. Farhana Begum', 'Dermatologist', '1500 BDT', '10:00 AM - 12:00 PM', 'Apollo Skin Clinic'),
+        ('Dr. M. Rahman', 'Cosmetic Dermatologist', '1100 BDT', '2:00 PM - 4:00 PM', 'Square Hospital'),
+        ('Dr. Tasnim Kabir', 'Skin Specialist', '900 BDT', '6:00 PM - 8:00 PM', 'Popular Medical')
+    ]
+    
+    # একসাথে সব ডাটা ইনসার্ট করা
+    c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
     
     conn.commit()
     conn.close()
