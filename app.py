@@ -277,7 +277,7 @@ else:
         response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
         response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
         response += "---\n*Do you have any more questions about this?*"
-return response
+    return response
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
