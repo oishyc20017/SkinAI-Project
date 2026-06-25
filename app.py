@@ -229,42 +229,34 @@ def detect_language(text):
     return 'bn' # ডিফল্ট বা বাংলিশ হলে বাংলা ভাবা হবে
 
 def get_intelligent_response(query, res):
-    # ভাষা শনাক্তকরণ
+    # ভাষা শনাক্তকরণ (বাংলা অক্ষর আছে কি না চেক করা)
     is_bn = any('\u0980' <= char <= '\u09FF' for char in query)
     
-    # যদি রোগ শনাক্ত না হয়
+    # রোগ শনাক্ত না হলে
     if res == "None":
-        if is_bn:
-            return "দয়া করে আগে একটি ছবি আপলোড করুন।"
-        else:
-            return "Please upload a photo first."
+        return "Please upload a photo first."
 
     data = disease_details.get(res, {})
     q = query.lower()
-    
-    # লজিক অনুযায়ী উত্তর (বাংলা এবং ইংরেজি পুরোপুরি আলাদা)
-    if any(word in q for word in ["doctor", "daktar", "specialist", "consult"]):
+
+    # ১. ডাক্তার বিষয়ক প্রশ্ন
+    if any(word in q for word in ["doctor", "specialist", "consult"]):
         if is_bn:
             return f"যেহেতু বিশ্লেষণে {res} এসেছে, আপনাকে একজন চর্মরোগ বিশেষজ্ঞ দেখাতে হবে।"
         else:
             return f"Since the analysis indicates {res}, you should consult a Dermatologist."
-            
-    elif any(word in q for word in ["keno", "ken", "cause", "caron"]):
+
+    # ২. কারণ বিষয়ক প্রশ্ন
+    elif any(word in q for word in ["why", "cause", "reason"]):
         if is_bn:
             return f"{res} সাধারণত {data.get('cause', 'বিভিন্ন কারণে')} হয়ে থাকে।"
         else:
             return f"{res} is usually caused by {data.get('cause', 'various factors')}."
 
-    elif any(word in q for word in ["home", "tips", "bashay", "upai"]):
-        if is_bn:
-            return f"এর জন্য ঘরোয়া পরামর্শ: {data.get('home', 'ত্বক পরিষ্কার রাখুন।')}"
-        else:
-            return f"Home care tips: {data.get('home', 'Keep the skin clean.')}"
-
-    # ডিফল্ট উত্তর
+    # ৩. ডিফল্ট বা অন্য সব প্রশ্ন (এখানেই আপনার মিক্সড হওয়ার ভয় থাকে)
     else:
         if is_bn:
-            return f"আপনার ছবিতে {res} এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}।"
+            return f"আপনার ছবিতে {res} এর লক্ষণ দেখা যাচ্ছে। {data.get('desc', 'একটি ত্বকের সমস্যা')}"
         else:
             return f"Based on the analysis, it is {res}. {data.get('desc', 'This is a skin condition.')}"
     data = disease_details.get(res, {})
