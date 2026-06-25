@@ -1,20 +1,74 @@
 import datetime
 import re
 import streamlit as st
-import sqlite3
-import smtplib
-from email.message import EmailMessage
-import requests # API দিয়ে SMS পাঠানোর জন্য
-import hashlib
-import requests
-from streamlit_lottie import st_lottie
-import time
+import google.generativeai as genai
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
 
+# --- 1. Global Setup (Ekhane kono bhul hobe na) ---
+genai.configure(api_key="YOUR_API_KEY") 
+chat_model = genai.GenerativeModel('gemini-1.5-flash')
+
+st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+
+# --- 2. Model Loading ---
+@st.cache_resource
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path): 
+        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
+
+model = load_skin_model()
+disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
+
+# --- 3. AI Response Function (Language controlled) ---
+def get_intelligent_response(query, res):
+    # Ekhane instruction clear kore dewa hoyeche
+    system_instruction = f"""
+    You are a professional Medical AI Assistant. 
+    Analyze: '{query}' based on result: '{res}'.
+    RULES: 
+    1. If user asks in Bangla/Banglish, reply strictly in Bangla. 
+    2. If user asks in English, reply strictly in English. 
+    3. No mixing of languages. 
+    4. Keep it short and medical advice is must.
+    """
+    try:
+        response = chat_model.generate_content(system_instruction + "\nUser: " + query)
+        return response.text
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+# --- 4. Interface ---
+if 'messages' not in st.session_state: st.session_state.messages = []
+if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+
+st.title("SkinAI Assistant")
+
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="unique_uploader_1")
+
+if file:
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    st.session_state.last_res = disease_classes[np.argmax(pred)]
+    st.write(f"Detected: {st.session_state.last_res}")
+
+for m in st.session_state.messages:
+    with st.chat_message(m["role"]): st.markdown(m["content"])
+
+if prompt := st.chat_input("Ask me anything..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"): st.markdown(prompt)
+    with st.chat_message("assistant"):
+        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        st.markdown(reply)
+        st.session_state.messages.append({"role": "assistant", "content": reply})
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
@@ -220,23 +274,6 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query, res):
-    # এখানে লজিক ঠিক করে দেওয়া হয়েছে যেন সে ইউজার যে ভাষায় প্রশ্ন করবে সেই ভাষাতেই উত্তর দেয়
-    system_instruction = f"""
-    You are a professional Medical AI Assistant.
-    Analyze the user's query: '{query}' based on the medical result: '{res}'.
-    
-    CRITICAL INSTRUCTION:
-    - If the user writes in Bengali, reply ONLY in Bengali.
-    - If the user writes in English, reply ONLY in English.
-    - Do NOT mix Bengali and English in the same response.
-    - Keep the tone professional, helpful, and concise.
-    - Always advise the user to consult a doctor for medical diagnosis.
-    """
-    try:
-        response = chat_model.generate_content(system_instruction + "\n\nUser Query: " + query)
-        return response.text
-    except Exception as e:
-        return f"এআই রেসপন্স এরর: {str(e)}"
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
         status.update(label="Response Ready!", state="complete")
