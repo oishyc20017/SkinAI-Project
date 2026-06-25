@@ -219,7 +219,7 @@ disease_details = {
 }
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
-def get_intelligent_response(query):
+def get_intelligent_response(query, res):
     # ইউজার কোন ভাষা বেছে নিয়েছে তা নেয়া
     target_lang = st.session_state.get('user_language', 'English')
     
