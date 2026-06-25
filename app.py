@@ -219,14 +219,19 @@ disease_details = {
 }
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
+# আপনার ফাংশনের শুরুটা এরকম করুন (২টি আর্গুমেন্টসহ):
 def get_intelligent_response(query, res):
-    # ইউজার কোন ভাষা বেছে নিয়েছে তা নেয়া
+    # ১. ইউজার যে ভাষা সিলেক্ট করেছে তা নিন
     target_lang = st.session_state.get('user_language', 'English')
     
-    # এআই-কে নির্দেশ দেওয়া
-    prompt = f"Answer the following question in {target_lang}: {query}"
+    # ২. সিস্টেম ইনস্ট্রাকশন তৈরি করুন
+    system_instruction = f"You are a medical AI. You must answer the user in {target_lang}. Do not mix languages."
     
-    # এই prompt টি আপনার এআই মডেলে পাঠিয়ে দিন
+    # ৩. প্রম্পটটি আপডেট করুন
+    full_prompt = f"{system_instruction}\n\nUser Question: {query}"
+    
+    # এরপর আপনার API কলের ভেতরে এই full_prompt পাঠিয়ে দিন
+    # (আপনার বর্তমান ফাংশনের নিচের দিকের কোডগুলো ঠিক এভাবেই থাকবে)ন
     # ... আপনার মডেল কলের কোড ...
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
@@ -302,16 +307,26 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # অনেকগুলো ভাষার লিস্ট
+    # ১. ভাষার লিস্ট এবং সিলেকশন
     languages = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French", "German", "Arabic", "Chinese", "Japanese"]
     selected_lang = st.selectbox("Select Your Preferred Language", languages)
-    
-    # এটি সেশনে সেভ হয়ে থাকবে
     st.session_state['user_language'] = selected_lang
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
+    
+    # ২. এখানে UI লজিকটি বসান (এই লজিকটিই অনুপস্থিত ছিল)
+    language_mapping = {
+        "English": {"help": "Help & Information"},
+        "Bangla": {"help": "সহায়তা ও তথ্য"},
+        "Hindi": {"help": "सहायता और जानकारी"}
+        # বাকি ভাষাগুলো একইভাবে যোগ করতে পারেন
+    }
+    ui_help = language_mapping.get(selected_lang, {"help": "Help & Information"})["help"]
 
+    st.markdown("---")
+    
+    # ৩. এখন expander এ ui_help ব্যবহার করুন
+    with st.expander(f"❓ {ui_help}"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন")
+        # বাকি রাইটগুলো এখানে...
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
     with st.expander("❓ Help & Information"):
