@@ -583,25 +583,21 @@ def doctor_booking_popup():
             time.sleep(1)
             st.rerun()
         
-    # আগের কোডের এই লাইনটি পরিবর্তন করে নিচের মতো করো:
-        # ১. নিশ্চিত করো যে re মডিউলটি এখানেই আছে
-        import re 
-        
+        user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
+        phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
+
+        import re
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         phone_pattern = r'^\+?[0-9]{11,14}$'
-        
-        # ২. ইনপুট চেক করার সময় নিশ্চিত করো যে এগুলো স্ট্রিং (str)
-        user_email_str = str(user_email) if user_email else ""
-        phone_number_str = str(phone_number) if phone_number else ""
         
         if phone_number_str == "" or user_email_str == "":
             st.error("Please fill up both Phone Number and Gmail Address!")
         elif not re.match(email_pattern, user_email_str):
-            st.error("Please enter a valid Gmail/Email address (e.g., name@gmail.com)!")
+            st.error("Please enter a valid Gmail address!")
         elif not re.match(phone_pattern, phone_number_str):
             st.error("Please enter a valid 11-digit Phone Number!")
         else:
-            # তোমার ডাটাবেস লজিক এখানে থাকবে...
+            # বাকি ডাটাবেস ও ইমেইল লজিক এখানে থাকবে
             conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
             c = conn.cursor()
             c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
