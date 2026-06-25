@@ -560,18 +560,21 @@ def doctor_booking_popup():
                 "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
             }
             try:
-        # ১. ডাটাবেস এবং এসএমএস এর কাজগুলো এখানে হবে
-        # (যদি এসএমএস এপিআই কাজ না করে, তবে এটি এখানেও এরর দেবে না)
+        # ১. এসএমএস বা অন্যান্য এপিআই রিকোয়েস্ট
         requests.get(sms_url, params=params)
         
-        # ২. সাকসেস মেসেজ ও ১৫ সেকেন্ড ওয়েট
+        # ২. সাকসেস মেসেজ
         st.success("Appointment successfully confirmed!")
         st.info("Booking details have been sent to your provided email and phone number.")
         st.balloons() 
         
+        # ৩. ১৫ সেকেন্ড বিরতি ও রিলোড
         time.sleep(15) 
         st.rerun()
 
+    except Exception as e:
+        # এটিই হবে একমাত্র এবং সর্বশেষ এক্সেপ্ট ব্লক
+        st.error(f"Error: {e}")
     except Exception as e:
         # যদি কোনো লাইনে ভুল হয়, তবে এই ব্লকটি সব হ্যান্ডেল করবে
         st.error(f"Error: {e}")
