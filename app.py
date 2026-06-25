@@ -545,11 +545,12 @@ def doctor_booking_popup():
           (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
             conn.commit()
             conn.close()
-            else:
-            # ১. ডাটাবেস সেভ
             # ... (তোমার আগের ডাটাবেস কোড)
+            conn.commit()
+            conn.close()
+            st.success("Appointment successfully committed!")
 
-            # ২. ইমেইল পাঠানো
+            # ২. ইমেইল পাঠানো (এটিকে ডাটাবেস সেভের পরেই রাখো)
             try:
                 msg = EmailMessage()
                 msg['Subject'] = 'Appointment Confirmation - SkinAI'
@@ -560,7 +561,12 @@ def doctor_booking_popup():
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
                     smtp.login('your_email@gmail.com', 'your_app_password')
                     smtp.send_message(msg)
-            except:
+                st.info("Confirmation email sent successfully.")
+            except Exception as e:
+                st.warning(f"Email could not be sent: {e}")
+            
+            time.sleep(1)
+            st.rerun()
                 st.warning("Email could not be sent.")
 
             # ৩. SMS পাঠানো (লোকাল API এর মাধ্যমে)
