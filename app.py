@@ -1,29 +1,72 @@
 import streamlit as st
 import google.generativeai as genai
 import sqlite3
+import hashlib
+import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
+from streamlit_lottie import st_lottie
+import requests
 
-# --- ১. Configuration (সবার উপরে) ---
-# আপনার API Key টি এখানে নিশ্চিত করুন
-API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA" 
+# --- ১. Configuration ---
+API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA"  # আপনার এপিআই কি এখানে বসান
 genai.configure(api_key=API_KEY)
-chat_model = genai.GenerativeModel('gemini-1.5-flash')
+model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 
-# --- ২. Model Loading (ক্যাশিং এর মাধ্যমে) ---
+# --- ২. Database Initialization ---
+def init_db():
+    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+    c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS users (email TEXT PRIMARY KEY, password TEXT)')
+    c.execute('''CREATE TABLE IF NOT EXISTS bookings (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                 user_email TEXT, phone_number TEXT, doctor_name TEXT, date TEXT, time TEXT, status TEXT)''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# --- ৩. Model Loading ---
 @st.cache_resource
 def load_skin_model():
     path = 'skin_cancer_model.h5'
-    if not os.path.exists(path): 
+    if not os.path.exists(path):
         gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
     return tf.keras.models.load_model(path, compile=False)
 
 model = load_skin_model()
 disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
+# --- ৪. UI & Logic ---
+st.set_page_config(page_title="SkinAI Assistant", layout="wide")
+st.title("SkinAI Assistant")
+
+# ফাইল আপলোডার
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="main_uploader")
+
+if file:
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    detected = disease_classes[np.argmax(pred)]
+    st.write(f"Detected: {detected}")
+
+    prompt = st.chat_input("Ask me anything...")
+    if prompt:
+        with st.chat_message("assistant"):
+            instruction = f"Medical Result: {detected}. Answer: {prompt}. If Bangla, answer in Bangla. If English, answer in English."
+            response = model_gemini.generate_content(instruction)
+            st.write(response.text)
+
+# --- ৫. CSS ---
+st.markdown("""
+<style>
+.rainbow-text { background: linear-gradient(to right, #ef5350, #2196f3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 38px; }
+</style>
+""", unsafe_allow_html=True)
 # --- ৩. AI Function ---
 def get_intelligent_response(query, res):
     # ল্যাঙ্গুয়েজ মিক্সিং রোধ করতে ক্লিয়ার ইনস্ট্রাকশন
