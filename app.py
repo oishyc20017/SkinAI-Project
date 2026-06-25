@@ -495,6 +495,8 @@ st.markdown(
     unsafe_allow_html=True)
 
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
+# আপনার পুরনো কোডটি পরিবর্তন করে এমন করুন:
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="skin_photo_uploader")
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
