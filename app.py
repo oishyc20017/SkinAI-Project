@@ -1,13 +1,20 @@
 import streamlit as st
 import google.generativeai as genai
+import sqlite3
+import hashlib
+import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
+from streamlit_lottie import st_lottie
+import requests
 
 # --- কনফিগারেশন ---
-genai.configure(api_key="YOUR_API_KEY_HERE")
+# আপনার Google AI Studio থেকে পাওয়া API Key এখানে বসান
+API_KEY = "YOUR_API_KEY_HERE" 
+genai.configure(api_key=API_KEY)
 model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 
 # --- মডেল লোড ---
@@ -18,28 +25,35 @@ def load_skin_model():
         gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
     return tf.keras.models.load_model(path, compile=False)
 
+# --- ডাটাবেস সেটআপ ---
+conn = sqlite3.connect('skinai_database.db', check_same_thread=False)
+c = conn.cursor()
+c.execute('''CREATE TABLE IF NOT EXISTS chat_history (user_msg TEXT, bot_msg TEXT)''')
+conn.commit()
+
+# --- মেইন অ্যাপ ---
+st.title("SkinAI Assistant")
 model = load_skin_model()
 disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# --- UI লজিক ---
-st.title("SkinAI Assistant")
+# ২. সমাধান: ফাইল আপলোডার একবারই রাখা হয়েছে
+uploaded_file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
-# এখানে একটি মাত্র ফাইল আপলোডার আছে
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
-
-if file:
-    img = Image.open(file).convert('RGB').resize((100, 75))
+if uploaded_file:
+    img = Image.open(uploaded_file).convert('RGB').resize((100, 75))
     x = np.expand_dims(np.asarray(img) / 255.0, axis=0)
     pred = model.predict(x, verbose=0)
-    detected = disease_classes[np.argmax(pred)]
-    st.write(f"### Detected: {detected}")
+    detected_disease = disease_classes[np.argmax(pred)]
+    st.write(f"### Detected: {detected_disease}")
 
-    # চ্যাট ইনপুট
+    # চ্যাট সেকশন
     prompt = st.chat_input("Ask me anything about your skin...")
     if prompt:
+        with st.chat_message("user"):
+            st.write(prompt)
         with st.chat_message("assistant"):
-            instruction = f"Skin condition detected: {detected}. Question: {prompt}"
-            response = model_gemini.generate_content(instruction)
+            full_prompt = f"The user has a skin condition called {detected_disease}. Answer the following question: {prompt}"
+            response = model_gemini.generate_content(full_prompt)
             st.write(response.text)
 
 # --- ৫. CSS ---
