@@ -1,4 +1,5 @@
 import datetime
+import random
 import re
 import streamlit as st
 import sqlite3
@@ -230,31 +231,45 @@ def detect_language(text):
     return 'bn' # ডিফল্ট বা বাংলিশ হলে বাংলা ভাবা হবে
 
 def get_intelligent_response(query, res):
-    lang = detect_language(query)
+    # ১. ভাষা শনাক্তকরণ (Bengali Script থাকলে বাংলা, নাহলে ইংরেজি)
+    is_bn = any('\u0980' <= char <= '\u09FF' for char in query)
     
-    # রেসপন্স এর টেম্পলেট
+    # যদি রোগ শনাক্ত না হয়
+    if res == "None":
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+
     data = disease_details.get(res, {})
     
-    if res == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if lang == 'bn' else "Please upload a photo first."
-
-    # কন্ডিশনাল রেসপন্স
-    if any(word in query.lower() for word in ["name", "doctor", "specialist", "daktar"]):
-        if lang == 'en':
-            return f"For {res}, I recommend consulting Dr. Sabina Yasmin or Dr. Asif Ahmed."
-        else:
-            return f"{res}-এর জন্য আমি আপনাকে Dr. Sabina Yasmin অথবা Dr. Asif Ahmed-এর পরামর্শ নেওয়ার অনুরোধ করবো।"
+    # ২. প্রশ্ন অনুযায়ী উত্তর নির্বাচন
+    q = query.lower()
     
-    elif any(word in query.lower() for word in ["cause", "keno", "caron"]):
-        cause = data.get('cause', 'various factors')
-        if lang == 'en':
-            return f"The main cause is: {cause}."
+    # ডাক্তার সংক্রান্ত
+    if any(word in q for word in ["doctor", "daktar", "specialist", "consult"]):
+        if is_bn:
+            return f"যেহেতু বিশ্লেষণে **{res}** এসেছে, আপনাকে একজন চর্মরোগ বিশেষজ্ঞ (Dermatologist) দেখাতে হবে। আপনি কি নির্দিষ্ট কোনো ডাক্তারের নাম জানতে চান?"
         else:
-            return f"এর মূল কারণ হলো: {cause}।"
+            return f"Since the analysis indicates **{res}**, you should consult a Dermatologist. Would you like to know any specific doctor names?"
             
+    # কারণ সংক্রান্ত
+    elif any(word in q for word in ["keno", "ken", "cause", "caron"]):
+        if is_bn:
+            return f"{res} সাধারণত {data.get('cause', 'বিভিন্ন কারণে')} হয়ে থাকে। ত্বক রোদে পোড়া থেকে বাঁচান।"
+        else:
+            return f"{res} is usually caused by {data.get('cause', 'various factors')}. Keep your skin shielded from UV rays."
+
+    # ঘরোয়া সমাধান
+    elif any(word in q for word in ["home", "goroa", "tips", "bashay"]):
+        if is_bn:
+            return f"এর জন্য ঘরোয়া পরামর্শ: {data.get('home', 'ত্বক পরিষ্কার রাখুন।')}। তবে অবশ্যই ডাক্তার দেখানো ভালো।"
+        else:
+            return f"Home care tips: {data.get('home', 'Keep the skin clean.')} However, professional advice is recommended."
+
     # ডিফল্ট উত্তর
-    if lang == 'en':
-        return f"Based on the analysis, it is {res}. {data.get('desc', '')}"
+    else:
+        if is_bn:
+            return f"আপনার ছবিতে **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এটি সম্পর্কে আরও কিছু জানতে চান?"
+        else:
+            return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know more about it?"
     else:
         return f"বিশ্লেষণ অনুযায়ী এটি {res} হতে পারে। {data.get('desc', '')}"
     data = disease_details.get(res, {})
@@ -308,6 +323,25 @@ def get_intelligent_response(query, res):
             return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know about its causes or appropriate specialists?"
 # --- ৫. モデル লোডিং ---
 @st.cache_resource
+# --- ১. ইম্পোর্ট এর পরে এই ফাংশনটি যোগ করুন ---
+def load_my_anim(url):
+    try:
+        r = requests.get(url)
+        if r.status_code == 200:
+            return r.json()
+        return None
+    except:
+        return None
+
+# --- ২. মডেল লোডিং ---
+@st.cache_resource
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
+
+model = load_skin_model()
+# ... বাকি কোড
 def load_skin_model():
     path = 'skin_cancer_model.h5'
     if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
