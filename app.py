@@ -492,20 +492,7 @@ def doctor_booking_popup():
     conn.close()
     # ... বাকি ফর্ম কোড এখানে থাকবে ...
 
-    col1, col2 = st.columns(2)
-    with col1:
-        patient_name = st.text_input("Patient Name", key="name_f")
-        patient_age = st.number_input("Age", min_value=0, max_value=120, key="age_f")
-        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"], key="doc_f")
-        
-    with col2:
-        phone_number = st.text_input("Phone Number", key="phone_f")
-        user_email = st.text_input("Gmail Address", key="email_f")
-        pref_date = st.date_input("Preferred Date", key="date_f")
-
-    # অ্যাপয়েন্টমেন্টের জন্য বাড়তি অপশন
-    symptoms = st.text_area("Brief description of symptoms/issues", key="symptoms_f")
-    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_f")
+    
     
     st.divider()
     payment_method = st.radio("Select Payment Method", 
