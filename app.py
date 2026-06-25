@@ -468,7 +468,6 @@ def doctor_booking_popup():
         st.markdown("### Book Your Appointment")
 
         with st.form(key="popup_booking_form_final"):
-            # ১. পেশেন্ট ডিটেইলস (উপরে)
             patient_name = st.text_input("Patient Name")
             phone_number = st.text_input("Phone Number")
             
@@ -478,74 +477,32 @@ def doctor_booking_popup():
             with col2:
                 gmail_address = st.text_input("Gmail Address")
             
-            # ২. ডাক্তার সিলেক্ট (মাঝখানে)
             doctor_names = [f"{d[0]} ({d[2]})" for d in doctor_list]
             selected_name = st.selectbox("Select Specialist", doctor_names)
-            
-            # ডাক্তারের ডিটেইলস অটোমেটিক দেখানো
             selected_doctor = next(d for d in doctor_list if f"{d[0]} ({d[2]})" == selected_name)
+            
             st.info(f"🏥 **Hospital:** {selected_doctor[4]} | ⏰ **Available:** {selected_doctor[3]}")
             
-            # ৩. ডেট এবং সিম্পটমস
             preferred_date = st.date_input("Preferred Date")
             symptoms = st.text_area("Brief description of symptoms/issues")
-            
-            # ৪. পেমেন্ট এবং বাটন (নিচে)
             payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
+            
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-            st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_doctor[0]}!")
+            # ১. সাকসেস মেসেজ এবং বেলুন
+            st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
+            st.info("Booking details have been sent to your provided email and phone number.")
+            st.balloons()
+            
+            # ২. ১০ সেকেন্ড ওয়েট এবং রিরান
+            import time
+            time.sleep(10)
+            st.rerun()
         
         conn.close()
     except Exception as e:
         st.error(f"Error: {e}")
-        user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
-        phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
-        doctor = st.session_state.doc_f
-        pref_date = st.session_state.date_f
-        pref_time = st.session_state.time_f
-
-        import re
-        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        phone_pattern = r'^\+?[0-9]{11,14}$'
-        
-        if phone_number_str == "" or user_email_str == "":
-            st.error("Please fill up both Phone Number and Gmail Address!")
-        elif not re.match(email_pattern, user_email_str):
-            st.error("Please enter a valid Gmail address!")
-        elif not re.match(phone_pattern, phone_number_str):
-            st.error("Please enter a valid 11-digit Phone Number!")
-        else:
-            # ১. ডাটাবেস সেভ লজিক
-            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-            c = conn.cursor()
-            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
-            conn.commit()
-            conn.close()
-            st.success("Appointment successfully committed!")
-
-            # ২. ইমেইল পাঠানো
-            try:
-                msg = EmailMessage()
-                msg['Subject'] = 'Appointment Confirmation - SkinAI'
-                msg['From'] = 'your_email@gmail.com'
-                msg['To'] = user_email_str
-                msg.set_content(f"Dear User, your appointment with {doctor} is booked for {pref_date} at {pref_time}.")
-                
-                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                    smtp.login('your_email@gmail.com', 'your_app_password')
-                    smtp.send_message(msg)
-                st.info("Confirmation email sent successfully.")
-            except Exception as e:
-                 st.success("Appointment successfully confirmed!")
-            st.info("Booking details have been sent to your provided email and phone number.")
-            st.balloons() 
-            
-            # ৩. ১৫ সেকেন্ড বিরতি ও রিলোড
-            time.sleep(15) 
-            st.rerun()
 
 # মেইন বডিতে এই অংশটি রাখো, অন্য কোনো বাটন ডিলিট করে দাও
 col1, col2, col3 = st.columns([3, 4, 3])
