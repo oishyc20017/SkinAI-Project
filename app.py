@@ -466,25 +466,28 @@ def doctor_booking_popup():
     
     st.markdown("### Book Your Appointment")
 
+    # আপনার মার্ক করা ফিল্ডগুলো শুধুমাত্র এই একটি ফর্মের ভেতরেই থাকবে
     with st.form(key="popup_booking_form_final"):
-        # ১. ড্রপডাউন
-        doctor_names = [d[0] for d in doctor_list] 
-        selected_name = st.selectbox("Select Specialist", doctor_names)
-        
-        # ২. সিলেক্ট করা ডাক্তারের তথ্য
-        selected_doctor = next(d for d in doctor_list if d[0] == selected_name)
-        st.info(f"📍 **Hospital:** {selected_doctor[4]}  \n💰 **Fee:** {selected_doctor[2]}  \n⏰ **Available:** {selected_doctor[3]}")
-        
-        # ৩. অন্যান্য ফিল্ড (এখানেই সব ফিল্ড আনুন)
+        # ১. উপরের তথ্যগুলো মুছে দিয়েছি, এখন সরাসরি নিচের ফিল্ডগুলো
         patient_name = st.text_input("Patient Name")
         phone_number = st.text_input("Phone Number")
-        preferred_date = st.date_input("Preferred Date")
         
-        # ৪. কনফার্ম বাটন (এটিই একমাত্র বাটন হবে)
+        col1, col2 = st.columns(2)
+        with col1:
+            age = st.number_input("Age", min_value=0, max_value=100)
+        with col2:
+            gmail_address = st.text_input("Gmail Address")
+            
+        doctor_names = [d[0] for d in doctor_list]
+        selected_name = st.selectbox("Select Specialist", doctor_names)
+        preferred_date = st.date_input("Preferred Date")
+        symptoms = st.text_area("Brief description of symptoms/issues")
+        
+        # সাবমিট বাটন
         submit_booking = st.form_submit_button("Confirm Appointment")
 
     if submit_booking:
-        st.success(f"🎉 Appointment confirmed with {selected_name} at {selected_doctor[4]}!")
+        st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
         
     conn.close()
     # ... বাকি ফর্ম কোড এখানে থাকবে ...
