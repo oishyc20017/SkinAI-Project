@@ -462,34 +462,31 @@ def doctor_booking_popup():
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
     
-    st.markdown("### Choose a Specialist & Book Your Appointment")
-    
-    # ১. ডাটাবেস থেকে সব ডাটা একদম শুরুতেই নিয়ে নিন
+    # ১. ডাটাবেস থেকে সব ডাটা নিন
     c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
     doctor_list = c.fetchall()
     
-    # ২. এরপর ডাক্তারদের কার্ড দেখান (লুপ ব্যবহার করে)
-    if doctor_list:
-        for doc in doctor_list:
-            st.markdown(f"""
-            <div style="background-color: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #58a6ff; margin-bottom: 10px;">
-                <h4 style="color: #58a6ff; margin: 0;">{doc[0]}</h4>
-                <p style="margin: 3px 0; font-size: 13px; color: #cccccc;">
-                    <b>Specialty:</b> {doc[1]} | <b>Hospital:</b> {doc[4]}
-                </p>
-                <p style="margin: 3px 0; font-size: 12px; color: #ff7b72;">⏰ {doc[3]} | 💰 {doc[2]}</p>
-            </div>
-            """, unsafe_allow_html=True)
+    st.markdown("### Book Your Appointment")
 
-    st.markdown("---")
-    
-    # ৩. ফর্মের ভেতরে ড্রপডাউন বসান (এখানে doctor_list ভেরিয়েবলটি এখন কাজ করবে)
     with st.form(key="popup_booking_form_final"):
-        doctor_names = [f"{d[0]} ({d[2]})" for d in doctor_list] 
-        selected_doc = st.selectbox("Select Specialist", doctor_names)
+        # ড্রপডাউনে ডাক্তারদের নাম
+        doctor_names = [d[0] for d in doctor_list] 
+        selected_name = st.selectbox("Select Specialist", doctor_names)
         
-        # বাকি ফর্মের কোড...
+        # সিলেক্ট করা ডাক্তারের তথ্য ফিল্টার করা
+        selected_doctor = next(d for d in doctor_list if d[0] == selected_name)
+        
+        # সিলেক্ট করা ডাক্তারের তথ্য অটোমেটিক দেখানো
+        st.info(f"📍 **Hospital:** {selected_doctor[4]}  \n💰 **Fee:** {selected_doctor[2]}  \n⏰ **Available:** {selected_doctor[3]}")
+        
+        # অন্যান্য ফিল্ড
+        patient_name = st.text_input("Patient Name")
+        preferred_date = st.date_input("Preferred Date")
+        
         submit_booking = st.form_submit_button("Confirm Appointment")
+
+    if submit_booking:
+        st.success(f"🎉 Appointment confirmed with {selected_name} at {selected_doctor[4]}!")
         
     conn.close()
     # ... বাকি ফর্ম কোড এখানে থাকবে ...
