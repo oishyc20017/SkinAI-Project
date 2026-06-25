@@ -327,6 +327,18 @@ with st.sidebar:
 
     st.markdown("---")
 
+    # ৪. ফেসবুক ও জিমেইল বাটন লজিক
+    if not st.session_state.logged_in:
+        st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 12px;'>Or Sign In With</p>", unsafe_allow_html=True)
+        social_col1, social_col2 = st.columns(2)
+        with social_col1:
+            if st.button("🔵 Facebook", use_container_width=True, key="unique_fb"): st.info("Coming Soon!")
+        with social_col2:
+            if st.button("🔴 Gmail", use_container_width=True, key="unique_gm"): st.info("Coming Soon!")
+
+
+    st.markdown("---")
+
     # ৫. আসল Login ও Register ট্যাব লজিক
         t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
         
