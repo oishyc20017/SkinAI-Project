@@ -261,23 +261,6 @@ def load_skin_model():
     return tf.keras.models.load_model(path, compile=False)
 model = load_skin_model()
 classes = list(disease_details.keys())
-if is_bangla_script or is_banglish:
-        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
-        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
-        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
-        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
-        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
-        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
-    
-    # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
-else:
-        response = f"### 🩺 **AI Analysis: {res}**\n\n"
-        response += f"**1. What is it?**\nIt is identified as {res}. This condition causes changes in skin texture.\n\n"
-        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
-        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
-        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
-        response += "---\n*Do you have any more questions about this?*"
-    return response
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
@@ -446,22 +429,46 @@ if file:
     }
     
     res_name = st.session_state.last_res
-    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "বিস্তারিত তথ্য পাওয়া যায়নি।"})
+    info = disease_info.get(res_name, {
+        "local_bn": "অজানা সমস্যা", "desc_bn": "বিস্তারিত তথ্য পাওয়া যায়নি।",
+        "local_en": "Unknown Condition", "desc_en": "No detailed information available."
+    })
 
-    # ৩. তোমার নতুন রেজাল্ট কার্ড ডিজাইন
+
+    # ৩. ইউজার চ্যাটে বা ইনপুটে বাংলা লিখছে কি না তা ট্র্যাক করা
+    # ডিফল্টভাবে কার্ডটি ইংরেজিতে দেখাবে, যদি ইউজার বাংলায় কিছু না চায়
+    show_english = True 
+
+    # ল্যাঙ্গুয়েজ সিলেকশন অনুযায়ী টাইটেল ও সাবটাইটেল ডাইনামিক করা
+    if show_english:
+        card_title = "AI Diagnostic Analysis"
+        name_label = "Common Name:"
+        sci_label = "Scientific Name:"
+        info_label = "Information:"
+        display_name = info['local_en']
+        display_desc = info['desc_en']
+    else:
+        card_title = "AI ডায়াগনস্টিক বিশ্লেষণ"
+        name_label = "সাধারণ নাম:"
+        sci_label = "বৈজ্ঞানিক নাম:"
+        info_label = "তথ্য:"
+        display_name = info['local_bn']
+        display_desc = info['desc_bn']
+
+    # ৪. গর্জিয়াস কার্ড ডিজাইন (সম্পূর্ণ ডাইনামিক)
     st.markdown(f"""
     <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">{card_title}</p>
         <div style="margin: 20px 0;">
-            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">সাধারণ নাম:</h4>
-            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">{name_label}</p>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{display_name}</h1>
         </div>
         <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক নাম:</p>
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">{sci_label}</p>
             <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
         </div>
         <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>তথ্য:</b> {info['desc']}</p>
+            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>{info_label}</b> {display_desc}</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -472,51 +479,138 @@ st.markdown("---")
 # --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
-    st.markdown("### Choose a Specialist & Book Your Appointment")
-    
-    # ডাটাবেস থেকে ডাক্তারদের লিস্ট রিড করা
-    c.execute("SELECT name, specialty, fee, available_time FROM doctors")
-    doctor_list = c.fetchall()
+    st.write("Please fill in your details to book an appointment.")
 
-    if doctor_list:
-        for doc in doctor_list:
-            st.markdown(f"""
-            <div style="background-color: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #58a6ff; margin-bottom: 10px;">
-                <h4 style="color: #58a6ff; margin: 0;">{doc[0]}</h4>
-                <p style="margin: 3px 0; font-size: 13px; color: #cccccc;"><b>Specialty:</b> {doc[1]} | <b>Fee:</b> {doc[2]}</p>
-                <p style="margin: 3px 0; font-size: 12px; color: #ff7b72;">⏰ {doc[3]}</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-    st.markdown("---")
-    
-    # বুকিং ফর্ম (পপ-আপের ভেতরে)
-    with st.form(key="popup_booking_form_final"):
-        doc_names = [doc[0] for doc in doctor_list] if doctor_list else ["No Doctors Available"]
-        selected_doc = st.selectbox("Select Specialist", doc_names)
-        appointment_date = st.date_input("Preferred Date")
-        appointment_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "5:00 PM - 6:00 PM", "7:00 PM - 8:00 PM", "8:00 PM - 9:00 PM"])
-        payment_method = st.radio("Payment Gateway", ["Pay at Chamber", "bKash / Nagad"], horizontal=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        patient_name = st.text_input("Patient Name", key="name_f")
+        patient_age = st.number_input("Age", min_value=0, max_value=120, key="age_f")
+        doctor = st.selectbox("Select Specialist", ["Dr. Sabina Yasmin (1200 BDT)", "Dr. Rayhan Ahmed (1000 BDT)"], key="doc_f")
         
-        submit_booking = st.form_submit_button("Confirm Appointment")
+    with col2:
+        phone_number = st.text_input("Phone Number", key="phone_f")
+        user_email = st.text_input("Gmail Address", key="email_f")
+        pref_date = st.date_input("Preferred Date", key="date_f")
 
-    if submit_booking and doctor_list:
-        user_email = st.session_state.get('user', 'Guest User')
-        c.execute("INSERT INTO bookings (user_email, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?)",
-                  (user_email, selected_doc, str(appointment_date), appointment_time, "Confirmed"))
-        conn.commit()
-        st.success(f"🎉 Appointment confirmed with {selected_doc}!")
-        st.rerun()
+    # অ্যাপয়েন্টমেন্টের জন্য বাড়তি অপশন
+    symptoms = st.text_area("Brief description of symptoms/issues", key="symptoms_f")
+    pref_time = st.selectbox("Preferred Time Slot", ["4:00 PM - 5:00 PM", "7:00 PM - 8:00 PM"], key="time_f")
+    
+    st.divider()
+    payment_method = st.radio("Select Payment Method", 
+                             ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"], 
+                             key="pay_f")
+    
+    st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
+    # কনফার্ম বাটন
+    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_date}_{pref_time}"):
+        
+        user_email_str = str(st.session_state.get('email_f', ''))
+        phone_number_str = str(st.session_state.get('phone_f', ''))
+        
+        if not phone_number_str or not user_email_str:
+            st.error("Please fill up both Phone Number and Gmail Address!")
+        else:
+            try:
+                # ডাটাবেস অপারেশান
+                conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+                c = conn.cursor()
+                c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                          (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+                conn.commit()
+                conn.close()
+                
+                # সাকসেস মেসেজ
+                st.success("Appointment successfully confirmed!")
+                st.info("Booking details have been sent to your provided email and phone number.")
+                st.balloons() 
+                
+                time.sleep(10) # ১০ সেকেন্ড বিরতি
+                st.rerun()
 
-# 🎯 মেইন স্ক্রিনে শুধু এই ২য় অপশনটি (বাটন) থাকবে, ১ম অপশনের সব কার্ড-ফর্ম ডিলিট করা হয়েছে
+            except Exception as e:
+                # এটিই একমাত্র এবং সর্বশেষ এক্সেপশন হ্যান্ডলার
+                st.error(f"An unexpected error occurred: {e}")
+            # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
+            sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
+            params = {
+                "api_key": "YOUR_API_KEY",
+                "phone": phone_number_str,
+                "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
+            }
+            # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
+    # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
+        
+        # এখানে আপনার আগের ডাটাবেস কোড থাকবে...
+        
+        try:
+            # ১. এসএমএস এপিআই রিকোয়েস্ট
+            requests.get(sms_url, params=params)
+            
+            # ২. সাকসেস মেসেজ
+            st.success("Appointment successfully confirmed!")
+            st.info("Booking details have been sent to your provided email and phone number.")
+            st.balloons() 
+            
+            # ৩. ১৫ সেকেন্ড বিরতি ও রিলোড
+            time.sleep(15) 
+            st.rerun()
+
+        except Exception as e:
+            st.error(f"Error: {e}")
+        user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
+        phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
+        doctor = st.session_state.doc_f
+        pref_date = st.session_state.date_f
+        pref_time = st.session_state.time_f
+
+        import re
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        phone_pattern = r'^\+?[0-9]{11,14}$'
+        
+        if phone_number_str == "" or user_email_str == "":
+            st.error("Please fill up both Phone Number and Gmail Address!")
+        elif not re.match(email_pattern, user_email_str):
+            st.error("Please enter a valid Gmail address!")
+        elif not re.match(phone_pattern, phone_number_str):
+            st.error("Please enter a valid 11-digit Phone Number!")
+        else:
+            # ১. ডাটাবেস সেভ লজিক
+            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+            c = conn.cursor()
+            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+            conn.commit()
+            conn.close()
+            st.success("Appointment successfully committed!")
+
+            # ২. ইমেইল পাঠানো
+            try:
+                msg = EmailMessage()
+                msg['Subject'] = 'Appointment Confirmation - SkinAI'
+                msg['From'] = 'your_email@gmail.com'
+                msg['To'] = user_email_str
+                msg.set_content(f"Dear User, your appointment with {doctor} is booked for {pref_date} at {pref_time}.")
+                
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login('your_email@gmail.com', 'your_app_password')
+                    smtp.send_message(msg)
+                st.info("Confirmation email sent successfully.")
+            except Exception as e:
+                st.warning(f"Email could not be sent: {e}")
+            
+            time.sleep(1)
+            st.rerun()
+
+# মেইন বডিতে এই অংশটি রাখো, অন্য কোনো বাটন ডিলিট করে দাও
 col1, col2, col3 = st.columns([3, 4, 3])
 with col2:
-    if st.button("🩺 Consult a Doctor Now", use_container_width=True):
+    if st.button("🩺 Consult a Doctor Now", use_container_width=True, key="btn_open_popup"):
         doctor_booking_popup()
 
 st.markdown("---")
 
-# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট (আগের মেইন কোড - সম্পূর্ণ নিরাপদ) ---
+# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট ---
 for m in st.session_state.messages:
     with st.chat_message(m["role"]): 
         st.markdown(m["content"])
