@@ -261,8 +261,7 @@ def load_skin_model():
     return tf.keras.models.load_model(path, compile=False)
 model = load_skin_model()
 classes = list(disease_details.keys())
-# যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
-    if is_bangla_script or is_banglish:
+if is_bangla_script or is_banglish:
         response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
         response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
         response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
