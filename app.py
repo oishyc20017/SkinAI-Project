@@ -338,9 +338,7 @@ with st.sidebar:
 
 
     st.markdown("---")
-
-    # ৫. আসল Login ও Register ট্যাব লজিক
-        t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
+    t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
         
         with t1:
             e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
