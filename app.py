@@ -459,18 +459,16 @@ st.markdown("---")
 # --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
-    # ফাংশনের ভেতরে নতুন করে কানেকশন তৈরি করুন
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
     
     st.markdown("### Choose a Specialist & Book Your Appointment")
-    c.execute("SELECT name, specialty, fee FROM doctors")
-    all_doctors = c.fetchall()
-    doctor_names = [f"{d[0]} ({d[2]})" for d in all_doctors] # নাম এবং ফি দেখাবে
-
-    selected_doc = st.selectbox("Select Specialist", doctor_names)
     
+    # ১. ডাটাবেস থেকে সব ডাটা একদম শুরুতেই নিয়ে নিন
+    c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
+    doctor_list = c.fetchall()
     
+    # ২. এরপর ডাক্তারদের কার্ড দেখান (লুপ ব্যবহার করে)
     if doctor_list:
         for doc in doctor_list:
             st.markdown(f"""
@@ -483,7 +481,16 @@ def doctor_booking_popup():
             </div>
             """, unsafe_allow_html=True)
 
-    # কাজ শেষে ডাটাবেস কানেকশন বন্ধ করুন
+    st.markdown("---")
+    
+    # ৩. ফর্মের ভেতরে ড্রপডাউন বসান (এখানে doctor_list ভেরিয়েবলটি এখন কাজ করবে)
+    with st.form(key="popup_booking_form_final"):
+        doctor_names = [f"{d[0]} ({d[2]})" for d in doctor_list] 
+        selected_doc = st.selectbox("Select Specialist", doctor_names)
+        
+        # বাকি ফর্মের কোড...
+        submit_booking = st.form_submit_button("Confirm Appointment")
+        
     conn.close()
     # ... বাকি ফর্ম কোড এখানে থাকবে ...
 
