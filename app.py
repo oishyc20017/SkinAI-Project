@@ -457,20 +457,30 @@ st.markdown("---")
 # --- ৩. ডক্টর কনসালটেশন পপ-আপ ফাংশন ---
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
+    # ফাংশনের ভেতরে নতুন করে কানেকশন তৈরি করুন
+    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+    c = conn.cursor()
+    
+    st.markdown("### Choose a Specialist & Book Your Appointment")
+    
+    # ডাটাবেস থেকে সব ডাটা আনুন
     c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
     doctor_list = c.fetchall()
 
-    for doc in doctor_list:
-        # এখানে হাসপাতাল নামটি যুক্ত করা হয়েছে
-        st.markdown(f"""
-        <div style="background-color: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #58a6ff; margin-bottom: 10px;">
-            <h4 style="color: #58a6ff; margin: 0;">{doc[0]}</h4>
-            <p style="margin: 3px 0; font-size: 13px; color: #cccccc;">
-                <b>Specialty:</b> {doc[1]} | <b>Hospital:</b> {doc[4]}
-            </p>
-            <p style="margin: 3px 0; font-size: 12px; color: #ff7b72;">⏰ {doc[3]} | 💰 {doc[2]}</p>
-        </div>
-        """, unsafe_allow_html=True)
+    if doctor_list:
+        for doc in doctor_list:
+            st.markdown(f"""
+            <div style="background-color: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #58a6ff; margin-bottom: 10px;">
+                <h4 style="color: #58a6ff; margin: 0;">{doc[0]}</h4>
+                <p style="margin: 3px 0; font-size: 13px; color: #cccccc;">
+                    <b>Specialty:</b> {doc[1]} | <b>Hospital:</b> {doc[4]}
+                </p>
+                <p style="margin: 3px 0; font-size: 12px; color: #ff7b72;">⏰ {doc[3]} | 💰 {doc[2]}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # কাজ শেষে ডাটাবেস কানেকশন বন্ধ করুন
+    conn.close()
     # ... বাকি ফর্ম কোড এখানে থাকবে ...
 
     col1, col2 = st.columns(2)
