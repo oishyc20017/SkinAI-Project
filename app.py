@@ -296,38 +296,35 @@ def load_skin_model():
 model = load_skin_model()
 classes = list(disease_details.keys())
 
-# সেশন ও সাইডবার ম্যানেজমেন্ট (এগুলো একদম বাম দিকে থাকবে)
-if 'logged_in' not in st.session_state: 
-    st.session_state.logged_in = False
-if 'messages' not in st.session_state: 
-    st.session_state.messages = []
-if 'last_res' not in st.session_state: 
-    st.session_state.last_res = "None"
-if 'user' not in st.session_state: 
-    st.session_state.user = None
+# --- সেশন ও সাইডবার ম্যানেজমেন্ট (এটি ফাংশনের বাইরে থাকবে) ---
+if 'logged_in' not in st.session_state: st.session_state.logged_in = False
+if 'messages' not in st.session_state: st.session_state.messages = []
+if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+if 'user' not in st.session_state: st.session_state.user = None
 
+# সাইডবার (একদম বাম ঘেঁষে শুরু হবে)
 with st.sidebar:
     st.markdown("### 🌐 Language Settings")
     language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
     language = st.selectbox("Select Language", language_list, key="lang_select")
     st.session_state['user_language'] = language
     st.markdown("---")
-        
-        # Logo Area
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("---")
-        
-        with st.expander("❓ Help & Information"):
-            st.write("১. স্পষ্ট ছবি আপলোড করুন")
-            st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
-            st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
+    # লোগো এরিয়া
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
 
-    # Secure Gateway - এটি সাইডবারের বাইরে, তাই একদম বাম ঘেঁষে থাকবে
-    st.markdown("""
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("---")
+
+    with st.expander("❓ Help & Information"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন")
+        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
+        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
+
+# সিকিউরিটি গেটওয়ে
+st.markdown("""
 <div style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); padding: 20px; border-radius: 10px; border: 1px solid #4338ca; text-align: center;">
     <h3 style="color: white;">🔒 Secure Gateway</h3>
     <p style="color: #cbd5e1; font-size: 12px;">SHA-256 Encrypted Session</p>
