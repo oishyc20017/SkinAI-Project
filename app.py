@@ -490,15 +490,18 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-            # ১. সাকসেস মেসেজ এবং বেলুন
-            st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
-            st.info("Booking details have been sent to your provided email and phone number.")
-            st.balloons()
-            
-            # ২. ১০ সেকেন্ড ওয়েট এবং রিরান
-            import time
-            time.sleep(10)
-            st.rerun()
+            # ভ্যালিডেশন চেক: নাম এবং ফোন নম্বর খালি কি না
+            if not patient_name or not phone_number:
+                st.warning("⚠️ Please fill in all required fields (Name and Phone Number) to confirm your appointment.")
+            else:
+                # যদি সব তথ্য থাকে, তবেই এই অংশটুকু কাজ করবে
+                st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
+                st.info("Booking details have been sent to your provided email and phone number.")
+                st.balloons()
+                
+                import time
+                time.sleep(10)
+                st.rerun()
         
         conn.close()
     except Exception as e:
