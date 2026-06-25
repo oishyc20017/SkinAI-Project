@@ -356,7 +356,7 @@ with st.sidebar:
                 else:
                     st.error("Invalid Login Details.")
                     
-        with t2:
+    with t2:
             r_name = st.text_input("👤 Full Name", key="r_name", placeholder="John Doe")
             re = st.text_input("✉️ New Gmail", key="r_e", placeholder="newuser@gmail.com")
             rp = st.text_input("🔑 New Password", type="password", key="r_p", placeholder="••••••••")
