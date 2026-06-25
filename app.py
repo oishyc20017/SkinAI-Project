@@ -6,6 +6,7 @@ import smtplib
 from email.message import EmailMessage
 import requests # API দিয়ে SMS পাঠানোর জন্য
 import hashlib
+import google.generativeai as genai
 import requests
 from streamlit_lottie import st_lottie
 import time
@@ -259,14 +260,7 @@ def get_intelligent_response(query, res):
             return f"আপনার আপলোড করা ছবিতে সম্ভবত **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এর কারণ বা কোন ডাক্তার দেখাবেন সে সম্পর্কে জানতে চান?"
         else:
             return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know about its causes or appropriate specialists?"
-# --- ৫. モデル লোডিং ---
-@st.cache_resource
-def load_skin_model():
-    path = 'skin_cancer_model.h5'
-    if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
-    return tf.keras.models.load_model(path, compile=False)
-model = load_skin_model()
-classes = list(disease_details.keys())
+
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
