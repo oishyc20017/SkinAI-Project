@@ -301,7 +301,7 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
- with st.sidebar:
+with st.sidebar:
         # Language Settings
         st.markdown("### 🌐 Language Settings")
         language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
