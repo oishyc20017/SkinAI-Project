@@ -271,7 +271,6 @@ with st.sidebar:
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
-    with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
@@ -300,7 +299,6 @@ with st.sidebar:
     st.markdown("---")
     
     # ৫. হেল্প অপশন
-    with st.expander("❓ Help & Information"):
         st.write("আপনার ত্বকের সমস্যার ছবি আপলোড করুন এবং AI এর পরামর্শ নিন।")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
