@@ -482,8 +482,6 @@ def doctor_booking_popup():
         # অন্যান্য ফিল্ড
         patient_name = st.text_input("Patient Name")
         preferred_date = st.date_input("Preferred Date")
-        
-        submit_booking = st.form_submit_button("Confirm Appointment")
 
     if submit_booking:
         st.success(f"🎉 Appointment confirmed with {selected_name} at {selected_doctor[4]}!")
