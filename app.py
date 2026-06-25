@@ -523,19 +523,18 @@ def doctor_booking_popup():
                              key="pay_f")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
-    if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
-        # ১. সেশন স্টেট থেকে ডাটা আনা (এই পদ্ধতিতে কোনোভাবেই UnboundLocalError আসবে না)
+    # ইউনিক কি দিয়ে বাটন তৈরি (লুপের ভেতরে থাকলে ডাইনামিক কি ব্যবহার করুন)
+    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_time}"):
+        
+        # সেশন স্টেট থেকে ডাটা সুরক্ষিতভাবে নেওয়া
         user_email_str = str(st.session_state.get('email_f', ''))
         phone_number_str = str(st.session_state.get('phone_f', ''))
-        doctor = st.session_state.get('doc_f', 'Unknown')
-        pref_date = st.session_state.get('date_f', '')
-        pref_time = st.session_state.get('time_f', '')
-
+        
         import re
         email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
         phone_pattern = r'^\+?[0-9]{11,14}$'
         
-        # ২. ভ্যালিডেশন চেক
+        # ভ্যালিডেশন
         if not phone_number_str or not user_email_str:
             st.error("Please fill up both Phone Number and Gmail Address!")
         elif not re.match(email_pattern, user_email_str):
@@ -543,7 +542,7 @@ def doctor_booking_popup():
         elif not re.match(phone_pattern, phone_number_str):
             st.error("Please enter a valid 11-digit Phone Number!")
         else:
-            # ৩. ডাটাবেস সেভ
+            # ডাটাবেস এবং ইমেইল লজিক
             try:
                 conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
                 c = conn.cursor()
@@ -553,7 +552,7 @@ def doctor_booking_popup():
                 conn.close()
                 st.success("Appointment successfully committed!")
 
-                # ৪. ইমেইল কনফার্মেশন
+                # ইমেইল পাঠানো
                 msg = EmailMessage()
                 msg['Subject'] = 'Appointment Confirmation - SkinAI'
                 msg['From'] = 'your_email@gmail.com'
