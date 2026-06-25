@@ -538,15 +538,16 @@ def doctor_booking_popup():
     elif not re.match(phone_pattern, phone_number_str):
         st.error("Please enter a valid 11-digit Phone Number!")
     else:
-        # ডাটাবেস সেভ লজিক
-        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-        c = conn.cursor()
-        c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                  (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
-        conn.commit()
-        conn.close()
-        st.success("Appointment successfully committed!")
-            # ২. ইমেইল পাঠানো
+            # ১. ডাটাবেস সেভ লজিক
+            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+            c = conn.cursor()
+            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+            conn.commit()
+            conn.close()
+            st.success("Appointment successfully committed!")
+
+            # ২. ইমেইল পাঠানো (এটিকে ডাটাবেস সেভের ঠিক নিচে, একই লেভেলে রাখুন)
             try:
                 msg = EmailMessage()
                 msg['Subject'] = 'Appointment Confirmation - SkinAI'
