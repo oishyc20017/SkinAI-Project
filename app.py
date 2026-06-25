@@ -296,10 +296,6 @@ with st.sidebar:
 
         
     st.markdown("---")
-    
-    # আপনার কোডের সাইডবার বা অন্য ব্লকের ভেতর যেখানে এই Expander টি আছে:
-    with st.expander("❓ Help & Information"):
-        st.write("আপনার ত্বকের সমস্যার ছবি আপলোড করুন এবং AI এর পরামর্শ নিন।")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
     <div style="
