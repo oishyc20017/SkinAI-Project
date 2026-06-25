@@ -502,6 +502,7 @@ def doctor_booking_popup():
                 "phone": phone_number_str,
                 "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
             }
+    
             # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
     # বাটন প্রেসের ভেতরে এই try-except ব্লকটি এভাবে রাখুন:
         
