@@ -539,14 +539,13 @@ def doctor_booking_popup():
                              key="pay_f")
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
-    # কনফার্ম বাটন
     # 540 line theke eivabe update korun
-if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_time}"):
-    # Prothome function call korben
-    is_saved = save_appointment(user_email, user_phone, selected_doctor, selected_date)
+    if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_time}"):
+        # Prothome function call korben
+        is_saved = save_appointment(user_email, user_phone, selected_doctor, selected_date)
     
-    # Jodi data save hoy, tobe success message dekhaben
-    if is_saved:
+        # Jodi data save hoy, tobe success message dekhaben
+        if is_saved:
         st.success("Apnar appointment database e save hoyeche!")
         st.balloons()
         # Baki kaj (sms ba time.sleep) ekhane korun
