@@ -525,11 +525,11 @@ def doctor_booking_popup():
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
     if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
         # বাটন ক্লিকের পর ইনপুটগুলো সেশন স্টেট থেকে নিন
-    user_email_str = str(st.session_state.email_f)
-    phone_number_str = str(st.session_state.phone_f)
+        user_email_str = str(st.session_state.email_f)
+        phone_number_str = str(st.session_state.phone_f)
     
-    email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-    phone_pattern = r'^\+?[0-9]{11,14}$'
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        phone_pattern = r'^\+?[0-9]{11,14}$'
 
     if phone_number_str == "" or user_email_str == "":
         st.error("Please fill up both Phone Number and Gmail Address!")
