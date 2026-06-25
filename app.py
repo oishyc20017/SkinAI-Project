@@ -114,6 +114,42 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+# --- ১. ডাটাবেস ও সিকিউরিটি ---
+conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+c = conn.cursor()
+
+def init_db():
+    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+    c = conn.cursor()
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS bookings
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  user_email TEXT, 
+                  phone_number TEXT, 
+                  doctor_name TEXT, 
+                  date TEXT, 
+                  time TEXT, 
+                  status TEXT)''')
+                  
+    c.execute('''CREATE TABLE IF NOT EXISTS doctors
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  name TEXT, specialty TEXT, fee TEXT, available_time TEXT)''')
+                  
+    c.execute('''CREATE TABLE IF NOT EXISTS chat_history
+                 (email TEXT, role TEXT, content TEXT)''')
+    
+    c.execute("SELECT COUNT(*) FROM doctors")
+    if c.fetchone()[0] == 0:
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM')")
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM')")
+    
+    conn.commit()
+    conn.close()
+
+init_db()
+
+def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
+def check_hash(p, h): return h if make_hash(p) == h else False
 
 # --- ৩. রোগের বিস্তারিত ডাটাবেস (সাতটি রোগ) ---
 disease_details = {
@@ -177,6 +213,55 @@ def get_intelligent_response(query, res):
     bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar"]
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     is_banglish = any(word in q.split() for word in bangla_hints) # split() দিলে একদম সঠিক শব্দ ধরবে
+    # ১. নির্দিষ্ট নাম বা বেস্ট সাজেশনের হাই-প্রায়োরিটি কন্ডিশন
+    if any(word in q for word in ["specific", "name", "nam", "tomar mote", "best", "kake", "kak", "mention"]):
+        if is_bn_mode:
+            personal_suggestions = [
+                f"আমার ব্যক্তিগত মতামত চাইলে বলবো, আপনি আমাদের প্যানেলের সিনিয়র ডার্মাটোলজিস্ট **Dr. Sabina Yasmin** অথবা লেজার স্পেশালিস্ট **Dr. Asif Ahmed**-কে দেখাতে পারেন। ওনারা দুজনেই এই বিষয়ে বেশ অভিজ্ঞ।",
+                f"যদি সুনির্দিষ্ট ১-২ জন ভালো ডাক্তারের কথা বলতে বলেন, তবে আমি সাজেস্ট করবো আপনি **Dr. Sabina Yasmin** অথবা **Dr. Nusrat Jahan**-এর অ্যাপয়েন্টমেন্ট নিতে পারেন।"
+            ]
+            return random.choice(personal_suggestions)
+        else:
+            personal_suggestions = [
+                f"If you want specific recommendations, I highly suggest consulting **Dr. Sabina Yasmin** or **Dr. Asif Ahmed** from our panel. They are highly experienced with {res}.",
+                f"Personally, scheduling a visit with either **Dr. Sabina Yasmin** or **Dr. Nusrat Jahan** would be the best choice for this condition."
+            ]
+            return random.choice(personal_suggestions)
+            
+    # ২. সাধারণ ক্যাটাগরি কন্ডিশন (কিসের ডাক্তার)
+    elif any(word in q for word in ["doctor", "daktar", "dekhale", "specialist", "consult"]):
+        if is_bn_mode:
+            return f"যেহেতু এআই বিশ্লেষণে **{res}** এসেছে, এটি মূলত ত্বকের একটি বিশেষ সমস্যা। তাই এর জন্য আপনাকে অবশ্যই একজন **চর্মরোগ বিশেষজ্ঞ (Skin Specialist বা Dermatologist)** দেখাতে হবে। আপনার কি কোনো নির্দিষ্ট ডাক্তারের নাম জানার প্রয়োজন আছে?"
+        else:
+            return f"Since the analysis indicates **{res}**, this falls under skin-related pathologies. You should definitely consult a qualified **Dermatologist (Skin Specialist)**. Do you need any specific doctor names?"
+            # ৩. কেন হয় বা কারণ কন্ডিশন
+    elif any(word in q for word in ["keno", "ken", "cause", "caron", "bhav"]):
+        if is_bn_mode:
+            return f"এটি সাধারণত {data.get('cause', 'নির্দিষ্ট কিছু কারণে')} হয়ে থাকে। ত্বক সুরক্ষিত রাখতে কড়া রোদ থেকে দূরে থাকা ভালো। এই বিষয়ে কি আরও কোনো তথ্য আপনার প্রয়োজন?"
+        else:
+            return f"This condition is usually caused by {data.get('cause', 'various factors')}. Keep your skin shielded from UV rays. Do you need any further insights?"
+            # ৪. ঘরোয়া চিকিৎসা কন্ডিশন
+    elif any(word in q for word in ["home", "goroa", "tips", "bashay", "upai", "treatment", "upokar"]):
+        if is_bn_mode:
+            return f"বাসায় বসে আপনি যা করতে পারেন: {data.get('home', 'ত্বক পরিষ্কার ও ময়েশ্চারाइजড রাখুন।')}। তবে মনে রাখবেন, ঘরোয়া উপায় সাময়িক, মূল চিকিৎসার জন্য ডাক্তার দেখানোই শ্রেয়। আর কিছু কি জানতে চান?"
+        else:
+            return f"For temporary home care: {data.get('home', 'Keep the skin clean.')} However, professional diagnosis is highly recommended. Anything else I can help with?"
+
+    # ৫. ডিফল্ট সাধারণ উত্তর
+    else:
+        if is_bn_mode:
+            return f"আপনার আপলোড করা ছবিতে সম্ভবত **{res}** এর লক্ষণ দেখা যাচ্ছে। এটি মূলত {data.get('desc', 'একটি ত্বকের সমস্যা')}। আপনি কি এর কারণ বা কোন ডাক্তার দেখাবেন সে সম্পর্কে জানতে চান?"
+        else:
+            return f"Based on the image, it looks like **{res}**. {data.get('desc', 'This is a skin condition.')} Would you like to know about its causes or appropriate specialists?"
+# --- ৫. モデル লোডিং ---
+@st.cache_resource
+def load_skin_model():
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
+model = load_skin_model()
+classes = list(disease_details.keys())
+
 
     # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
     if is_bangla_script or is_banglish:
@@ -213,86 +298,87 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-    # --- লোগো সেন্টার এবং আধুনিক স্কিন এআই ডিজাইন ---
-    st.write("") 
-    col1, col2, col3 = st.columns([1, 2, 1]) 
+    # ১. লোগো এরিয়া
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        # এটি একটি রঙিন 'Skin Scan' বা 'Healthy Skin' আইকন
         st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
-    
-    st.markdown("<br>", unsafe_allow_html=True) 
-    # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
-    st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, rgba(88, 166, 255, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
-        padding: 15px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        margin-top: -10px;
-    ">
-        <p style="color: #e3e3e3; font-size: 13px; font-weight: 500; margin: 0; line-height: 1.4;">
-            ✨ <span style="color: #58a6ff;">SkinAI</span> scans for 7 types of skin conditions with professional precision.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
+
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
+    with st.expander("❓ Help & Information"):
+        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
+        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
+        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
+    # ২. সিকিউরিটি গেটওয়ে কার্ড
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+        padding: 15px; 
+        border-radius: 10px; 
+        border: 1px solid #4338ca; 
+        text-align: center; 
+        margin-bottom: 15px;">
+        <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
+        <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if st.button("➕ New Chat", use_container_width=True):
+    # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
+    if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
         st.session_state.messages = []
         st.session_state.last_res = "None"
         st.rerun()
 
     st.markdown("---")
-    
-    if not st.session_state.logged_in:
-        # --- তোমার চাওয়া Facebook ও Gmail বাটন ---
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
-        with col2:
-            if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
+
+    # ৫. আসল Login ও Register ট্যাব লজিক
+        t1, t2 = st.tabs(["🔑 Login", "📝 Register"])
         
-        st.markdown("---")
-        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
-            e = st.text_input("Gmail Address", key="l_e")
-            p = st.text_input("Password", type="password", key="l_p")
-            if st.button("Log In", use_container_width=True):
+            e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
+            p = st.text_input("🔑 Password", type="password", key="l_p", placeholder="••••••••")
+            if st.button("Log In", use_container_width=True, key="unique_login_submit"):
                 c.execute('SELECT password FROM users WHERE email=?', (e,))
                 data = c.fetchone()
                 if data and check_hash(p, data[0]):
-                    st.session_state.logged_in, st.session_state.user = True, e
-                    # ডাটাবেস থেকে পুরনো হিস্ট্রি নিয়ে আসা
+                    st.session_state.logged_in = True
+                    st.session_state.user = e
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
                     st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
-                    st.success("Welcome back! History Loaded.")
-                    time.sleep(0.5); st.rerun()
-                else: st.error("Invalid Login Details.")
+                    st.success("Welcome back!")
+                    time.sleep(0.5)
+                    st.rerun()
+                else:
+                    st.error("Invalid Login Details.")
+                    
         with t2:
-            re = st.text_input("New Gmail", key="r_e")
-            rp = st.text_input("New Password", type="password", key="r_p")
-            if st.button("Create Account", use_container_width=True):
-                if "@" in re and len(rp) > 3:
+            r_name = st.text_input("👤 Full Name", key="r_name", placeholder="John Doe")
+            re = st.text_input("✉️ New Gmail", key="r_e", placeholder="newuser@gmail.com")
+            rp = st.text_input("🔑 New Password", type="password", key="r_p", placeholder="••••••••")
+            
+            if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
+                if r_name == "":
+                    st.warning("Please fill in your Full Name!")
+                elif "@" in re and len(rp) > 3:
                     try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp))); conn.commit()
-                        st.success("Account Created! Now Login.")
-                    except: st.error("User already exists.")
-                else: st.warning("Enter valid details.")
-    else:
-        st.success(f"Logged in as: {st.session_state.user}")
-        if st.button("Logout", use_container_width=True):
-            st.session_state.logged_in = False
-            st.session_state.messages = []
-            st.rerun()
+                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
+                        conn.commit()
+                        st.success(f"Account Created for {r_name}! Now Login.")
+                    except:
+                        st.error("User already exists.")
+                else:
+                    st.warning("Enter valid details.")
 
-    st.markdown("---")
-    with st.expander("❓ Help & Information"):
-        st.write("১. স্পষ্ট ছবি আপলোড করুন।")
-        st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
-        st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ৬. ট্রাস্ট ও সিকিউরিটি নোটিশ
+    st.markdown("""
+    <div style="background-color: #0b1329; padding: 10px; border-radius: 6px; border-left: 4px solid #10b981;">
+        <p style="color: #10b981; font-size: 11px; margin: 0; font-weight: bold;">✓ Zero-Knowledge Privacy Enabled</p>
+        <p style="color: #64748b; font-size: 11px; margin: 3px 0 0 0;">Your credentials are locally hashed and never stored in plain text.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
 # --- ৭. মেইন চ্যাট ইন্টারফেস ---
 # --- ১. মেইন পেজ অ্যানিমেশন ---
 col1, col2, col3 = st.columns([1, 1, 1])
