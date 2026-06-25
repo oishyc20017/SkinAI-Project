@@ -219,16 +219,44 @@ disease_details = {
 }
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
-def get_intelligent_response(query, res):
-    with st.status("Analyzing your question...", expanded=False) as status:
-        time.sleep(1.0)
-        status.update(label="Response Ready!", state="complete")
-    
-    q = query.lower()
-    if res == "None":
-        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+def detect_language(text):
+    # বাংলা ইউনিকোড রেঞ্জ চেক করা
+    if any('\u0980' <= char <= '\u09FF' for char in text):
+        return 'bn'
+    # ইংরেজি কিওয়ার্ড চেক করা (যদি ইংলিশ হয়)
+    english_keywords = ["what", "why", "how", "doctor", "cause", "advice", "treatment", "tell", "best"]
+    if any(word in text.lower() for word in english_keywords):
+        return 'en'
+    return 'bn' # ডিফল্ট বা বাংলিশ হলে বাংলা ভাবা হবে
 
+def get_intelligent_response(query, res):
+    lang = detect_language(query)
+    
+    # রেসপন্স এর টেম্পলেট
+    data = disease_details.get(res, {})
+    
+    if res == "None":
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if lang == 'bn' else "Please upload a photo first."
+
+    # কন্ডিশনাল রেসপন্স
+    if any(word in query.lower() for word in ["name", "doctor", "specialist", "daktar"]):
+        if lang == 'en':
+            return f"For {res}, I recommend consulting Dr. Sabina Yasmin or Dr. Asif Ahmed."
+        else:
+            return f"{res}-এর জন্য আমি আপনাকে Dr. Sabina Yasmin অথবা Dr. Asif Ahmed-এর পরামর্শ নেওয়ার অনুরোধ করবো।"
+    
+    elif any(word in query.lower() for word in ["cause", "keno", "caron"]):
+        cause = data.get('cause', 'various factors')
+        if lang == 'en':
+            return f"The main cause is: {cause}."
+        else:
+            return f"এর মূল কারণ হলো: {cause}।"
+            
+    # ডিফল্ট উত্তর
+    if lang == 'en':
+        return f"Based on the analysis, it is {res}. {data.get('desc', '')}"
+    else:
+        return f"বিশ্লেষণ অনুযায়ী এটি {res} হতে পারে। {data.get('desc', '')}"
     data = disease_details.get(res, {})
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
