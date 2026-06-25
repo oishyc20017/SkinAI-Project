@@ -297,16 +297,16 @@ model = load_skin_model()
 classes = list(disease_details.keys())
 
 # --- সেশন ম্যানেজমেন্ট (এগুলো একদম বাম দিকে থাকবে, কোনো স্পেস ছাড়া) ---
+# --- সেশন ম্যানেজমেন্ট ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
-# --- সাইডবার (এগুলো বাম দিকে থাকবে) ---
+# --- সাইডবার ---
 with st.sidebar:
     st.markdown("### 🌐 Language Settings")
-    language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
-    language = st.selectbox("Select Language", language_list, key="lang_select")
+    language = st.selectbox("Select Language", ["English", "Bangla", "Banglish"], key="lang_select")
     st.session_state['user_language'] = language
     st.markdown("---")
     
