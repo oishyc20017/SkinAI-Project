@@ -121,45 +121,6 @@ div.stButton > button:first-child:hover {
     margin-top: -5px;
 }
 
-    /* ২. জেমিনি লুক: ডিফল্ট বর্ডার এবং কালার পুরোপুরি ভ্যানিশ করা */
-    [data-testid="stChatMessage"] {
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    
-    /* চ্যাট মেসেজের ভেতরের ডিফল্ট বক্স রিমুভ */
-    [data-testid="stChatMessage"] > div {
-        background-color: transparent !important;
-        border: none !important;
-    }
-
-    /* ৩. জেমিনি স্টাইল চ্যাট বাবল (স্মুথ লুক) */
-    .chat-bubble {
-        background-color: #1e1f20; /* জেমিনি ডার্ক গ্রে */
-        border: 1px solid #3c4043;
-        border-radius: 20px;
-        padding: 16px 20px;
-        color: #e3e3e3;
-        line-height: 1.6;
-        margin-top: 5px;
-        display: inline-block;
-        max-width: 90%;
-    }
-
-    /* ৪. ইনপুট বক্স জেমিনি স্টাইল (গোল এবং ক্লিন) */
-    [data-testid="stChatInput"] {
-        border-radius: 30px !important;
-        background-color: #1e1f20 !important;
-        border: 1px solid #3c4043 !important;
-    }
-
-    /* ইনপুটের সেই লাল/কমলা বর্ডার ফোকাস সল্ভ করা */
-    [data-testid="stChatInput"] div {
-        border: none !important;
-        box-shadow: none !important;
-    }
-
     @keyframes rainbow {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
@@ -167,6 +128,43 @@ div.stButton > button:first-child:hover {
     }
 </style>
 """, unsafe_allow_html=True)
+# --- ১. ডাটাবেস ও সিকিউরিটি ---
+conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+c = conn.cursor()
+
+def init_db():
+    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+    c = conn.cursor()
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS bookings
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                  user_email TEXT, 
+                  phone_number TEXT, 
+                  doctor_name TEXT, 
+                  date TEXT, 
+                  time TEXT, 
+                  status TEXT)''')
+                  
+    c.execute('''CREATE TABLE IF NOT EXISTS doctors
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  name TEXT, specialty TEXT, fee TEXT, available_time TEXT)''')
+                  
+    c.execute('''CREATE TABLE IF NOT EXISTS chat_history
+                 (email TEXT, role TEXT, content TEXT)''')
+    
+    c.execute("SELECT COUNT(*) FROM doctors")
+    if c.fetchone()[0] == 0:
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM')")
+        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM')")
+    
+    conn.commit()
+    conn.close()
+
+init_db()
+
+def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
+def check_hash(p, h): return h if make_hash(p) == h else False
+
 
 # --- ৩. রোগের বিস্তারিত ডাটাবেস (সাতটি রোগ) ---
 disease_details = {
