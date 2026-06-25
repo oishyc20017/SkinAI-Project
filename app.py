@@ -1,87 +1,19 @@
+import datetime
+import re
 import streamlit as st
-import google.generativeai as genai
 import sqlite3
+import smtplib
+from email.message import EmailMessage
+import requests # API দিয়ে SMS পাঠানোর জন্য
 import hashlib
+import requests
+from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
-from email.message import EmailMessage
-import smtplib
-import re
-
-# --- ১. কনফিগারেশন ---
-st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
-genai.configure(api_key="YOUR_API_KEY") # এখানে আপনার এপিআই কি দিন
-chat_model = genai.GenerativeModel('gemini-1.5-flash')
-
-# --- ২. মডেল ও ডাটাবেস ফাংশন ---
-def load_skin_model():
-    path = 'skin_cancer_model.h5'
-    if not os.path.exists(path): 
-        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
-    return tf.keras.models.load_model(path, compile=False)
-
-model = load_skin_model()
-
-disease_details = {
-    'Actinic keratoses': "Actinic keratoses are rough, scaly patches on the skin, caused by years of sun exposure. They are considered precancerous.",
-    'Basal cell carcinoma': "Basal cell carcinoma is a type of skin cancer that begins in the basal cells. It often appears as a slightly transparent bump on the skin.",
-    'Benign keratosis': "Benign keratosis is a noncancerous skin growth that often appears as a waxy, brown, or black bump.",
-    'Dermatofibroma': "Dermatofibroma is a common, harmless skin growth that typically appears as a small, firm, reddish-brown bump.",
-    'Melanoma': "Melanoma is the most serious type of skin cancer. It develops in the cells that produce melanin.",
-    'Melanocytic nevi': "Melanocytic nevi are common moles, which are growths on the skin that are usually brown or black.",
-    'Vascular lesions': "Vascular lesions are relatively common abnormalities of the skin and underlying tissues, more commonly known as birthmarks."
-}
-
-# --- ৩. এআই ফাংশন ---
-def get_intelligent_response(query, res):
-    system_instruction = f"""
-    You are a professional Medical AI Assistant.
-    Analyze the user's query: '{query}' based on the medical result: '{res}'.
-    If the user asks for details about the disease, provide information from the medical context.
-    Always prioritize safety and advise the user to consult a doctor.
-    Respond to the user in the language they used (Bengali or English).
-    """
-    try:
-        response = chat_model.generate_content(system_instruction + "\n\nUser Query: " + query)
-        return response.text
-    except Exception as e:
-        return f"এআই রেসপন্স এরর: {str(e)}"
-
-# --- ৪. সেশন স্টেট ---
-if 'messages' not in st.session_state: st.session_state.messages = []
-if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-
-# --- ৫. মেইন চ্যাট ইন্টারফেস ---
-st.title("SkinAI Assistant")
-
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
-
-if file:
-    img_res = Image.open(file).convert('RGB').resize((100, 75))
-    x = np.asarray(img_res) / 255.0
-    x = np.expand_dims(x, axis=0)
-    pred = model.predict(x, verbose=0)
-    st.session_state.last_res = list(disease_details.keys())[np.argmax(pred)]
-    st.write(f"Detected: {st.session_state.last_res}")
-
-# চ্যাট লজিক
-for m in st.session_state.messages:
-    with st.chat_message(m["role"]): st.markdown(m["content"])
-
-if prompt := st.chat_input("Ask me anything..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"): st.markdown(prompt)
-    
-    with st.chat_message("assistant"):
-        reply = get_intelligent_response(prompt, st.session_state.last_res)
-        st.markdown(reply)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
-
-# ৩. অ্যাপের বাকি কোড...
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -288,27 +220,15 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query, res):
-    # এটি ব্যবহারকারীর ভাষা বুঝে জেমিনির মাধ্যমে উত্তর দিবে
-    system_instruction = f"""
-    You are a professional Medical AI Assistant.
-    Analyze the user's query: '{query}' based on the medical result: '{res}'.
-    
-    Instruction:
-    - Respond to the user in the language they used to ask the question (e.g., if Bengali, reply in Bengali).
-    - If the language is not clear, default to English.
-    - Be natural, helpful, and concise.
-    """
-    
     with st.status("Analyzing your question...", expanded=False) as status:
         time.sleep(1.0)
         status.update(label="Response Ready!", state="complete")
     
-    try:
-        # এখানে 'chat_model' ব্যবহার করা হয়েছে যাতে 'Sequential' মডেলের সাথে কনফ্লিক্ট না হয়
-        response = chat_model.generate_content(system_instruction + "\n\nUser Query: " + query)
-        return response.text
-    except Exception as e:
-        return f"এআই রেসপন্স এরর: {str(e)}"
+    q = query.lower()
+    if res == "None":
+        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+
     data = disease_details.get(res, {})
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
@@ -493,10 +413,8 @@ st.markdown(
     <hr style="margin-top: 5px; margin-bottom: 15px; border: 0.1px solid #444; opacity: 0.2;">
     """,
     unsafe_allow_html=True)
-# আপনার কোডের ৪৯৭ নম্বর লাইনে যেখানে file_uploader আছে, 
-# সেখানে শুধু key="skin_photo_uploader" যুক্ত করে দিন।
 
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="skin_photo_uploader")
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
