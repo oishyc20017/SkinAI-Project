@@ -1,19 +1,15 @@
 import streamlit as st
 import google.generativeai as genai
-import sqlite3
-import hashlib
-import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
-from streamlit_lottie import st_lottie
-import requests
+import sqlite3
 
 # --- কনফিগারেশন ---
-# আপনার Google AI Studio থেকে পাওয়া API Key এখানে বসান
-API_KEY = "YOUR_API_KEY_HERE" 
+# আপনার API Key এখানে বসান (Screenshot 211 থেকে সংগ্রহ করুন)
+API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA"
 genai.configure(api_key=API_KEY)
 model_gemini = genai.GenerativeModel('gemini-1.5-flash')
 
@@ -25,19 +21,20 @@ def load_skin_model():
         gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
     return tf.keras.models.load_model(path, compile=False)
 
-# --- ডাটাবেস সেটআপ ---
+model = load_skin_model()
+disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
+
+# --- ডাটাবেস ---
 conn = sqlite3.connect('skinai_database.db', check_same_thread=False)
 c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS chat_history (user_msg TEXT, bot_msg TEXT)''')
 conn.commit()
 
-# --- মেইন অ্যাপ ---
+# --- UI ---
 st.title("SkinAI Assistant")
-model = load_skin_model()
-disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
 
-# ২. সমাধান: ফাইল আপলোডার একবারই রাখা হয়েছে
-uploaded_file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
+# এখানে একটি মাত্র ফাইল আপলোডার ব্যবহার করা হয়েছে
+uploaded_file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="main_uploader")
 
 if uploaded_file:
     img = Image.open(uploaded_file).convert('RGB').resize((100, 75))
