@@ -584,45 +584,45 @@ def doctor_booking_popup():
             st.rerun()
         
         if st.button("Confirm Appointment", use_container_width=True, key="unique_confirm_btn"):
-        # ইনপুটগুলো সেশন স্টেট থেকে নেওয়া
-        user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
-        phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
-        doctor = st.session_state.doc_f
-        pref_date = st.session_state.date_f
-        pref_time = st.session_state.time_f
+            # ইনপুটগুলো সেশন স্টেট থেকে নেওয়া
+            user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
+            phone_number_str = str(st.session_state.phone_f) if 'phone_f' in st.session_state else ""
+            doctor = st.session_state.doc_f
+            pref_date = st.session_state.date_f
+            pref_time = st.session_state.time_f
 
-        import re
-        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        phone_pattern = r'^\+?[0-9]{11,14}$'
+            import re
+            email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+            phone_pattern = r'^\+?[0-9]{11,14}$'
         
-        if phone_number_str == "" or user_email_str == "":
-            st.error("Please fill up both Phone Number and Gmail Address!")
-        elif not re.match(email_pattern, user_email_str):
-            st.error("Please enter a valid Gmail address!")
-        elif not re.match(phone_pattern, phone_number_str):
-            st.error("Please enter a valid 11-digit Phone Number!")
-        else:
-            # ১. ডাটাবেস সেভ লজিক
-            conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-            c = conn.cursor()
-            c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
-            conn.commit()
-            conn.close()
-            st.success("Appointment successfully committed!")
+            if phone_number_str == "" or user_email_str == "":
+                st.error("Please fill up both Phone Number and Gmail Address!")
+            elif not re.match(email_pattern, user_email_str):
+                st.error("Please enter a valid Gmail address!")
+            elif not re.match(phone_pattern, phone_number_str):
+                st.error("Please enter a valid 11-digit Phone Number!")
+            else:
+                # ১. ডাটাবেস সেভ লজিক
+                conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+                c = conn.cursor()
+                c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
+                         (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+                conn.commit()
+                conn.close()
+                st.success("Appointment successfully committed!")
 
             # ২. ইমেইল পাঠানো
-            try:
-                msg = EmailMessage()
-                msg['Subject'] = 'Appointment Confirmation - SkinAI'
-                msg['From'] = 'your_email@gmail.com'
-                msg['To'] = user_email_str
-                msg.set_content(f"Dear User, your appointment with {doctor} is booked for {pref_date} at {pref_time}.")
+                try:
+                    msg = EmailMessage()
+                    msg['Subject'] = 'Appointment Confirmation - SkinAI'
+                    msg['From'] = 'your_email@gmail.com'
+                    msg['To'] = user_email_str
+                    msg.set_content(f"Dear User, your appointment with {doctor} is booked for {pref_date} at {pref_time}.")
                 
-                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-                    smtp.login('your_email@gmail.com', 'your_app_password')
-                    smtp.send_message(msg)
-                st.info("Confirmation email sent successfully.")
+                    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                        smtp.login('your_email@gmail.com', 'your_app_password')
+                        smtp.send_message(msg)
+                    st.info("Confirmation email sent successfully.")
             except Exception as e:
                 st.warning(f"Email could not be sent: {e}")
             
