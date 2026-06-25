@@ -545,7 +545,7 @@ def doctor_booking_popup():
         is_saved = save_appointment(user_email, user_phone, selected_doctor, selected_date)
     
         # Jodi data save hoy, tobe success message dekhaben
-        if is_saved:
+    if is_saved:
         st.success("Apnar appointment database e save hoyeche!")
         st.balloons()
         # Baki kaj (sms ba time.sleep) ekhane korun
