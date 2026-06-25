@@ -1,14 +1,11 @@
-import datetime
-st.write("CodeUpdated Successfully")
-import random
-import re
 import streamlit as st
+import datetime
+import re
 import sqlite3
 import smtplib
 from email.message import EmailMessage
-import requests # API দিয়ে SMS পাঠানোর জন্য
-import hashlib
 import requests
+import hashlib
 from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
@@ -16,6 +13,7 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
+import random # এটা জরুরি, কারণ আপনার কোডে random.choice আছে
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
