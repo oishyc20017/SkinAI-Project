@@ -1,48 +1,23 @@
+import datetime
+import re
 import streamlit as st
-import google.generativeai as genai
+import sqlite3
+import smtplib
+from email.message import EmailMessage
+import requests # API দিয়ে SMS পাঠানোর জন্য
+import hashlib
+import requests
+from streamlit_lottie import st_lottie
+import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
 import gdown
 
-# --- Configuration ---
-genai.configure(api_key="AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA")
-model_gemini = genai.GenerativeModel('gemini-1.5-flash')
+# --- পেজ কনফিগারেশন (একটিই থাকবে) ---
+st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
-# --- Model Loading ---
-@st.cache_resource
-def load_skin_model():
-    path = 'skin_cancer_model.h5'
-    if not os.path.exists(path):
-        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
-    return tf.keras.models.load_model(path, compile=False)
-
-model = load_skin_model()
-disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
-
-# --- UI Setup ---
-st.title("SkinAI Assistant")
-
-# ইউনিক কী দিয়ে আপলোডার সেট করা হয়েছে
-uploaded_file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="my_unique_uploader")
-
-if uploaded_file:
-    img = Image.open(uploaded_file).convert('RGB').resize((100, 75))
-    x = np.expand_dims(np.asarray(img) / 255.0, axis=0)
-    pred = model.predict(x, verbose=0)
-    detected_disease = disease_classes[np.argmax(pred)]
-    st.write(f"### Detection Result: {detected_disease}")
-
-    # চ্যাট ইনপুট (ইউনিক কী)
-    prompt = st.chat_input("Ask about your skin condition...", key="my_unique_chat")
-    if prompt:
-        with st.chat_message("user"):
-            st.write(prompt)
-        with st.chat_message("assistant"):
-            instruction = f"The user has {detected_disease}. Answer professionally in English: {prompt}"
-            response = model_gemini.generate_content(instruction)
-            st.write(response.text)
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
 <style>
