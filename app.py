@@ -493,9 +493,9 @@ st.markdown(
     <hr style="margin-top: 5px; margin-bottom: 15px; border: 0.1px solid #444; opacity: 0.2;">
     """,
     unsafe_allow_html=True)
+# আপনার কোডের ৪৯৭ নম্বর লাইনে যেখানে file_uploader আছে, 
+# সেখানে শুধু key="skin_photo_uploader" যুক্ত করে দিন।
 
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
-# আপনার পুরনো কোডটি পরিবর্তন করে এমন করুন:
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="skin_photo_uploader")
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
