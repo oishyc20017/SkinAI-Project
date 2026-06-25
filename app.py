@@ -1,8 +1,13 @@
-# --- ১. সব ইমপোর্ট লাইন (সবার উপরে থাকতে হবে) ---
+import datetime
+import re
 import streamlit as st
-import google.generativeai as genai
 import sqlite3
+import smtplib
+from email.message import EmailMessage
+import requests # API দিয়ে SMS পাঠানোর জন্য
 import hashlib
+import requests
+from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
 from PIL import Image
@@ -10,117 +15,6 @@ import numpy as np
 import os
 import gdown
 
-# --- ২. কনফিগারেশন (সঠিকভাবে সাজানো) ---
-# আপনার API Key টি এখানে বসান
-genai.configure(api_key="YOUR_ACTUAL_API_KEY_HERE") 
-chat_model = genai.GenerativeModel('gemini-1.5-flash')
-
-# ডাটাবেস কানেকশন (sqlite3 এখন কাজ করবে)
-conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-c = conn.cursor()
-
-# --- ৩. বাকি অংশ (মডেল ও ইন্টারফেস) ---
-st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
-
-@st.cache_resource
-def load_skin_model():
-    path = 'skin_cancer_model.h5'
-    if not os.path.exists(path): 
-        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
-    return tf.keras.models.load_model(path, compile=False)
-
-model = load_skin_model()
-disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
-
-# এআই ফাংশন
-def get_intelligent_response(query, res):
-    system_instruction = "You are a professional Medical AI. If user writes in Bangla, reply in Bangla. If English, reply in English. Do not mix languages."
-    try:
-        response = chat_model.generate_content(system_instruction + "\nUser: " + query)
-        return response.text
-    except Exception as e:
-        return f"এআই এরর: {str(e)}"
-
-# ইন্টারফেস
-st.title("SkinAI Assistant")
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="unique_uploader_1")
-
-if file:
-    img_res = Image.open(file).convert('RGB').resize((100, 75))
-    x = np.asarray(img_res) / 255.0
-    x = np.expand_dims(x, axis=0)
-    pred = model.predict(x, verbose=0)
-    st.write(f"Detected: {disease_classes[np.argmax(pred)]}")
-
-if prompt := st.chat_input("Ask me anything..."):
-    with st.chat_message("assistant"):
-        st.write(get_intelligent_response(prompt, "Unknown"))
-
-# ডাটাবেস কানেকশন
-conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-c = conn.cursor()
-
-# --- ৩. বাকি সব ফাংশন ---
-# এখানে আপনার আগের মডেল লোডিং এবং চ্যাট ফাংশনগুলো বসান
-# ... (অন্য সব কোড আগে যেভাবে ছিল) ...
-
-st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
-
-# --- 2. Model Loading ---
-@st.cache_resource
-def load_skin_model():
-    path = 'skin_cancer_model.h5'
-    if not os.path.exists(path): 
-        gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
-    return tf.keras.models.load_model(path, compile=False)
-
-model = load_skin_model()
-disease_classes = ['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanoma', 'Nevus', 'Vascular lesions']
-
-# --- 3. AI Response Function (Language controlled) ---
-def get_intelligent_response(query, res):
-    # Ekhane instruction clear kore dewa hoyeche
-    system_instruction = f"""
-    You are a professional Medical AI Assistant. 
-    Analyze: '{query}' based on result: '{res}'.
-    RULES: 
-    1. If user asks in Bangla/Banglish, reply strictly in Bangla. 
-    2. If user asks in English, reply strictly in English. 
-    3. No mixing of languages. 
-    4. Keep it short and medical advice is must.
-    """
-    try:
-        response = chat_model.generate_content(system_instruction + "\nUser: " + query)
-        return response.text
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-# --- 4. Interface ---
-if 'messages' not in st.session_state: st.session_state.messages = []
-if 'last_res' not in st.session_state: st.session_state.last_res = "None"
-
-st.title("SkinAI Assistant")
-
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"], key="unique_uploader_1")
-
-if file:
-    img_res = Image.open(file).convert('RGB').resize((100, 75))
-    x = np.asarray(img_res) / 255.0
-    x = np.expand_dims(x, axis=0)
-    pred = model.predict(x, verbose=0)
-    st.session_state.last_res = disease_classes[np.argmax(pred)]
-    st.write(f"Detected: {st.session_state.last_res}")
-
-for m in st.session_state.messages:
-    with st.chat_message(m["role"]): st.markdown(m["content"])
-
-if prompt := st.chat_input("Ask me anything..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"): st.markdown(prompt)
-    with st.chat_message("assistant"):
-        reply = get_intelligent_response(prompt, st.session_state.last_res)
-        st.markdown(reply)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
