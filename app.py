@@ -14,13 +14,12 @@ from PIL import Image
 import numpy as np
 import os
 import gdown
+# কোডের শুরুর এই অংশটি খুঁজুন:
+API_KEY = "AIzaSyCNDsW8rVy8uYK2HffarOj1uAvIuQFNDsU" 
 
-API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA"
-genai.configure(api_key=API_KEY)
-model_gemini = genai.GenerativeModel('gemini-1.5-flash')
+# এখন "YOUR_API_KEY_HERE" লেখাটি মুছে দিয়ে আপনার কি-টি বসান। উদাহরণস্বরূপ:
+API_KEY = "AIzaSy..."  # আপনার আসল কি-টি এখানে পেস্ট করুন
 
-# --- ৩. বাকি সব লজিক এবং ইউআই (এর নিচে) ---
-st.set_page_config(page_title="SkinAI Pro", layout="wide")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
