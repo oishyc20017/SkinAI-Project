@@ -468,7 +468,6 @@ def doctor_booking_popup():
         st.markdown("### Book Your Appointment")
 
         with st.form(key="popup_booking_form_final"):
-            # আপনার ইনপুট ফিল্ডগুলো
             patient_name = st.text_input("Patient Name")
             phone_number = st.text_input("Phone Number")
             
@@ -488,12 +487,14 @@ def doctor_booking_popup():
             submit_booking = st.form_submit_button("Confirm Appointment")
 
         if submit_booking:
+            # এখানে আপনার SMS বা API এর লজিক থাকবে, খেয়াল করুন এটি if ব্লকের ভেতরে আছে
+            sms_url = "http://api.smsgateway.com/send" 
+            
             st.success(f"🎉 Appointment confirmed for {patient_name} with {selected_name}!")
             
         conn.close()
 
     except Exception as e:
-        # এখানে এডার হ্যান্ডেল করা হচ্ছে
         st.error(f"An error occurred: {e}")
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
             sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
