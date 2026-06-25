@@ -10,40 +10,93 @@ import gdown
 import sqlite3
 import hashlib
 
-# --- ১. ডাটাবেস ও সিকিউরিটি ---
-conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-c = conn.cursor()
-
-def init_db():
-    c.execute('CREATE TABLE IF NOT EXISTS users(email TEXT PRIMARY KEY, password TEXT)')
-    c.execute('CREATE TABLE IF NOT EXISTS chat_history(email TEXT, role TEXT, content TEXT)')
-    
-    # 🩺 নতুন টেবিল: ডাক্তারদের লিস্ট রাখার জন্য
-    c.execute('''CREATE TABLE IF NOT EXISTS doctors 
-                 (id INTEGER PRIMARY KEY, name TEXT, specialty TEXT, fee TEXT, available_time TEXT)''')
-    
-    # 🗓️ নতুন টেবিল: ইউজারদের বুকিং হিস্ট্রি রাখার জন্য
-    c.execute('''CREATE TABLE IF NOT EXISTS bookings 
-                 (id INTEGER PRIMARY KEY, user_email TEXT, doctor_name TEXT, date TEXT, time TEXT, status TEXT)''')
-    
-    # প্রথমবার রান করার সময় ডাটাবেসে ২ জন ডামি ডাক্তার অ্যাড করে রাখা
-    c.execute("SELECT COUNT(*) FROM doctors")
-    if c.fetchone()[0] == 0:
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM')")
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM')")
-        
-    conn.commit()
-
-init_db()
-
-def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
-def check_hash(p, h): return h if make_hash(p) == h else False
-
-# --- ২. ডিজাইন ও এস্থেটিকস ---
+# --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+
+# --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
 <style>
-    /* ১. তোমার সেই সুন্দর টাইটেলগুলো (অপরিবর্তিত) */
+/* ১. বাটন স্টাইলিং */
+div.stButton > button:first-child {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s ease;
+}
+div.stButton > button:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* ২. সাইডবার গোছানোর সিএসএস */
+[data-testid="stSidebar"] {
+    background-color: #0f172a !important; /* ডিপ ডার্ক প্রিমিয়াম ব্যাকগ্রাউন্ড */
+    padding-top: 20px;
+}
+
+/* সাইডবারের ভেতরের ইনপুট বক্স充পেসিল স্পেসিং */
+[data-testid="stSidebar"] .stTextInput, 
+[data-testid="stSidebar"] .stSelectbox {
+    margin-bottom: 20px !important;
+}
+
+/* সাইডবারের শিরোনাম কালার */
+[data-testid="stSidebar"] h1, 
+[data-testid="stSidebar"] h2, 
+[data-testid="stSidebar"] h3 {
+    color: #38bdf8 !important; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+}
+
+/* ডিভাইডার লাইন হালকা করা */
+[data-testid="stSidebar"] hr {
+    margin: 15px 0 !important;
+    border-color: #334155 !important;
+}
+
+/* ৩. জেমিনি লুক: ডিফল্ট বর্ডার এবং কালার পুরোপুরি ভ্যানিশ করা */
+[data-testid="stChatMessage"] {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* চ্যাট মেসেজের ভেতরের ডিফল্ট বক্স রিমুভ */
+[data-testid="stChatMessage"] > div {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* ৪. জেমিনি স্টাইল চ্যাট বাবল (স্মুথ লুক) */
+.chat-bubble {
+    background-color: #1e1f20; /* জেমিনি ডার্ক গ্রে */
+    border: 1px solid #3c4043;
+    border-radius: 20px;
+    padding: 16px 20px;
+    color: #e3e3e3;
+    line-height: 1.6;
+    margin-top: 5px;
+    display: inline-block;
+    max-width: 90%;
+}
+
+/* ৫. ইনপুট বক্স জেমিনি স্টাইল (গোল এবং ক্লিন) */
+[data-testid="stChatInput"] {
+    border-radius: 30px !important;
+    background-color: #1e1f20 !important;
+    border: 1px solid #3c4043 !important;
+}
+
+/* ইনপুটের সেই লাল/কমলা বর্ডার ফোকাস সল্ভ করা */
+[data-testid="stChatInput"] div {
+    border: none !important;
+    box-shadow: none !important;
+}
+
     .rainbow-text {
         background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
         -webkit-background-clip: text;
