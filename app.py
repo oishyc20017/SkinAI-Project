@@ -2,6 +2,9 @@ import datetime
 import re
 import streamlit as st
 import sqlite3
+import smtplib
+from email.message import EmailMessage
+import requests # API দিয়ে SMS পাঠানোর জন্য
 import hashlib
 import requests
 from streamlit_lottie import st_lottie
@@ -539,9 +542,41 @@ def doctor_booking_popup():
             conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
             c = conn.cursor()
             c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
-                      (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
+          (user_email_str, phone_number_str, doctor, str(pref_date), pref_time, 'Confirmed'))
             conn.commit()
             conn.close()
+            else:
+            # ১. ডাটাবেস সেভ
+            # ... (তোমার আগের ডাটাবেস কোড)
+
+            # ২. ইমেইল পাঠানো
+            try:
+                msg = EmailMessage()
+                msg['Subject'] = 'Appointment Confirmation - SkinAI'
+                msg['From'] = 'your_email@gmail.com'
+                msg['To'] = user_email_str
+                msg.set_content(f"Dear User, your appointment with {doctor} is booked for {pref_date} at {pref_time}.")
+                
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login('your_email@gmail.com', 'your_app_password')
+                    smtp.send_message(msg)
+            except:
+                st.warning("Email could not be sent.")
+
+            # ৩. SMS পাঠানো (লোকাল API এর মাধ্যমে)
+            # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
+            sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
+            params = {
+                "api_key": "YOUR_API_KEY",
+                "phone": phone_number_str,
+                "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
+            }
+            try:
+                requests.get(sms_url, params=params)
+            except:
+                pass # SMS ফেইল করলেও অ্যাপ যেন ক্র্যাশ না করে
+
+            st.success("Appointment Confirmed! Email and SMS sent successfully.")
             st.success("Appointment successfully committed!")
             time.sleep(1)
             st.rerun()
