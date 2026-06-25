@@ -303,12 +303,11 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
-        # ল্যাঙ্গুয়েজ সিলেক্টর
+        # Language Settings
         st.markdown("### 🌐 Language Settings")
         language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
         language = st.selectbox("Select Language", language_list, key="lang_select")
         st.session_state['user_language'] = language
-        
         st.markdown("---")
         
         # ১. লোগো এরিয়া
@@ -323,19 +322,14 @@ with st.sidebar:
             st.write("১. স্পষ্ট ছবি আপলোড করুন")
             st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
             st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
-    # ২. সিকিউরিটি গেটওয়ে কার্ড
+
+    # ২. সিকিউরিটি গেটওয়ে কার্ড
     st.markdown("""
-    <div style="
-        background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
-        padding: 15px; 
-        border-radius: 10px; 
-        border: 1px solid #4338ca; 
-        text-align: center; 
-        margin-bottom: 15px;">
-        <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
-        <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
-    </div>
-    """, unsafe_allow_html=True)
+<div style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); padding: 20px; border-radius: 10px; border: 1px solid #4338ca; text-align: center;">
+    <h3 style="color: white;">🔒 Secure Gateway</h3>
+    <p style="color: #cbd5e1; font-size: 12px;">SHA-256 Encrypted Session</p>
+</div>
+""", unsafe_allow_html=True)
 
     # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
     if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
