@@ -560,19 +560,21 @@ def doctor_booking_popup():
                 "message": f"SkinAI: Your booking with {doctor} on {pref_date} is confirmed!"
             }
             try:
-                requests.get(sms_url, params=params)
-            except:
-                pass # SMS ফেইল করলেও অ্যাপ যেন ক্র্যাশ না করে
+        # ১. ডাটাবেস এবং এসএমএস এর কাজগুলো এখানে হবে
+        # (যদি এসএমএস এপিআই কাজ না করে, তবে এটি এখানেও এরর দেবে না)
+        requests.get(sms_url, params=params)
+        
+        # ২. সাকসেস মেসেজ ও ১৫ সেকেন্ড ওয়েট
+        st.success("Appointment successfully confirmed!")
+        st.info("Booking details have been sent to your provided email and phone number.")
+        st.balloons() 
+        
+        time.sleep(15) 
+        st.rerun()
 
-            # ২. সাকসেস মেসেজ ও ১৫ সেকেন্ড ওয়েট
-                st.success("Appointment successfully confirmed!")
-                st.info("Booking details have been sent to your provided email and phone number.")
-                st.balloons() 
-                
-                time.sleep(15) # পরীক্ষকের দেখার জন্য ১৫ সেকেন্ড বিরতি
-                st.rerun()
-            except Exception as e:
-                st.error(f"Error: {e}")
+    except Exception as e:
+        # যদি কোনো লাইনে ভুল হয়, তবে এই ব্লকটি সব হ্যান্ডেল করবে
+        st.error(f"Error: {e}")
         # Ensure this button is aligned correctly with the previous code block
     
         user_email_str = str(st.session_state.email_f) if 'email_f' in st.session_state else ""
