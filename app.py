@@ -301,8 +301,7 @@ if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
-
-with st.sidebar:
+    with st.sidebar:
         # Language Settings
         st.markdown("### 🌐 Language Settings")
         language_list = ["English", "Bangla", "Banglish", "Hindi", "Spanish", "French"]
@@ -310,7 +309,7 @@ with st.sidebar:
         st.session_state['user_language'] = language
         st.markdown("---")
         
-        # ১. লোগো এরিয়া
+        # Logo Area
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
             st.image("https://cdn-icons-png.flaticon.com/512/3591/3591234.png", width=100)
@@ -323,7 +322,7 @@ with st.sidebar:
             st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন")
             st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন")
 
-    # ২. সিকিউরিটি গেটওয়ে কার্ড
+    # Secure Gateway
     st.markdown("""
 <div style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); padding: 20px; border-radius: 10px; border: 1px solid #4338ca; text-align: center;">
     <h3 style="color: white;">🔒 Secure Gateway</h3>
