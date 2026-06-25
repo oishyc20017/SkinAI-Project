@@ -533,7 +533,7 @@ def doctor_booking_popup():
             st.error("Please fill up both Phone Number and Gmail Address!")
         else:
             try:
-                # ১. ডাটাবেসে সেভ
+                # ডাটাবেস অপারেশান
                 conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
                 c = conn.cursor()
                 c.execute("INSERT INTO bookings (user_email, phone_number, doctor_name, date, time, status) VALUES (?, ?, ?, ?, ?, ?)", 
@@ -541,16 +541,20 @@ def doctor_booking_popup():
                 conn.commit()
                 conn.close()
                 
-                # ২. সাকসেস মেসেজ ও ১৫ সেকেন্ড ওয়েট
+                # সাকসেস মেসেজ
                 st.success("Appointment successfully confirmed!")
                 st.info("Booking details have been sent to your provided email and phone number.")
                 st.balloons() 
                 
-                time.sleep(15) # পরীক্ষকের দেখার জন্য ১৫ সেকেন্ড বিরতি
+                time.sleep(10)
                 st.rerun()
+
+            except sqlite3.Error as e:
+                # নির্দিষ্ট ডাটাবেস এরর হ্যান্ডলিং
+                st.error(f"Database error: {e}")
             except Exception as e:
-                st.error(f"Error: {e}")
-                
+                # সবশেষে সাধারণ এক্সেপশন হ্যান্ডলিং (default)
+                st.error(f"An unexpected error occurred: {e}")
             # ৩. SMS পাঠানো (লোকাল API এর মাধ্যমে)
             # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
             sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
