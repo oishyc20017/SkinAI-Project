@@ -132,34 +132,26 @@ div.stButton > button:first-child:hover {
 conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
 c = conn.cursor()
 
+# আপনার ডাটাবেস ফাংশনে এই পরিবর্তনটি করুন
 def init_db():
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
     
-    c.execute('''CREATE TABLE IF NOT EXISTS bookings
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                  user_email TEXT, 
-                  phone_number TEXT, 
-                  doctor_name TEXT, 
-                  date TEXT, 
-                  time TEXT, 
-                  status TEXT)''')
-                  
+    # যদি আগে থেকে ডাটাবেস ফাইল থাকে, তবে সেটি ডিলিট করে দিন যাতে নতুন কলাম যোগ হতে পারে
+    c.execute('DROP TABLE IF EXISTS doctors') 
+    
+    # নতুন টেবিল স্ট্রাকচার (hospital_name কলাম যুক্ত হয়েছে)
     c.execute('''CREATE TABLE IF NOT EXISTS doctors
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  name TEXT, specialty TEXT, fee TEXT, available_time TEXT)''')
+                  name TEXT, 
+                  specialty TEXT, 
+                  fee TEXT, 
+                  available_time TEXT,
+                  hospital_name TEXT)''')
                   
-    c.execute('''CREATE TABLE IF NOT EXISTS chat_history
-                 (email TEXT, role TEXT, content TEXT)''')
-    
-    c.execute("SELECT COUNT(*) FROM doctors")
-    if c.fetchone()[0] == 0:
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM')")
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM')")
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Farhana Begum', 'Dermatologist', '1200 BDT', '10:00 AM - 12:00 PM')")
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Rokeya Afrin', 'Skin & Laser Specialist', '1200 BDT', '2:00 PM - 4:00 PM')")
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Mithun Das', 'Cosmetic Dermatologist', '1200 BDT', '8:00 PM - 10:00 PM')")
-        c.execute("INSERT INTO doctors (name, specialty, fee, available_time) VALUES ('Dr. Moina Charan', 'Pediatric Dermatologist', '1200 BDT', '9:00 AM - 11:00 AM')")
+    # নতুন ডাক্তার এবং হাসপাতালের নাম এন্ট্রি করুন
+    c.execute("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", 
+              ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM', 'Dhaka Medical Center'))
     
     conn.commit()
     conn.close()
