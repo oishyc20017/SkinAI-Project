@@ -15,18 +15,21 @@ import numpy as np
 import os
 import gdown
 import sqlite3
+import streamlit as st
 
-# প্রজেক্টের ভেতরে ডেটাবেস কানেক্ট করা
+# Function ti ekhane define korun
 def save_appointment(email, phone, doctor, date):
-    conn = sqlite3.connect('my.db') # ফাইলটি আপনার প্রজেক্ট ফোল্ডারে থাকলে শুধু নাম দিলেই হবে
-    cursor = conn.cursor()
-    
-    # ডেটা ইনসার্ট করার কমান্ড
-    cursor.execute("INSERT INTO bookings (email, phone, doctor, date) VALUES (?, ?, ?, ?)", 
-                   (email, phone, doctor, date))
-    
-    conn.commit()
-    conn.close()
+    try:
+        conn = sqlite3.connect('my.db') # my.db file ti project folder e thakle eta kaj korbe
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO bookings (email, phone, doctor, date) VALUES (?, ?, ?, ?)", 
+                       (email, phone, doctor, date))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        st.error(f"Database error: {e}")
+        return False
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -537,8 +540,18 @@ def doctor_booking_popup():
     
     st.info(f"You selected: {payment_method}. No transaction ID is required at this stage.")
     # কনফার্ম বাটন
-    if st.button("Confirm Appointment",save_appointment(user_email, user_phone, selected_doctor, selected_date)
-    st.success("আপনার অ্যাপয়েন্টমেন্ট ডাটাবেসে সেভ হয়েছে!") use_container_width=True, key=f"confirm_btn_{doctor}_{pref_date}_{pref_time}"):
+    # 540 line theke eivabe update korun
+if st.button("Confirm Appointment", use_container_width=True, key=f"confirm_btn_{doctor}_{pref_time}"):
+    # Prothome function call korben
+    is_saved = save_appointment(user_email, user_phone, selected_doctor, selected_date)
+    
+    # Jodi data save hoy, tobe success message dekhaben
+    if is_saved:
+        st.success("Apnar appointment database e save hoyeche!")
+        st.balloons()
+        # Baki kaj (sms ba time.sleep) ekhane korun
+    else:
+        st.error("Data save hoyni, doya kore abar chesta korun.")
         
         user_email_str = str(st.session_state.get('email_f', ''))
         phone_number_str = str(st.session_state.get('phone_f', ''))
