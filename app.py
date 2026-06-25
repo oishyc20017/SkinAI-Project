@@ -220,23 +220,27 @@ disease_details = {
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (ফিক্সড ও পারফেক্ট কন্ডিশন) ---
 def get_intelligent_response(query, res):
-    # ১. প্রম্পট তৈরি করুন যেখানে ভাষাগত নির্দেশনা থাকবে
-    prompt = f"""
-    You are a professional medical assistant. 
+    # এটি ব্যবহারকারীর ভাষা বুঝে জেমিনির মাধ্যমে উত্তর দিবে
+    system_instruction = f"""
+    You are a professional Medical AI Assistant.
     Analyze the user's query: '{query}' based on the medical result: '{res}'.
     
     Instruction:
-    - If the user asks in Bengali, answer in Bengali.
-    - If the user asks in English, answer in English.
-    - Keep the tone professional and helpful.
+    - Respond to the user in the language they used to ask the question (e.g., if Bengali, reply in Bengali).
+    - If the language is not clear, default to English.
+    - Be natural, helpful, and concise.
     """
     
+    with st.status("Analyzing your question...", expanded=False) as status:
+        time.sleep(1.0)
+        status.update(label="Response Ready!", state="complete")
+    
     try:
-        # ২. জেমিনি মডেলকে ইনস্ট্রাকশনসহ প্রম্পট পাঠান
-        response = chat_model.generate_content(prompt)
+        # এখানে 'chat_model' ব্যবহার করা হয়েছে যাতে 'Sequential' মডেলের সাথে কনফ্লিক্ট না হয়
+        response = chat_model.generate_content(system_instruction + "\n\nUser Query: " + query)
         return response.text
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"এআই রেসপন্স এরর: {str(e)}"
     data = disease_details.get(res, {})
     
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
