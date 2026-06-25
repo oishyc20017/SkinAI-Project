@@ -496,8 +496,7 @@ def doctor_booking_popup():
 
     except Exception as e:
         st.error(f"An error occurred: {e}")
-            # তুমি যে কোনো বাংলাদেশী গেটওয়ে থেকে API Key ও Sender ID কিনলে এই ফরম্যাটে কোড হবে:
-            sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
+        sms_url = "http://api.smsgateway.com/send" # গেটওয়ের API লিঙ্ক
             params = {
                 "api_key": "YOUR_API_KEY",
                 "phone": phone_number_str,
