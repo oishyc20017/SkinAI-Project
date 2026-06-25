@@ -15,6 +15,12 @@ import numpy as np
 import os
 import gdown
 
+API_KEY = "AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA"
+genai.configure(api_key=API_KEY)
+model_gemini = genai.GenerativeModel('gemini-1.5-flash')
+
+# --- ৩. বাকি সব লজিক এবং ইউআই (এর নিচে) ---
+st.set_page_config(page_title="SkinAI Pro", layout="wide")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
