@@ -227,29 +227,26 @@ def get_intelligent_response(query, res):
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     is_banglish = any(word in q.split() for word in bangla_hints) # split() দিলে একদম সঠিক শব্দ ধরবে
 
-    # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
-    if is_bangla_script or is_bangla_script:
-       response = f"### AI Diagnostic Analysis\n\n"
-       response += f"**Condition:** {res}\n"
-       response += f"**Common Name:** {data.get('common_name', 'N/A')}\n\n"
-       response += f"---\n"
-       response += f"Would you like to know more about this condition?\n"
-       response += f"You can ask: 'Treatment options', 'Symptoms', or 'Prevention'."
-    
-    # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
-    else:
-        # ধরি, আপনার dictionary তে 'common_name' নামে একটি কি (key) আছে
-        common_name = disease_details.get(res, {}).get('common_name', 'Not specified')
-        
-        response = f"### AI Diagnostic Analysis\n\n"
-        response += f"**Condition:** {res}\n"
-        response += f"**Commonly known as:** {common_name}\n\n"
-        response += f"---\n"
-        response += f"Would you like to know more about this condition? \n"
-        response += f"You can ask me about: \n"
-        response += f"- Treatment options\n"
-        response += f"- Symptoms to watch for\n"
-        response += f"- Preventive measures"
+    # ২৩১ নম্বর লাইনের পর থেকে এভাবে পরিবর্তন করুন:
+
+if is_bangla_script or is_bangla_script:
+    # এখানে আপনার আগের বাংলা লেখাগুলো সরিয়ে নতুন ইংরেজি ফরম্যাট দিন
+    # কারণ ইউজার বাংলাতে প্রশ্ন করলেও সে প্রফেশনাল ইংরেজি উত্তরই পাবে
+    response = f"### AI Diagnostic Analysis\n\n"
+    response += f"**Condition:** {res}\n"
+    response += f"**Common Name:** {data.get('common_name', 'N/A')}\n\n"
+    response += f"---\n"
+    response += f"Would you like to know more about this condition?\n"
+    response += f"You can ask: 'Treatment options', 'Symptoms', or 'Prevention'."
+
+else:
+    # ইংরেজি ইনপুটের জন্য একই ফরম্যাট ব্যবহার করুন
+    response = f"### AI Diagnostic Analysis\n\n"
+    response += f"**Condition:** {res}\n"
+    response += f"**Common Name:** {data.get('common_name', 'N/A')}\n\n"
+    response += f"---\n"
+    response += f"Would you like to know more about this condition?\n"
+    response += f"You can ask: 'Treatment options', 'Symptoms', or 'Prevention'."
     
     return response
 # --- ৫. মডেল লোডিং ---
