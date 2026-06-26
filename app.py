@@ -229,20 +229,20 @@ def get_intelligent_response(query, res):
 
     # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
     if is_bangla_script or is_banglish:
-        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
-        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
-        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
-        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
-        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
-        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
+        response = f"### AI Analysis: {res}\n\n"
+        response += f"**What is it?**\n{data.get('desc', 'Detailed information is unavailable.')}\n\n"
+        response += f"**Possible Causes:**\n{data.get('cause', 'Not specified.')}\n\n"
+        response += f"**Home Care Tips:**\n{data.get('home', 'No specific home care.')}\n\n"
+        response += f"**Medical Advice:**\n{data.get('advice', 'Please consult a dermatologist.')}\n\n"
+        response += "---\n*Do you have any more questions about this?*"
     
     # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
     else:
-        response = f"### 🩺 **AI Analysis: {res}**\n\n"
-        response += f"**1. What is it?**\nIt is identified as {res}. This condition causes changes in skin texture.\n\n"
-        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
-        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
-        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
+        response = f"### AI Analysis: {res}\n\n"
+        response += f"**What is it?**\n{data.get('desc', 'Detailed information is unavailable.')}\n\n"
+        response += f"**Possible Causes:**\n{data.get('cause', 'Not specified.')}\n\n"
+        response += f"**Home Care Tips:**\n{data.get('home', 'No specific home care.')}\n\n"
+        response += f"**Medical Advice:**\n{data.get('advice', 'Please consult a dermatologist.')}\n\n"
         response += "---\n*Do you have any more questions about this?*"
     
     return response
