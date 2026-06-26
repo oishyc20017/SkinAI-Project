@@ -428,19 +428,23 @@ if file:
 if 'last_res' in st.session_state:
     res_name = st.session_state.last_res
     
-    # নিশ্চিত করা হচ্ছে যে রেজাল্টটি আমাদের লিস্টে আছে কি না
-    if res_name in disease_info:
-        info = disease_info[res_name]
+    # আপনার তৈরি করা disease_details ডাটাবেস থেকে তথ্য নেওয়া
+    info = disease_details.get(res_name)
+
+    if info:
+        # কার্ড ডিজাইন
         st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 10px 20px rgba(0,0,0,0.3); margin: 20px 0; text-align: center;">
-            <p style="color: #58a6ff; font-size: 12px; letter-spacing: 3px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px;">AI DIAGNOSIS</p>
-            <h1 style="color: #ffffff; font-size: 28px; margin: 0;">{info['local']}</h1>
-            <p style="color: #94a3b8; font-style: italic; margin-top: 10px;">({res_name})</p>
+        <div style="background: #1e293b; padding: 25px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+            <h1 style="color: #ffffff; margin-bottom: 5px;">{res_name}</h1>
+            <p style="color: #94a3b8; font-size: 16px;"><b>বিবরণ:</b> {info['desc']}</p>
+            <p style="color: #cbd5e1;"><b>কারণ:</b> {info['cause']}</p>
+            <p style="color: #cbd5e1;"><b>প্রতিকার:</b> {info['home']}</p>
+            <p style="color: #ffcc00;"><b>পরামর্শ:</b> {info['advice']}</p>
         </div>
         """, unsafe_allow_html=True)
     else:
-        # যদি 'res_name' কোনো এরর না দেয় কিন্তু ডাটাবেসে না থাকে, তবে শুধু নামটা দেখাবে
-        st.info(f"Result detected: {res_name}. (Clinical details currently unavailable).")
+        # ডাটাবেসে তথ্য না থাকলে
+        st.warning(f"আমরা এই রোগটি শনাক্ত করেছি: {res_name}, তবে এর বিস্তারিত তথ্য আমাদের ডাটাবেসে নেই।")
 else:
     # যদি কোনো রেজাল্ট জেনারেট না হয়, তবে কিছু দেখাবে না (শান্ত থাকবে)
     pass
