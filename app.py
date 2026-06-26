@@ -229,17 +229,21 @@ def get_intelligent_response(query, res):
 
     # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
     if is_bangla_script or is_banglish:
-        response = f"### AI Analysis: {res}\n\n"
-        response += f"**Condition:** {data.get('local', 'N/A')}\n\n"
-        response += f"**Details:** {data.get('desc', 'Detailed info unavailable.')}\n\n"
-        response += "---\n*Please consult a dermatologist for professional advice.*"
+        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
+        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
+        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
+        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
+        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
+        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
     
     # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
     else:
-        response = f"### AI Analysis: {res}\n\n"
-        response += f"**Condition:** {data.get('local', 'N/A')}\n\n"
-        response += f"**Details:** {data.get('desc', 'Detailed info unavailable.')}\n\n"
-        response += "---\n*Please consult a dermatologist for professional advice.*"
+        response = f"### 🩺 **AI Analysis: {res}**\n\n"
+        response += f"**1. What is it?**\nIt is identified as {res}. This condition causes changes in skin texture.\n\n"
+        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
+        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
+        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
+        response += "---\n*Do you have any more questions about this?*"
     
     return response
 # --- ৫. মডেল লোডিং ---
@@ -281,7 +285,7 @@ with st.sidebar:
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
     """, unsafe_allow_html=True)
-        
+
     st.markdown("---")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
@@ -403,35 +407,32 @@ file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
 if file:
-    # ... আগের কোড (ইমেজ প্রসেসিং) ...
-    res_name = st.session_state.last_res
-    
-    # রেজাল্ট কার্ড (ইংরেজি এবং প্রফেশনাল ডিজাইন)
-    # -------------------------------------------------------------------
-    # ১. এই ডিকশনারিটি সবার আগে নিয়ে আসুন (৪১০ নম্বর লাইনের উপরে)
-    # -------------------------------------------------------------------
+    import numpy as np
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
+    x = np.asarray(img_res) / 255.0
+    x = np.expand_dims(x, axis=0)
+    pred = model.predict(x, verbose=0)
+    st.session_state.last_res = classes[np.argmax(pred)]
+
+    # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
-        "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
-        "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
-        "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growth, usually harmless."},
-        "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Firm skin nodule. Typically benign."},
-        "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spot."},
-        "Melanoma": {"local": "Melanoma", "desc": "Serious form of skin cancer. Urgent medical consultation required."},
-        "Vascular lesions": {"local": "Vascular Lesion", "desc": "Blood vessel skin condition. Requires professional treatment."}
+        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়।"},
+        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি এক প্রকার স্কিন ক্যান্সার।"},
+        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়।"},
+        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা।"},
+        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল।"},
+        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি দ্রুত চিকিৎসা করা জরুরি।"},
+        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।"}
     }
     
-    # -------------------------------------------------------------------
-    # ২. এরপর আপনার আগের কোডটি রাখুন (লাইন ৪১০ এ এটি আর এরর দিবে না)
-    # -------------------------------------------------------------------
-    res_name = st.session_state.last_res
-    
+    # রেজাল্ট যদি আমাদের লিস্টে থাকে তবেই দেখাবে, নাহলে কিছু দেখাবে না
     if res_name in disease_info:
         info = disease_info[res_name]
         st.markdown(f"""
         <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
             <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
             <div style="margin: 20px 0;">
-                <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Common Name:</h4>
+                <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Condition:</h4>
                 <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
             </div>
             <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
@@ -439,35 +440,12 @@ if file:
                 <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
             </div>
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Info:</b> {info['desc']}</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    # ২. প্রেডিকশন রেজাল্ট নেওয়া
-    res_name = st.session_state.last_res
-    
-    # ৩. রেজাল্ট কার্ড প্রদর্শন (সঠিক সিকোয়েন্সে)
-    if res_name in disease_info:
-        info = disease_info[res_name]
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-            <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-            <div style="margin: 20px 0;">
-                <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Common Name:</h4>
-                <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
-            </div>
-            <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-                <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
-                <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Info:</b> {info['desc']}</p>
+                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Details:</b> {info['desc']}</p>
             </div>
         </div>
         """, unsafe_allow_html=True)
     
-    st.markdown("---")
-    st.caption("**Disclaimer:** This AI tool is for educational purposes only. Please consult a dermatologist.")
+    # এর বাইরে কোনো 'else' বা 'Unknown' লজিক রাখবেন না, তাহলে আর কোনো বাড়তি লেখা আসবে না।
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
