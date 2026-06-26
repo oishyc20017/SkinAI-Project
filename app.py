@@ -415,37 +415,36 @@ if file:
     st.session_state.last_res = classes[np.argmax(pred)]
 
     # ২. রোগের তালিকা (ইংরেজি ও প্রফেশনাল)
-disease_info = {
-    "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
-    "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
-    "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growth, usually harmless."},
-    "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Firm skin nodule. Typically benign."},
-    "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spot."},
-    "Melanoma": {"local": "Melanoma", "desc": "Serious form of skin cancer. Urgent medical consultation required."},
-    "Vascular lesions": {"local": "Vascular Lesion", "desc": "Blood vessel skin condition. Requires professional treatment."}
-}
-
-# রেজাল্ট চেক এবং প্রদর্শন
-if 'last_res' in st.session_state:
-    res_name = st.session_state.last_res
-    if res_name in disease_info:
-        info = disease_info[res_name]
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-            <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-            <div style="margin: 20px 0;">
-                <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Condition:</h4>
-                <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+    disease_info = {
+        "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
+        "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
+        "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growth, usually harmless."},
+        "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Firm skin nodule. Typically benign."},
+        "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spot."},
+        "Melanoma": {"local": "Melanoma", "desc": "Serious form of skin cancer. Urgent medical consultation required."},
+        "Vascular lesions": {"local": "Vascular Lesion", "desc": "Blood vessel skin condition. Requires professional treatment."}
+    }
+    # রেজাল্ট চেক এবং প্রদর্শন
+    if 'last_res' in st.session_state:
+        res_name = st.session_state.last_res
+        if res_name in disease_info:
+            info = disease_info[res_name]
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
+                <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+                <div style="margin: 20px 0;">
+                    <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Condition:</h4>
+                    <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+                </div>
+                <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
+                    <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
+                    <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
+                    <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Details:</b> {info['desc']}</p>
+                </div>
             </div>
-            <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-                <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
-                <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Details:</b> {info['desc']}</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
     
     # এর বাইরে কোনো 'else' বা 'Unknown' লজিক রাখবেন না, তাহলে আর কোনো বাড়তি লেখা আসবে না।
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
