@@ -237,13 +237,12 @@ def get_intelligent_response(query, res):
         response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
     
     # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
-    # উদাহরণস্বরূপ, ইংরেজি ভার্সনের জন্য লাইনগুলো এভাবে ক্লিন করতে পারেন:\
-else:
-    response = f"### AI Analysis: {res}\n\n"
-    response += f"**Common Name:** [আপনার ডাটাবেস থেকে কমন নাম]\n\n" # নতুন লাইন
-    response += f"--- \n\n" # সুন্দর দেখানোর জন্য একটি ডিভাইডার
-    response += f"**Would you like to know more?**\n"
-    response += f"You can ask me questions like 'How to treat this?' or 'Is it serious?'"
+    else:
+        response = f"### AI Analysis: {res}\n\n"
+        response += f"**Common Name:** [আপনার ডাটাবেস থেকে কমন নাম]\n\n" # নতুন লাইন
+        response += f"--- \n\n" # সুন্দর দেখানোর জন্য একটি ডিভাইডার
+        response += f"**Would you like to know more?**\n"
+        response += f"You can ask me questions like 'How to treat this?' or 'Is it serious?'"
     
     return response
 # --- ৫. মডেল লোডিং ---
@@ -285,6 +284,14 @@ with st.sidebar:
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
     """, unsafe_allow_html=True)
+
+    # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
+    if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
+        st.session_state.messages = []
+        st.session_state.last_res = "None"
+        st.rerun()
+
+        
     st.markdown("---")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
@@ -482,18 +489,15 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-            # ভ্যালিডেশন চেক: নাম এবং ফোন নম্বর খালি কি না
-            if not patient_name or not phone_number:
-                st.warning("⚠️ Please fill in all required fields (Name and Phone Number) to confirm your appointment.")
-            else:
-                # যদি সব তথ্য থাকে, তবেই এই অংশটুকু কাজ করবে
-                st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
-                st.info("Booking details have been sent to your provided email and phone number.")
-                st.balloons()
-                
-                import time
-                time.sleep(10)
-                st.rerun()
+            # ১. সাকসেস মেসেজ এবং বেলুন
+            st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
+            st.info("Booking details have been sent to your provided email and phone number.")
+            st.balloons()
+            
+            # ২. ১০ সেকেন্ড ওয়েট এবং রিরান
+            import time
+            time.sleep(10)
+            st.rerun()
         
         conn.close()
     except Exception as e:
