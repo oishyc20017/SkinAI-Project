@@ -414,18 +414,20 @@ if file:
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
-    # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
-    disease_info = {
-        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়।"},
-        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি এক প্রকার স্কিন ক্যান্সার।"},
-        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়।"},
-        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা।"},
-        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল।"},
-        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি দ্রুত চিকিৎসা করা জরুরি।"},
-        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।"}
-    }
-    
-    # রেজাল্ট যদি আমাদের লিস্টে থাকে তবেই দেখাবে, নাহলে কিছু দেখাবে না
+    # ২. রোগের তালিকা (ইংরেজি ও প্রফেশনাল)
+disease_info = {
+    "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
+    "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
+    "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growth, usually harmless."},
+    "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Firm skin nodule. Typically benign."},
+    "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spot."},
+    "Melanoma": {"local": "Melanoma", "desc": "Serious form of skin cancer. Urgent medical consultation required."},
+    "Vascular lesions": {"local": "Vascular Lesion", "desc": "Blood vessel skin condition. Requires professional treatment."}
+}
+
+# রেজাল্ট চেক এবং প্রদর্শন
+if 'last_res' in st.session_state:
+    res_name = st.session_state.last_res
     if res_name in disease_info:
         info = disease_info[res_name]
         st.markdown(f"""
