@@ -228,13 +228,13 @@ def get_intelligent_response(query, res):
     is_banglish = any(word in q.split() for word in bangla_hints) # split() দিলে একদম সঠিক শব্দ ধরবে
 
     # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
-    if is_bangla_script or is_banglish:
-        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
-        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
-        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
-        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
-        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
-        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
+    if is_bangla_script or is_bangla_script:
+       response = f"### AI Diagnostic Analysis\n\n"
+       response += f"**Condition:** {res}\n"
+       response += f"**Common Name:** {data.get('common_name', 'N/A')}\n\n"
+       response += f"---\n"
+       response += f"Would you like to know more about this condition?\n"
+       response += f"You can ask: 'Treatment options', 'Symptoms', or 'Prevention'."
     
     # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
     else:
