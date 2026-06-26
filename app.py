@@ -227,36 +227,34 @@ def get_intelligent_response(query, res):
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     is_banglish = any(word in q.split() for word in bangla_hints) # split() দিলে একদম সঠিক শব্দ ধরবে
 
-    # ২৩১ নম্বর লাইনের পর থেকে এভাবে পরিবর্তন করুন:
-
-    # এই অংশটি আপনার কোডের সেই স্থানে বসান যেখানে রেজাল্ট দেখান হচ্ছে
-# 'prediction' এবং 'confidence' আপনার কোডের ভেরিয়েবল অনুযায়ী হতে হবে
-
-# --- ইমেজ প্রসেসিং এর ঠিক নিচে এই অংশটি বসান ---
+    # ৩. রোগের বিস্তারিত তথ্য (English)
+    disease_info = {
+        "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesions caused by long-term sun exposure. Professional evaluation is recommended."},
+        "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Immediate consultation with a dermatologist is advised."},
+        "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growths often associated with aging. Usually harmless."},
+        "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Small, firm skin nodules. Typically benign, but consult a doctor if painful."},
+        "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spots. Consult a doctor if you notice sudden changes."},
+        "Melanoma": {"local": "Melanoma", "desc": "A serious form of skin cancer. Requires urgent medical attention."},
+        "Vascular lesions": {"local": "Vascular Lesion", "desc": "Skin conditions related to blood vessels. Professional treatment may be required."}
+    }
+    
     res_name = st.session_state.last_res
     
-    # রেজাল্ট কার্ড দেখানোর আগে চেক করুন 'unknown' কি না
-    if res_name == "Unknown" or res_name == "None":
-        st.warning("### Analysis Inconclusive")
-        st.markdown("""
-        **Observation:** The model could not confidently classify this skin condition. 
-        *Detailed clinical information is currently unavailable for this specific classification.*
-        
-        **Recommendation:** Please consult a board-certified dermatologist for a professional clinical evaluation.
-        """)
-    else:
-        # সফল প্রেডিকশনের জন্য আপনার আগের ডিজাইন করা কার্ডটি এখানে থাকবে
-        st.success(f"### Detected: {res_name}")
-        # কনফিডেন্স স্কোর যদি থাকে তবেই দেখান
-        # st.write(f"**Confidence Level:** {np.max(pred):.2%}") 
-
-    # ডিসক্লেইমার (সবসময় নিচে দেখাবে)
+    # শুধুমাত্র সঠিক রোগ থাকলে কার্ড দেখাবে, 'অজানা' থাকলে কিছুই দেখাবে না
+    if res_name in disease_info:
+        info = disease_info[res_name]
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
+            <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 20px 0;">{info['local']}</h1>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6;">{info['desc']}</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
     st.markdown("---")
-    st.caption("""
-    **Disclaimer:** This AI-powered tool is intended for educational and informational purposes only. 
-    It is not a substitute for professional medical diagnosis, treatment, or advice. 
-    Always seek the guidance of a qualified healthcare provider for any health-related concerns.
-    """)
+    st.caption("**Disclaimer:** This AI tool is for educational purposes only. It is not a substitute for professional medical advice. Always consult a qualified dermatologist.")
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
