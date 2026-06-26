@@ -232,25 +232,31 @@ def get_intelligent_response(query, res):
     # এই অংশটি আপনার কোডের সেই স্থানে বসান যেখানে রেজাল্ট দেখান হচ্ছে
 # 'prediction' এবং 'confidence' আপনার কোডের ভেরিয়েবল অনুযায়ী হতে হবে
 
-if prediction == "unknown":
-    st.warning("### Analysis Inconclusive")
-    st.markdown("""
-    **Observation:** The model could not confidently classify this skin condition. 
-    *Detailed clinical information is currently unavailable for this specific classification.*
+# --- ইমেজ প্রসেসিং এর ঠিক নিচে এই অংশটি বসান ---
+    res_name = st.session_state.last_res
     
-    **Recommendation:** Please consult a board-certified dermatologist for a professional clinical evaluation.
-    """)
-else:
-    st.success(f"### Detected: {prediction}")
-    st.write(f"**Confidence Level:** {confidence:.2%}")
+    # রেজাল্ট কার্ড দেখানোর আগে চেক করুন 'unknown' কি না
+    if res_name == "Unknown" or res_name == "None":
+        st.warning("### Analysis Inconclusive")
+        st.markdown("""
+        **Observation:** The model could not confidently classify this skin condition. 
+        *Detailed clinical information is currently unavailable for this specific classification.*
+        
+        **Recommendation:** Please consult a board-certified dermatologist for a professional clinical evaluation.
+        """)
+    else:
+        # সফল প্রেডিকশনের জন্য আপনার আগের ডিজাইন করা কার্ডটি এখানে থাকবে
+        st.success(f"### Detected: {res_name}")
+        # কনফিডেন্স স্কোর যদি থাকে তবেই দেখান
+        # st.write(f"**Confidence Level:** {np.max(pred):.2%}") 
 
-# ডিসক্লেইমারটি একদম শেষে বসাবেন
-st.markdown("---")
-st.caption("""
-**Disclaimer:** This AI-powered tool is intended for educational and informational purposes only. 
-It is not a substitute for professional medical diagnosis, treatment, or advice. 
-Always seek the guidance of a qualified healthcare provider for any health-related concerns.
-""")
+    # ডিসক্লেইমার (সবসময় নিচে দেখাবে)
+    st.markdown("---")
+    st.caption("""
+    **Disclaimer:** This AI-powered tool is intended for educational and informational purposes only. 
+    It is not a substitute for professional medical diagnosis, treatment, or advice. 
+    Always seek the guidance of a qualified healthcare provider for any health-related concerns.
+    """)
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
