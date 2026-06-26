@@ -232,7 +232,7 @@ def get_intelligent_response(query, res):
     if is_english_script or is_english_script:
        # এখানে আপনার আগের বাংলা লেখাগুলো সরিয়ে নতুন ইংরেজি ফরম্যাট দিন
        # কারণ ইউজার বাংলাতে প্রশ্ন করলেও সে প্রফেশনাল ইংরেজি উত্তরই পাবে
-       response = f"### AI Diagnostic Analysis\n\n"
+        response = f"### AI Diagnostic Analysis\n\n"
         response += f"**Condition:** {res}\n"
         response += f"**Common Name:** {data.get('common_name', 'Not specified')}\n\n"
         response += f"---\n"
