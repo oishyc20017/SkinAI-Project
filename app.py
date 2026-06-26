@@ -229,7 +229,7 @@ def get_intelligent_response(query, res):
 
     # ২৩১ নম্বর লাইনের পর থেকে এভাবে পরিবর্তন করুন:
 
-    if is_english_script or is_english_script:
+    if is_bangla_script or is_bangla_script:
        # এখানে আপনার আগের বাংলা লেখাগুলো সরিয়ে নতুন ইংরেজি ফরম্যাট দিন
        # কারণ ইউজার বাংলাতে প্রশ্ন করলেও সে প্রফেশনাল ইংরেজি উত্তরই পাবে
         response = f"### AI Diagnostic Analysis\n\n"
@@ -289,13 +289,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
-    if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
-        st.session_state.messages = []
-        st.session_state.last_res = "None"
-        st.rerun()
-
-        
     st.markdown("---")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
