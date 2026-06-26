@@ -419,7 +419,7 @@ if file:
         """, unsafe_allow_html=True)
     st.markdown("---")
 
-    # 1. রোগের বিস্তারিত ডাটাবেস (হুবহু এখানে চেক করুন)
+    # ১. রোগের বিস্তারিত ডাটাবেস (সবার উপরে থাকতে হবে)
     disease_info = {
         "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
         "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
@@ -429,10 +429,11 @@ if file:
         "Melanoma": {"local": "Melanoma", "desc": "Serious form of skin cancer. Urgent medical consultation required."},
         "Vascular lesions": {"local": "Vascular Lesion", "desc": "Blood vessel skin condition. Requires professional treatment."}
     }
-    
+
+    # ২. প্রেডিকশন রেজাল্ট নেওয়া
     res_name = st.session_state.last_res
     
-    # এটি শুধু তখন কাজ করবে যখন রোগটি আমাদের তালিকার মধ্যে থাকবে
+    # ৩. রেজাল্ট কার্ড প্রদর্শন (সঠিক সিকোয়েন্সে)
     if res_name in disease_info:
         info = disease_info[res_name]
         st.markdown(f"""
@@ -451,10 +452,9 @@ if file:
             </div>
         </div>
         """, unsafe_allow_html=True)
-
-    # ডিসক্লেইমারটি সব সময় ইংরেজিতে থাকবে
+    
     st.markdown("---")
-    st.caption("**Disclaimer:** This AI tool is for educational purposes only. Please consult a dermatologist for professional medical advice.")
+    st.caption("**Disclaimer:** This AI tool is for educational purposes only. Please consult a dermatologist.")
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
