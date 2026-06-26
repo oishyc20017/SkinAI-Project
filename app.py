@@ -414,8 +414,7 @@ if file:
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
-    # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
-    # ৩. রোগের বিস্তারিত ডাটাবেস (English)
+    # 1. রোগের বিস্তারিত ডাটাবেস (হুবহু এখানে চেক করুন)
     disease_info = {
         "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
         "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
@@ -428,26 +427,24 @@ if file:
     
     res_name = st.session_state.last_res
     
-    # যদি রোগটি তালিকার মধ্যে থাকে তবেই কার্ড দেখাবে
-    if res_name in disease_info:
-        info = disease_info[res_name]
-        
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-            <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-            <div style="margin: 20px 0;">
-                <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Common Name:</h4>
-                <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+    # 2. রেজাল্ট দেখানোর লজিক
+    if res_name != "None":
+        # যদি রোগটি ডিকশনারিতে থাকে
+        if res_name in disease_info:
+            info = disease_info[res_name]
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; margin: 25px 0;">
+                <h1 style="color: #ffffff;">{info['local']}</h1>
+                <p style="color: #cbd5e1;">{info['desc']}</p>
             </div>
-            <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-                <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
-                <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
-            </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Info:</b> {info['desc']}</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        else:
+            # যদি রোগটি তালিকায় না থাকে, তবুও যেন রেজাল্ট দেখায়
+            st.info(f"Analysis complete. Detected: {res_name}. (Detailed clinical info unavailable).")
+    
+    # 3. ডিসক্লেইমার
+    st.markdown("---")
+    st.caption("**Disclaimer:** For educational purposes only. Please consult a dermatologist.")
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
