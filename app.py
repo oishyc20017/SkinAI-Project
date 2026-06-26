@@ -227,34 +227,25 @@ def get_intelligent_response(query, res):
     is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
     is_banglish = any(word in q.split() for word in bangla_hints) # split() দিলে একদম সঠিক শব্দ ধরবে
 
-    # ৩. রোগের বিস্তারিত তথ্য (English)
-    disease_info = {
-        "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesions caused by long-term sun exposure. Professional evaluation is recommended."},
-        "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Immediate consultation with a dermatologist is advised."},
-        "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growths often associated with aging. Usually harmless."},
-        "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Small, firm skin nodules. Typically benign, but consult a doctor if painful."},
-        "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spots. Consult a doctor if you notice sudden changes."},
-        "Melanoma": {"local": "Melanoma", "desc": "A serious form of skin cancer. Requires urgent medical attention."},
-        "Vascular lesions": {"local": "Vascular Lesion", "desc": "Skin conditions related to blood vessels. Professional treatment may be required."}
-    }
+    # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
+    if is_bangla_script or is_banglish:
+        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
+        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
+        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
+        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
+        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
+        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
     
-    res_name = st.session_state.last_res
+    # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
+    else:
+        response = f"### 🩺 **AI Analysis: {res}**\n\n"
+        response += f"**1. What is it?**\nIt is identified as {res}. This condition causes changes in skin texture.\n\n"
+        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
+        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
+        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
+        response += "---\n*Do you have any more questions about this?*"
     
-    # শুধুমাত্র সঠিক রোগ থাকলে কার্ড দেখাবে, 'অজানা' থাকলে কিছুই দেখাবে না
-    if res_name in disease_info:
-        info = disease_info[res_name]
-        st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-            <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-            <h1 style="color: #ffffff; font-size: 32px; margin: 20px 0;">{info['local']}</h1>
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
-                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6;">{info['desc']}</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.caption("**Disclaimer:** This AI tool is for educational purposes only. It is not a substitute for professional medical advice. Always consult a qualified dermatologist.")
+    return response
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
@@ -294,7 +285,7 @@ with st.sidebar:
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
     """, unsafe_allow_html=True)
-
+        
     st.markdown("---")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
@@ -423,7 +414,6 @@ if file:
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
-
     # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
         "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়।"},
@@ -436,6 +426,7 @@ if file:
     }
     
     res_name = st.session_state.last_res
+    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "বিস্তারিত তথ্য পাওয়া যায়নি।"})
 
     # ৩. তোমার নতুন রেজাল্ট কার্ড ডিজাইন
     st.markdown(f"""
