@@ -9,6 +9,23 @@ import os
 import gdown
 import sqlite3
 import hashlib
+import streamlit as st
+import sqlite3
+import os
+
+def download_database_button():
+    db_file = 'skinai_wishy_v30.db'  # আপনার ডাটাবেসের নাম
+    
+    if os.path.exists(db_file):
+        with open(db_file, "rb") as f:
+            st.download_button(
+                label="📥 ডাউনলোড ডাটাবেস (Database)",
+                data=f,
+                file_name=db_file,
+                mime="application/x-sqlite3"
+            )
+    else:
+        st.error("ডাটাবেস ফাইলটি খুঁজে পাওয়া যাচ্ছে না!")
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
