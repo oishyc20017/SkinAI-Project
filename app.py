@@ -240,13 +240,13 @@ def get_intelligent_response(query, res):
         response += f"You can ask me questions like: 'Treatment', 'Symptoms', or 'Prevention'."
 
     else:
-        # ইংরেজি ইনপুটের জন্য একই ফরম্যাট ব্যবহার করুন
-        response = f"### AI Diagnostic Analysis\n\n"
+        # English response block
+        response = "### AI Diagnostic Analysis\n\n"
         response += f"**Condition:** {res}\n"
         response += f"**Common Name:** {data.get('common_name', 'Not specified')}\n\n"
-        response += f"---\n"
-        response += f"Would you like to know more about this condition?\n"
-        response += f"You can ask me questions like: 'Treatment', 'Symptoms', or 'Prevention'."
+        response += "---\n"
+        response += "Would you like to know more about this condition?\n"
+        response += "You can ask me questions like: 'Treatment', 'Symptoms', or 'Prevention'."
     
     return response
 # --- ৫. মডেল লোডিং ---
