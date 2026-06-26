@@ -415,7 +415,6 @@ st.markdown(
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
-# --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
 if file:
     import numpy as np
     img_res = Image.open(file).convert('RGB').resize((100, 75))
@@ -424,19 +423,6 @@ if file:
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
-    res_name = st.session_state.last_res
-    
-    # প্রফেশনাল রেজাল্ট ডিজাইন (সঠিক ইন্ডেন্টেশনে)
-    if res_name == "Unknown" or res_name == "None":
-        st.warning("### Analysis Inconclusive")
-        st.markdown("**Observation:** The model could not confidently classify this skin condition. Please consult a dermatologist.")
-    else:
-        st.success(f"### Detected: {res_name}")
-        # এখানে আপনার ডিজাইন করা গর্জিয়াস কার্ডটি বসাতে পারেন (res_name ব্যবহার করে)
-        
-    # ডিসক্লেইমার (সবসময় নিচে দেখাবে)
-    st.markdown("---")
-    st.caption("**Disclaimer:** This AI tool is for educational purposes only. Please consult a professional dermatologist.")
 
     # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
@@ -450,7 +436,6 @@ if file:
     }
     
     res_name = st.session_state.last_res
-    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "বিস্তারিত তথ্য পাওয়া যায়নি।"})
 
     # ৩. তোমার নতুন রেজাল্ট কার্ড ডিজাইন
     st.markdown(f"""
