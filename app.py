@@ -427,9 +427,6 @@ if file:
     
     res_name = st.session_state.last_res
     
-    # 2. রেজাল্ট দেখানোর লজিক
-    res_name = st.session_state.last_res
-    
     if res_name != "None":
         # যদি রোগটি ডিকশনারিতে থাকে তবে সুন্দর কার্ড দেখাবে
         if res_name in disease_info:
@@ -451,7 +448,7 @@ if file:
             </div>
             """, unsafe_allow_html=True)
         else:
-            # যদি তালিকার বাইরে কিছু হয়
+            # যদি তালিকার বাইরে কিছু হয়, তবুও সতর্কবার্তা দেখাবে
             st.warning(f"Detected: {res_name}. No detailed clinical information found.")
     
     st.markdown("---")
