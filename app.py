@@ -229,27 +229,28 @@ def get_intelligent_response(query, res):
 
     # ২৩১ নম্বর লাইনের পর থেকে এভাবে পরিবর্তন করুন:
 
-    if is_bangla_script or is_bangla_script:
-       # Professional English Response Block
-        response = "### AI Diagnostic Analysis\n\n"
-        response += f"**Condition:** {res}\n"
-        response += f"**Common Name:** {data.get('common_name', 'Not specified')}\n\n"
-        response += "---\n"
-        response += "Would you like more details regarding this condition?\n"
-        response += "You can ask me about: 'Treatment', 'Symptoms', or 'Prevention'.\n\n"
-        response += "*Disclaimer: This AI tool is for informational purposes only and does not replace professional medical advice. Please consult a dermatologist.*"
+    # এই অংশটি আপনার কোডের সেই স্থানে বসান যেখানে রেজাল্ট দেখান হচ্ছে
+# 'prediction' এবং 'confidence' আপনার কোডের ভেরিয়েবল অনুযায়ী হতে হবে
 
-    else:
-        # Professional English Response Block
-        response = "### AI Diagnostic Analysis\n\n"
-        response += f"**Condition:** {res}\n"
-        response += f"**Common Name:** {data.get('common_name', 'Not specified')}\n\n"
-        response += "---\n"
-        response += "Would you like more details regarding this condition?\n"
-        response += "You can ask me about: 'Treatment', 'Symptoms', or 'Prevention'.\n\n"
-        response += "*Disclaimer: This AI tool is for informational purposes only and does not replace professional medical advice. Please consult a dermatologist.*"
+if prediction == "unknown":
+    st.warning("### Analysis Inconclusive")
+    st.markdown("""
+    **Observation:** The model could not confidently classify this skin condition. 
+    *Detailed clinical information is currently unavailable for this specific classification.*
     
-    return response
+    **Recommendation:** Please consult a board-certified dermatologist for a professional clinical evaluation.
+    """)
+else:
+    st.success(f"### Detected: {prediction}")
+    st.write(f"**Confidence Level:** {confidence:.2%}")
+
+# ডিসক্লেইমারটি একদম শেষে বসাবেন
+st.markdown("---")
+st.caption("""
+**Disclaimer:** This AI-powered tool is intended for educational and informational purposes only. 
+It is not a substitute for professional medical diagnosis, treatment, or advice. 
+Always seek the guidance of a qualified healthcare provider for any health-related concerns.
+""")
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
