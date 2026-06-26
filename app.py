@@ -285,7 +285,7 @@ with st.sidebar:
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
     """, unsafe_allow_html=True)
-
+        
     st.markdown("---")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
@@ -414,39 +414,37 @@ if file:
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
 
-    # ২. রোগের তালিকা (ইংরেজি ও প্রফেশনাল)
+    # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
-        "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
-        "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
-        "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growth, usually harmless."},
-        "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Firm skin nodule. Typically benign."},
-        "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spot."},
-        "Melanoma": {"local": "Melanoma", "desc": "Serious form of skin cancer. Urgent medical consultation required."},
-        "Vascular lesions": {"local": "Vascular Lesion", "desc": "Blood vessel skin condition. Requires professional treatment."}
+        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়।"},
+        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি এক প্রকার স্কিন ক্যান্সার।"},
+        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়।"},
+        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা।"},
+        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল।"},
+        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি দ্রুত চিকিৎসা করা জরুরি।"},
+        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।"}
     }
-    # রেজাল্ট চেক এবং প্রদর্শন
-    if 'last_res' in st.session_state:
-        res_name = st.session_state.last_res
-        if res_name in disease_info:
-            info = disease_info[res_name]
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-                <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-                <div style="margin: 20px 0;">
-                    <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Condition:</h4>
-                    <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
-                </div>
-                <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-                    <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
-                    <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
-                </div>
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-                    <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Details:</b> {info['desc']}</p>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
     
-    # এর বাইরে কোনো 'else' বা 'Unknown' লজিক রাখবেন না, তাহলে আর কোনো বাড়তি লেখা আসবে না।
+    res_name = st.session_state.last_res
+    info = disease_info.get(res_name, {"local": "অজানা সমস্যা", "desc": "বিস্তারিত তথ্য পাওয়া যায়নি।"})
+
+    # ৩. তোমার নতুন রেজাল্ট কার্ড ডিজাইন
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
+        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+        <div style="margin: 20px 0;">
+            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">সাধারণ নাম:</h4>
+            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+        </div>
+        <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
+            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">বৈজ্ঞানিক নাম:</p>
+            <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
+            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>তথ্য:</b> {info['desc']}</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
