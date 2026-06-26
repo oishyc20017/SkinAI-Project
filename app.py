@@ -467,16 +467,16 @@ if 'last_res' in st.session_state:
     info = disease_details.get(res_name)
 
     if info:
-        # কার্ড ডিজাইন
         st.markdown(f"""
         <div style="background: #1e293b; padding: 25px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
             <h1 style="color: #ffffff; margin-bottom: 5px;">{res_name}</h1>
-            <p style="color: #94a3b8; font-size: 16px;"><b>বিবরণ:</b> {info['desc']}</p>
-            <p style="color: #cbd5e1;"><b>কারণ:</b> {info['cause']}</p>
-            <p style="color: #cbd5e1;"><b>প্রতিকার:</b> {info['home']}</p>
-            <p style="color: #ffcc00;"><b>পরামর্শ:</b> {info['advice']}</p>
+            <p style="color: #94a3b8; font-size: 16px;"><b>Description:</b> {info['desc']}</p>
+            <p style="color: #cbd5e1;"><b>Cause:</b> {info['cause']}</p>
+            <p style="color: #cbd5e1;"><b>Prevention:</b> {info['home']}</p>
+            <p style="color: #ffcc00;"><b>Advice:</b> {info['advice']}</p>
         </div>
         """, unsafe_allow_html=True)
+        
     else:
         # ডাটাবেসে তথ্য না থাকলে
         st.warning(f"আমরা এই রোগটি শনাক্ত করেছি: {res_name}, তবে এর বিস্তারিত তথ্য আমাদের ডাটাবেসে নেই।")
