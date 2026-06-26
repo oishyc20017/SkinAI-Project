@@ -230,23 +230,24 @@ def get_intelligent_response(query, res):
     # ২৩১ নম্বর লাইনের পর থেকে এভাবে পরিবর্তন করুন:
 
     if is_bangla_script or is_bangla_script:
-       # এখানে আপনার আগের বাংলা লেখাগুলো সরিয়ে নতুন ইংরেজি ফরম্যাট দিন
-       # কারণ ইউজার বাংলাতে প্রশ্ন করলেও সে প্রফেশনাল ইংরেজি উত্তরই পাবে
-        response = f"### AI Diagnostic Analysis\n\n"
-        response += f"**Condition:** {res}\n"
-        response += f"**Common Name:** {data.get('common_name', 'Not specified')}\n\n"
-        response += f"---\n"
-        response += f"Would you like to know more about this condition?\n"
-        response += f"You can ask me questions like: 'Treatment', 'Symptoms', or 'Prevention'."
-
-    else:
-        # English response block
+       # Professional English Response Block
         response = "### AI Diagnostic Analysis\n\n"
         response += f"**Condition:** {res}\n"
         response += f"**Common Name:** {data.get('common_name', 'Not specified')}\n\n"
         response += "---\n"
-        response += "Would you like to know more about this condition?\n"
-        response += "You can ask me questions like: 'Treatment', 'Symptoms', or 'Prevention'."
+        response += "Would you like more details regarding this condition?\n"
+        response += "You can ask me about: 'Treatment', 'Symptoms', or 'Prevention'.\n\n"
+        response += "*Disclaimer: This AI tool is for informational purposes only and does not replace professional medical advice. Please consult a dermatologist.*"
+
+    else:
+        # Professional English Response Block
+        response = "### AI Diagnostic Analysis\n\n"
+        response += f"**Condition:** {res}\n"
+        response += f"**Common Name:** {data.get('common_name', 'Not specified')}\n\n"
+        response += "---\n"
+        response += "Would you like more details regarding this condition?\n"
+        response += "You can ask me about: 'Treatment', 'Symptoms', or 'Prevention'.\n\n"
+        response += "*Disclaimer: This AI tool is for informational purposes only and does not replace professional medical advice. Please consult a dermatologist.*"
     
     return response
 # --- ৫. মডেল লোডিং ---
