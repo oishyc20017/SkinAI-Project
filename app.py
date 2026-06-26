@@ -416,17 +416,18 @@ if file:
 
     # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
     disease_info = {
-        "Actinic keratoses": {"local": "Actinic Keratosis", "desc": "Pre-cancerous skin lesion due to sun exposure."},
-        "Basal cell carcinoma": {"local": "Basal Cell Carcinoma", "desc": "A common type of skin cancer. Requires medical attention."},
-        "Benign keratosis-like lesions": {"local": "Benign Keratosis", "desc": "Non-cancerous skin growth, usually harmless."},
-        "Dermatofibroma": {"local": "Dermatofibroma", "desc": "Firm skin nodule. Typically benign."},
-        "Melanocytic nevi": {"local": "Common Mole (Nevus)", "desc": "Common pigmented skin spot."},
-        "Melanoma": {"local": "Melanoma", "desc": "Serious form of skin cancer. Urgent medical consultation required."},
-        "Vascular lesions": {"local": "Vascular Lesion", "desc": "Blood vessel skin condition. Requires professional treatment."}
+        "Actinic keratoses": {"local": "রোদে পোড়া খসখসে দাগ", "desc": "এটি সূর্যরশ্মির কারণে হয়।"},
+        "Basal cell carcinoma": {"local": "সাধারণ স্কিন ক্যান্সার", "desc": "এটি এক প্রকার স্কিন ক্যান্সার।"},
+        "Benign keratosis-like lesions": {"local": "ক্ষতিহীন আঁচিল বা তিল", "desc": "এটি সাধারণত ভয়ের কিছু নয়।"},
+        "Dermatofibroma": {"local": "ত্বকের শক্ত গুটি", "desc": "ত্বকের নিচে ছোট শক্ত দানা।"},
+        "Melanocytic nevi": {"local": "সাধারণ তিল বা জন্মদাগ", "desc": "এটি আমাদের ত্বকের অতি পরিচিত তিল।"},
+        "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি দ্রুত চিকিৎসা করা জরুরি।"},
+        "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।"}
     }
+
     
     res_name = st.session_state.last_res
-    info = disease_info.get(res_name, {"local": "Local NAme Unknown", "desc": "We do not have complete information about this diseases.Soon we provide more information about this diseases."})
+    info = disease_info.get(res_name, {"local": "Local Name Unknown", "desc": "We do not have complete information about this diseases.Soon we provide more information about this diseases."})
 
     # ৩. তোমার নতুন রেজাল্ট কার্ড ডিজাইন
     st.markdown(f"""
