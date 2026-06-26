@@ -424,28 +424,26 @@ if file:
         "Melanoma": {"local": "মারাত্মক স্কিন ক্যান্সার", "desc": "এটি দ্রুত চিকিৎসা করা জরুরি।"},
         "Vascular lesions": {"local": "রক্তনালীর লাল দাগ", "desc": "জন্মগত লাল দাগ বা রক্তনালী ফুলে যাওয়া।"}
     }
-
-    
+# এই অংশটুকু আপনার ৪২৮ নম্বর লাইনের জায়গা থেকে বসান
+if 'last_res' in st.session_state:
     res_name = st.session_state.last_res
-    info = disease_info.get(res_name, {"local": "Local Name Unknown", "desc": "We do not have complete information about this diseases.Soon we provide more information about this diseases."})
-
-    # ৩. তোমার নতুন রেজাল্ট কার্ড ডিজাইন
-    st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-        <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-        <div style="margin: 20px 0;">
-            <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">General Name:</h4>
-            <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
+    
+    # এখানে আমরা সরাসরি চেক করছি 'disease_info' এর মধ্যে তথ্য আছে কি না
+    if res_name in disease_info:
+        info = disease_info[res_name]
+        st.markdown(f"""
+        <div style="background: #1e293b; padding: 20px; border-radius: 15px; border-left: 5px solid #58a6ff; margin: 10px 0;">
+            <p style="color: #58a6ff; font-size: 12px; margin:0; letter-spacing: 2px;">AI DIAGNOSTIC ANALYSIS</p>
+            <h2 style="color: #ffffff; margin: 5px 0;">{info['local']}</h2>
+            <p style="color: #94a3b8; font-size: 14px; margin: 0;"><b>Scientific Name:</b> {res_name}</p>
         </div>
-        <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-            <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
-            <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
-        </div>
-        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-            <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Information:</b> {info['desc']}</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+    else:
+        # যদি 'res_name' কোনো এরর না দেয় কিন্তু ডাটাবেসে না থাকে, তবে শুধু নামটা দেখাবে
+        st.info(f"Result detected: {res_name}. (Clinical details currently unavailable).")
+else:
+    # যদি কোনো রেজাল্ট জেনারেট না হয়, তবে কিছু দেখাবে না (শান্ত থাকবে)
+    pass
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
