@@ -279,6 +279,8 @@ if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
+    st.subheader("Data Management")
+    download_database_button()
     # ১. লোগো এরিয়া
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
@@ -302,14 +304,6 @@ with st.sidebar:
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
     """, unsafe_allow_html=True)
-
-    # ৩. নিউ চ্যাট বাটন (সব এক লাইনে)
-    if st.button("+ New Chat", use_container_width=True, key="unique_new_chat"): 
-        st.session_state.messages = []
-        st.session_state.last_res = "None"
-        st.rerun()
-
-        
     st.markdown("---")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
