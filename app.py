@@ -238,11 +238,18 @@ def get_intelligent_response(query, res):
     
     # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
     else:
-        response = f"### AI Analysis: {res}\n\n"
-        response += f"**Common Name:** [আপনার ডাটাবেস থেকে কমন নাম]\n\n" # নতুন লাইন
-        response += f"--- \n\n" # সুন্দর দেখানোর জন্য একটি ডিভাইডার
-        response += f"**Would you like to know more?**\n"
-        response += f"You can ask me questions like 'How to treat this?' or 'Is it serious?'"
+        # ধরি, আপনার dictionary তে 'common_name' নামে একটি কি (key) আছে
+        common_name = disease_details.get(res, {}).get('common_name', 'Not specified')
+        
+        response = f"### AI Diagnostic Analysis\n\n"
+        response += f"**Condition:** {res}\n"
+        response += f"**Commonly known as:** {common_name}\n\n"
+        response += f"---\n"
+        response += f"Would you like to know more about this condition? \n"
+        response += f"You can ask me about: \n"
+        response += f"- Treatment options\n"
+        response += f"- Symptoms to watch for\n"
+        response += f"- Preventive measures"
     
     return response
 # --- ৫. মডেল লোডিং ---
