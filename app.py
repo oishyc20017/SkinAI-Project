@@ -230,20 +230,16 @@ def get_intelligent_response(query, res):
     # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
     if is_bangla_script or is_banglish:
         response = f"### AI Analysis: {res}\n\n"
-        response += f"**What is it?**\n{data.get('desc', 'Detailed information is unavailable.')}\n\n"
-        response += f"**Possible Causes:**\n{data.get('cause', 'Not specified.')}\n\n"
-        response += f"**Home Care Tips:**\n{data.get('home', 'No specific home care.')}\n\n"
-        response += f"**Medical Advice:**\n{data.get('advice', 'Please consult a dermatologist.')}\n\n"
-        response += "---\n*Do you have any more questions about this?*"
+        response += f"**Condition:** {data.get('local', 'N/A')}\n\n"
+        response += f"**Details:** {data.get('desc', 'Detailed info unavailable.')}\n\n"
+        response += "---\n*Please consult a dermatologist for professional advice.*"
     
     # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
     else:
         response = f"### AI Analysis: {res}\n\n"
-        response += f"**What is it?**\n{data.get('desc', 'Detailed information is unavailable.')}\n\n"
-        response += f"**Possible Causes:**\n{data.get('cause', 'Not specified.')}\n\n"
-        response += f"**Home Care Tips:**\n{data.get('home', 'No specific home care.')}\n\n"
-        response += f"**Medical Advice:**\n{data.get('advice', 'Please consult a dermatologist.')}\n\n"
-        response += "---\n*Do you have any more questions about this?*"
+        response += f"**Condition:** {data.get('local', 'N/A')}\n\n"
+        response += f"**Details:** {data.get('desc', 'Detailed info unavailable.')}\n\n"
+        response += "---\n*Please consult a dermatologist for professional advice.*"
     
     return response
 # --- ৫. মডেল লোডিং ---
@@ -407,12 +403,21 @@ file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
 if file:
-    import numpy as np
-    img_res = Image.open(file).convert('RGB').resize((100, 75))
-    x = np.asarray(img_res) / 255.0
-    x = np.expand_dims(x, axis=0)
-    pred = model.predict(x, verbose=0)
-    st.session_state.last_res = classes[np.argmax(pred)]
+    # ... আগের কোড (ইমেজ প্রসেসিং) ...
+    res_name = st.session_state.last_res
+    
+    # রেজাল্ট কার্ড (ইংরেজি এবং প্রফেশনাল ডিজাইন)
+    if res_name in disease_info:
+        info = disease_info[res_name]
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; margin: 25px 0; text-align: center;">
+            <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+            <h1 style="color: #ffffff; font-size: 32px;">{info['local']}</h1>
+            <h3 style="color: #58a6ff;">{res_name}</h3>
+            <p style="color: #cbd5e1;">{info['desc']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+    st.markdown("---")
 
     # 1. রোগের বিস্তারিত ডাটাবেস (হুবহু এখানে চেক করুন)
     disease_info = {
@@ -427,32 +432,29 @@ if file:
     
     res_name = st.session_state.last_res
     
-    if res_name != "None":
-        # যদি রোগটি ডিকশনারিতে থাকে তবে সুন্দর কার্ড দেখাবে
-        if res_name in disease_info:
-            info = disease_info[res_name]
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
-                <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
-                <div style="margin: 20px 0;">
-                    <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Common Name:</h4>
-                    <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
-                </div>
-                <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
-                    <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
-                    <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
-                </div>
-                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
-                    <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Info:</b> {info['desc']}</p>
-                </div>
+    # এটি শুধু তখন কাজ করবে যখন রোগটি আমাদের তালিকার মধ্যে থাকবে
+    if res_name in disease_info:
+        info = disease_info[res_name]
+        st.markdown(f"""
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); margin: 25px 0; text-align: center;">
+            <p style="color: #58a6ff; font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">AI Diagnostic Analysis</p>
+            <div style="margin: 20px 0;">
+                <h4 style="color: #8b949e; margin-bottom: 5px; font-size: 16px;">Common Name:</h4>
+                <h1 style="color: #ffffff; font-size: 32px; margin: 0;">{info['local']}</h1>
             </div>
-            """, unsafe_allow_html=True)
-        else:
-            # যদি তালিকার বাইরে কিছু হয়, তবুও সতর্কবার্তা দেখাবে
-            st.warning(f"Detected: {res_name}. No detailed clinical information found.")
-    
+            <div style="margin: 20px 0; border-top: 1px solid #334155; padding-top: 15px;">
+                <p style="color: #8b949e; margin-bottom: 5px; font-size: 14px;">Scientific Name:</p>
+                <h3 style="color: #58a6ff; font-style: italic; font-size: 22px; margin: 0;">{res_name}</h3>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-top: 20px;">
+                <p style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin: 0;"><b>Info:</b> {info['desc']}</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # ডিসক্লেইমারটি সব সময় ইংরেজিতে থাকবে
     st.markdown("---")
-    st.caption("**Disclaimer:** For educational purposes only. Please consult a dermatologist.")
+    st.caption("**Disclaimer:** This AI tool is for educational purposes only. Please consult a dermatologist for professional medical advice.")
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
