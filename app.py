@@ -248,7 +248,7 @@ else:
     response += f"Would you like to know more about this condition?\n"
     response += f"You can ask: 'Treatment options', 'Symptoms', or 'Prevention'."
     
-    return response
+return response
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
