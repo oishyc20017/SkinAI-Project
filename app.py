@@ -237,13 +237,13 @@ def get_intelligent_response(query, res):
         response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
     
     # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
-    else:
-        response = f"### 🩺 **AI Analysis: {res}**\n\n"
-        response += f"**1. What is it?**\nIt is identified as {res}. This condition causes changes in skin texture.\n\n"
-        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
-        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
-        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
-        response += "---\n*Do you have any more questions about this?*"
+    # উদাহরণস্বরূপ, ইংরেজি ভার্সনের জন্য লাইনগুলো এভাবে ক্লিন করতে পারেন:\
+else:
+    response = f"### AI Analysis: {res}\n\n"
+    response += f"**Common Name:** [আপনার ডাটাবেস থেকে কমন নাম]\n\n" # নতুন লাইন
+    response += f"--- \n\n" # সুন্দর দেখানোর জন্য একটি ডিভাইডার
+    response += f"**Would you like to know more?**\n"
+    response += f"You can ask me questions like 'How to treat this?' or 'Is it serious?'"
     
     return response
 # --- ৫. মডেল লোডিং ---
