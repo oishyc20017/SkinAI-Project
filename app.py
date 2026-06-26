@@ -229,7 +229,7 @@ def get_intelligent_response(query, res):
 
     # ২৩১ নম্বর লাইনের পর থেকে এভাবে পরিবর্তন করুন:
 
-    if is_bangla_script or is_bangla_script:
+    if is_english_script or is_english_script:
        # এখানে আপনার আগের বাংলা লেখাগুলো সরিয়ে নতুন ইংরেজি ফরম্যাট দিন
        # কারণ ইউজার বাংলাতে প্রশ্ন করলেও সে প্রফেশনাল ইংরেজি উত্তরই পাবে
        response = f"### AI Diagnostic Analysis\n\n"
