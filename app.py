@@ -192,6 +192,7 @@ Instructions:
 - If you don't know something, say so instead of making it up.
 - Give only safe medical advice.
 - Never claim a diagnosis is certain from a photo. Instead, explain that the prediction is AI-based and should be confirmed by a dermatologist if needed.
+- Keep answers concise unless the user asks for more details.
 
 
 User Question:
