@@ -233,9 +233,17 @@ Never force the disease into every reply.
 User Question:
 {user_question}
 """
+    try:
+        response = model_ai.generate_content(prompt)
+        return response.text
 
-    response = model_ai.generate_content(prompt)
-    return response.text
+    except Exception as e:
+        error = str(e)
+
+        if "ResourceExhausted" in error or "429" in error:
+            return "⚠️ AI request limit has been reached. Please try again later."
+
+        return "⚠️ SkinAI is temporarily unavailable. Please try again in a few moments."
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
