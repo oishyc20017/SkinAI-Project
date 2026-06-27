@@ -5,7 +5,6 @@ import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
-from datetime import datetime
 import os
 import gdown
 import sqlite3
@@ -535,8 +534,6 @@ with col2:
 st.markdown("---")
 
 # ---------------- CHAT ----------------
-from datetime import datetime
-
 for m in st.session_state.messages:
 
     avatar = "👤" if m["role"] == "user" else "🩺"
@@ -551,8 +548,6 @@ for m in st.session_state.messages:
         )
 
         st.write(m["content"])
-
-        st.caption(datetime.now().strftime("%I:%M %p"))
 # নতুন মেসেজ
 prompt = st.chat_input("Ask me anything about your skin...")
 
@@ -580,8 +575,7 @@ if prompt:
     # AI message save
     st.session_state.messages.append({
         "role": "assistant",
-        "content": reply,
-        "time": m.get("time", "")
+        "content": reply
     })
 
     # Login থাকলে AI message save
