@@ -555,12 +555,9 @@ for m in st.session_state.messages:
 prompt = st.chat_input("Ask me anything about your skin...")
 
 if prompt:
-
-    # User message দেখাও
     st.session_state.messages.append({
         "role": "user",
-        "content": prompt,
-        "time": m.get("time", "")
+        "content": prompt
     })
   
     # Login থাকলে user message save করো
