@@ -190,6 +190,11 @@ Instructions:
 - If you don't know something, say so instead of making it up.
 - Give only safe medical advice.
 - Never claim a diagnosis is certain from a photo.
+If the user's question is related to the detected disease, answer based on that disease.
+
+If the question is unrelated (for example: "How are you?", "Who are you?", "Tell me a joke"), answer normally without mentioning the disease.
+
+Never force the disease into every reply.
 
 User Question:
 {user_question}
