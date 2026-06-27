@@ -216,70 +216,32 @@ disease_details = {
 }
 
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (Fix: English vs Bangla/Banglish) ---
-def get_intelligent_response(query, res):
-    with st.status("Analyzing your question...", expanded=False) as status:
-        time.sleep(1.0)
-        status.update(label="Response Ready!", state="complete")
-    
-    q = query.lower()
-    if res == "None":
-        is_bn = any('\u0980' <= char <= '\u09FF' for char in query) or any(word in q for word in ["ki", "keno", "upai"])
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।" if is_bn else "Please upload a photo first."
+def ask_ai(user_question, disease):
 
-    data = disease_details.get(res, {})
-    
-    # বাংলা এবং বাংলিশ কী-ওয়ার্ড চেক
-    bangla_hints = ["ki", "keno", "ken", "bolo", "tips", "bashay", "osud", "doctor", "upai", "goroa", "protikar"]
-    is_bangla_script = any('\u0980' <= char <= '\u09FF' for char in query)
-    is_banglish = any(word in q.split() for word in bangla_hints) # split() দিলে একদম সঠিক শব্দ ধরবে
+    if disease == "None":
+        return "দয়া করে আগে একটি ছবি আপলোড করুন।"
 
-    # যদি ইউজার বাংলা বা বাংলিশ ব্যবহার করে
-    if is_bangla_script or is_banglish:
-        response = f"### 🩺 **AI বিশ্লেষণ: {res}**\n\n"
-        response += f"**১. এটি আসলে কী?**\n{data['desc']}\n\n"
-        response += f"**২. এটি কেন হয়?**\n{data['cause']}\n\n"
-        response += f"**৩. ঘরোয়া টিপস ও সাবধানতা:**\n{data['home']}\n\n"
-        response += f"**৪. বিশেষজ্ঞের পরামর্শ:**\n{data['advice']}\n\n"
-        response += "---\n*আপনার কি আরও কিছু জানার আছে?*"
-    
-    # যদি ইউজার পুরোপুরি ইংরেজিতে প্রশ্ন করে (যেমন: "What is this?", "Give me details")
-    else:
-        response = f"### 🩺 **AI Analysis: {res}**\n\n"
-        response += f"**1. What is it?**\nIt is identified as {res}. This condition causes changes in skin texture.\n\n"
-        response += f"**2. Possible Causes:**\nUsually caused by prolonged UV exposure, genetic factors, or skin irritation.\n\n"
-        response += f"**3. Home Care Tips:**\nAvoid direct sunlight, use high SPF sunscreen, and keep the skin moisturized.\n\n"
-        response += f"**4. Medical Advice:**\nConsult a dermatologist for a professional clinical examination.\n\n"
-        response += "---\n*Do you have any more questions about this?*"
-    
-    return response
-    def ask_ai(user_question, disease):
+    prompt = f"""
+You are SkinAI Pro, an experienced dermatologist.
 
-        prompt = f"""
-    You are SkinAI Pro.
+The detected skin disease is:
+{disease}
 
-    The detected skin disease is:
+Rules:
+- Answer naturally like a human doctor.
+- Only answer what the user asks.
+- Don't always explain causes unless asked.
+- If the user greets you, greet back.
+- Reply in Bangla if the question is Bangla.
+- Reply in English if the question is English.
+- Keep answers short, friendly and helpful.
 
-    {disease}
+User Question:
+{user_question}
+"""
 
-    Answer naturally like an experienced dermatologist.
-
-    Rules:
-    - Reply like a human.
-    - Never answer like a robot.
-    - Only answer what the user asked.
-    - Don't always explain causes.
-    - If the user greets you, greet back.
-    - If the question is Bangla, answer Bangla.
-    - If English, answer English.
-    - Give safe medical advice.
-
-    User Question:
-    {user_question}
-    """
-
-        response = model_ai.generate_content(prompt)
-
-        return response.text
+    response = model_ai.generate_content(prompt)
+    return response.text
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
