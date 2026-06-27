@@ -239,10 +239,9 @@ User Question:
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
-    return tf.keras.models.load_model(
-        "skin_cancer_model.h5",
-        compile=False
-    )
+    path = 'skin_cancer_model.h5'
+    if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
+    return tf.keras.models.load_model(path, compile=False)
 model = load_skin_model()
 disease_details = {
     'Actinic keratoses': {
@@ -343,7 +342,7 @@ with st.sidebar:
 
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.messages = []
-        st.session_state.last_res = None
+        st.session_state.last_res = "None"
         st.rerun()
 
     st.markdown("---")
@@ -450,16 +449,30 @@ if file:
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
-    # রেজাল্ট প্রদর্শন লজিক
-    if st.session_state.last_res:
-        res_name = st.session_state.last_res
+# রেজাল্ট প্রদর্শন লজিক
+if 'last_res' in st.session_state:
+    res_name = st.session_state.last_res
+    
+    # আপনার তৈরি করা disease_details ডাটাবেস থেকে তথ্য নেওয়া
+    info = disease_details.get(res_name)
 
-        info = disease_details.get(res_name)
-
-        if info:
-            ...
+    if info:
+        st.markdown(f"""
+        <div style="background: #1e293b; padding: 25px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+            <h1 style="color: #ffffff; margin-bottom: 5px;">{res_name}</h1>
+            <p style="color: #94a3b8; font-size: 16px;"><b>Description:</b> {info['desc']}</p>
+            <p style="color: #cbd5e1;"><b>Cause:</b> {info['cause']}</p>
+            <p style="color: #cbd5e1;"><b>Prevention:</b> {info['home']}</p>
+            <p style="color: #ffcc00;"><b>Advice:</b> {info['advice']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
     else:
-        pass
+        # ডাটাবেসে তথ্য না থাকলে
+        st.warning(f"আমরা এই রোগটি শনাক্ত করেছি: {res_name}, তবে এর বিস্তারিত তথ্য আমাদের ডাটাবেসে নেই।")
+else:
+    # যদি কোনো রেজাল্ট জেনারেট না হয়, তবে কিছু দেখাবে না (শান্ত থাকবে)
+    pass
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
