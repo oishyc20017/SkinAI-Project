@@ -336,7 +336,9 @@ with st.sidebar:
                     st.session_state.logged_in = True
                     st.session_state.user = e
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
-                    st.session_state.messages = [{"role": r, "content": ct} for r, ct in c.fetchall()]
+                    for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
                     st.success("Welcome back!")
                     time.sleep(0.5)
                     st.rerun()
