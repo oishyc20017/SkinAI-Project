@@ -558,9 +558,7 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
     if st.session_state.get('logged_in', False):
         c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
         conn.commit()
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    with st.chat_message("assistant"):
-        reply = ask_ai(prompt,st.session_state.last_res)
-        st.markdown(reply)
+        reply = ask_ai(prompt, st.session_state.last_res)
         st.session_state.messages.append({"role": "assistant", "content": reply})
+
+        st.rerun()
