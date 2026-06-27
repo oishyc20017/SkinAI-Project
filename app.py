@@ -418,52 +418,6 @@ if file:
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
     st.session_state.last_res = classes[np.argmax(pred)]
-
-    # ২. নামের লিস্ট (মানুষ যেভাবে চেনে বনাম বৈজ্ঞানিক নাম)
-    disease_details = {
-    'Actinic keratoses': {
-        'desc': 'A rough, scaly patch on the skin caused by years of sun exposure.',
-        'cause': 'Long-term exposure to ultraviolet (UV) radiation from the sun.',
-        'home': 'Use sunscreen daily, avoid peak sun hours, and keep skin moisturized.',
-        'advice': 'Consult a dermatologist to ensure it is not pre-cancerous.'
-    },
-    'Basal cell carcinoma': {
-        'desc': 'A common type of skin cancer that begins in the basal cells.',
-        'cause': 'Prolonged exposure to sunlight or UV rays.',
-        'home': 'No home remedy; regular skin protection is essential.',
-        'advice': 'Requires professional treatment or biopsy; see a doctor immediately.'
-    },
-    'Benign keratosis': {
-        'desc': 'Non-cancerous skin growth, often appearing as a dark or tan spot as you age.',
-        'cause': 'Natural aging process and genetics.',
-        'home': 'Keep it moisturized; coconut oil may help if there is mild itching.',
-        'advice': 'Usually no treatment needed, but see a doctor if it grows rapidly.'
-    },
-    'Dermatofibroma': {
-        'desc': 'A small, firm red or brown bump, often on the legs or arms.',
-        'cause': 'Usually a reaction to a minor injury like an insect bite.',
-        'home': 'No specific home treatment.',
-        'advice': 'If it becomes painful or changes in appearance, consult a doctor for removal.'
-    },
-    'Melanoma': {
-        'desc': 'The most serious type of skin cancer that can spread rapidly.',
-        'cause': 'Genetic mutations and intense UV exposure.',
-        'home': 'No home treatment; this is a medical emergency.',
-        'advice': 'Urgent consultation with an oncologist or dermatologist is mandatory.'
-    },
-    'Nevus': {
-        'desc': 'A common mole; a cluster of pigmented skin cells.',
-        'cause': 'Concentration of melanin cells.',
-        'home': 'Sun protection to prevent irritation.',
-        'advice': 'Monitor for changes in size, shape, or color; see a doctor if it changes.'
-    },
-    'Vascular lesions': {
-        'desc': 'Skin conditions caused by abnormal blood vessels (red or purple spots).',
-        'cause': 'Blood vessel malformations.',
-        'home': 'Ice packs may reduce swelling, but it is not a permanent solution.',
-        'advice': 'Laser treatment is usually recommended for complete removal.'
-    }
-}
 # রেজাল্ট প্রদর্শন লজিক
 if 'last_res' in st.session_state:
     res_name = st.session_state.last_res
