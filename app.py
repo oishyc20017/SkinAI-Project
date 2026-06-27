@@ -506,7 +506,7 @@ st.markdown("---")
 for m in st.session_state.messages:
     with st.chat_message("assistant"):
         with st.spinner("🩺 SkinAI is thinking..."):
-            reply = ask_ai(prompt, st.session_state.last_res)
+             reply = ask_ai(prompt, st.session_state.last_res)
 
         st.markdown(reply)
 
