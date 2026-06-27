@@ -254,34 +254,35 @@ def get_intelligent_response(query, res):
     return response
     def ask_ai(user_question, disease):
 
-    prompt = f"""
-You are SkinAI Pro.
+        prompt = f"""
+    You are SkinAI Pro.
 
-The detected skin disease is:
+    The detected skin disease is:
 
-{disease}
+    {disease}
 
-Answer naturally like an experienced dermatologist.
+    Answer naturally like an experienced dermatologist.
 
-Rules:
+    Rules:
 
-- Reply like a human.
-- Never answer like a robot.
-- Only answer what the user asked.
-- Don't always explain causes.
-- If the user greets you, greet back.
-- If the question is Bangla, answer Bangla.
-- If English, answer English.
-- Give safe medical advice.
+    - Reply like a human.
+    - Never answer like a robot.
+    - Only answer what the user asked.
+    - Don't always explain causes.
+    - If the user greets you, greet back.
+    - If the question is Bangla, answer Bangla.
+    - If English, answer English.
+    - Give safe medical advice.
 
-User Question:
+    User Question:
 
-{user_question}
-"""
+    {user_question}
+    """
 
-    response = model_ai.generate_content(prompt)
+       response = model_ai.generate_content(prompt)
 
-    return response.text
+       return response.text
+    
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
