@@ -132,6 +132,37 @@ div.stButton > button:first-child:hover {
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
+    .user-box{
+    background: linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:white;
+    padding:14px 18px;
+    border-radius:20px;
+    margin:8px 0;
+    width:fit-content;
+    max-width:75%;
+    margin-left:auto;
+    box-shadow:0 5px 15px rgba(0,0,0,.25);
+}
+
+.ai-box{
+    background:#1e293b;
+    color:white;
+    padding:14px 18px;
+    border-radius:20px;
+    margin:8px 0;
+    width:fit-content;
+    max-width:75%;
+    border:1px solid #334155;
+    box-shadow:0 5px 15px rgba(0,0,0,.25);
+}
+
+.chat-name{
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:6px;
+    opacity:.8;
+}
+
 </style>
 """, unsafe_allow_html=True)
 # --- ১. ডাটাবেস ও সিকিউরিটি ---
@@ -503,12 +534,29 @@ with col2:
 st.markdown("---")
 
 # ---------------- CHAT ----------------
-
-# পুরনো মেসেজ দেখাও
 for m in st.session_state.messages:
-    with st.chat_message(m["role"]):
-        st.markdown(m["content"])
 
+    if m["role"] == "user":
+
+        st.markdown(f"""
+        <div style="display:flex;justify-content:flex-end;">
+            <div class="user-box">
+                <div class="chat-name">👤 You</div>
+                {m["content"]}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    else:
+
+        st.markdown(f"""
+        <div style="display:flex;justify-content:flex-start;">
+            <div class="ai-box">
+                <div class="chat-name">🤖 SkinAI Assistant</div>
+                {m["content"]}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 # নতুন মেসেজ
 prompt = st.chat_input("Ask me anything about your skin...")
