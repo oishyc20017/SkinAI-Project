@@ -442,18 +442,23 @@ st.markdown(
 file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
+file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
+
 if file:
-    import numpy as np
+    # যখন ফাইল আপলোড হবে, তখনই কেবল প্রসেসিং শুরু হবে
     img_res = Image.open(file).convert('RGB').resize((100, 75))
     x = np.asarray(img_res) / 255.0
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
-    st.session_state.last_res = classes[np.argmax(pred)]
-# রেজাল্ট প্রদর্শন লজিক
-if 'last_res' in st.session_state:
-    res_name = st.session_state.last_res
     
-    # আপনার তৈরি করা disease_details ডাটাবেস থেকে তথ্য নেওয়া
+    # শনাক্তকরণের মান
+    pred_index = np.argmax(pred)
+    res_name = classes[pred_index] # classes লিস্ট থেকে সঠিক নাম নিচ্ছে
+    st.session_state.last_res = res_name 
+
+# ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
+if st.session_state.last_res != "None":
+    res_name = st.session_state.last_res
     info = disease_details.get(res_name)
 
     if info:
@@ -466,12 +471,11 @@ if 'last_res' in st.session_state:
             <p style="color: #ffcc00;"><b>Advice:</b> {info['advice']}</p>
         </div>
         """, unsafe_allow_html=True)
-        
     else:
-        # ডাটাবেসে তথ্য না থাকলে
-        st.warning(f"আমরা এই রোগটি শনাক্ত করেছি: {res_name}, তবে এর বিস্তারিত তথ্য আমাদের ডাটাবেসে নেই।")
+        # এখানে কোনো warning দেখানোর প্রয়োজন নেই যদি আপনি ক্লিন রাখতে চান
+        pass 
 else:
-    # যদি কোনো রেজাল্ট জেনারেট না হয়, তবে কিছু দেখাবে না (শান্ত থাকবে)
+    # ফাইল আপলোড না করলে একদম ক্লিন থাকবে
     pass
   # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
