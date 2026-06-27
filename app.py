@@ -5,6 +5,7 @@ import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
+from datetime import datetime
 import os
 import gdown
 import sqlite3
@@ -560,9 +561,10 @@ if prompt:
     # User message দেখাও
     st.session_state.messages.append({
         "role": "user",
-        "content": prompt
+        "content": prompt,
+        "time": m.get("time", "")
     })
-
+  
     # Login থাকলে user message save করো
     if st.session_state.get("logged_in", False):
         c.execute(
@@ -578,7 +580,8 @@ if prompt:
     # AI message save
     st.session_state.messages.append({
         "role": "assistant",
-        "content": reply
+        "content": reply,
+        "time": m.get("time", "")
     })
 
     # Login থাকলে AI message save
