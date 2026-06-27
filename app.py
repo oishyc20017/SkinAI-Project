@@ -502,39 +502,47 @@ with col2:
 
 st.markdown("---")
 
-# --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট (আগের মেইন কোড - সম্পূর্ণ নিরাপদ) ---
+# ---------------- CHAT ----------------
+
+# পুরনো মেসেজ দেখাও
 for m in st.session_state.messages:
-    with st.chat_message("assistant"):
-        with st.spinner("🩺 SkinAI is thinking..."):
-             reply = ask_ai(prompt, st.session_state.last_res)
+    with st.chat_message(m["role"]):
+        st.markdown(m["content"])
 
-        st.markdown(reply)
 
+# নতুন মেসেজ
+prompt = st.chat_input("Ask me anything about your skin...")
+
+if prompt:
+
+    # User message দেখাও
     st.session_state.messages.append({
-        "role": "assistant",
-        "content": reply
+        "role": "user",
+        "content": prompt
     })
 
-    # Login থাকলে শুধু history save করবে
+    # Login থাকলে user message save করো
     if st.session_state.get("logged_in", False):
         c.execute(
-            'INSERT INTO chat_history VALUES (?,?,?)',
+            "INSERT INTO chat_history VALUES (?,?,?)",
             (st.session_state.user, "user", prompt)
         )
         conn.commit()
 
-    # AI সবসময় উত্তর দেবে
-    reply = ask_ai(prompt, st.session_state.last_res)
+    # AI উত্তর তৈরি
+    with st.spinner("🩺 SkinAI is thinking..."):
+        reply = ask_ai(prompt, st.session_state.last_res)
 
+    # AI message save
     st.session_state.messages.append({
         "role": "assistant",
         "content": reply
     })
 
-    # Login থাকলে AI reply-ও save করবে
+    # Login থাকলে AI message save
     if st.session_state.get("logged_in", False):
         c.execute(
-            'INSERT INTO chat_history VALUES (?,?,?)',
+            "INSERT INTO chat_history VALUES (?,?,?)",
             (st.session_state.user, "assistant", reply)
         )
         conn.commit()
