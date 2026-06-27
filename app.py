@@ -510,10 +510,10 @@ for m in st.session_state.messages:
 
         st.markdown(reply)
 
-st.session_state.messages.append({
-    "role": "assistant",
-    "content": reply
-})
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": reply
+    })
 
     # Login থাকলে শুধু history save করবে
     if st.session_state.get("logged_in", False):
