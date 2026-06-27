@@ -15,7 +15,7 @@ import google.generativeai as genai
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
 # সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
 genai.configure(api_key=st.secrets["API_KEY"])
-model_ai = genai.GenerativeModel("gemini-1.5-flash")
+model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
@@ -169,79 +169,39 @@ init_db()
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
 
-
-# --- ৩. রোগের বিস্তারিত ডাটাবেস (সাতটি রোগ) ---
-disease_details = {
-    'Actinic keratoses': {
-        'desc': "এটি রোদে পোড়া খসখসে দাগ। এটি অবহেলা করলে ভবিষ্যতে ক্যান্সার হতে পারে।",
-        'cause': "দীর্ঘদিন সূর্যের অতিবেগুনি রশ্মির (UV) সংস্পর্শে থাকা।",
-        'home': "রোদে বের হওয়া কমিয়ে দিন, সানস্ক্রিন ব্যবহার করুন এবং আক্রান্ত স্থান ময়েশ্চারাইজড রাখুন।",
-        'advice': "একজন চর্মরোগ বিশেষজ্ঞকে দেখিয়ে নিশ্চিত হোন যে এটি ক্যান্সারের দিকে যাচ্ছে কি না।"
-    },
-    'Basal cell carcinoma': {
-        'desc': "এটি একটি সাধারণ স্কিন ক্যান্সার। এটি সাধারণত শরীরের খোলা অংশে দেখা দেয়।",
-        'cause': "সূর্যের আলো বা ট্যানিং বেড থেকে আসা UV রশ্মি।",
-        'home': "বাসায় এর কোনো প্রতিকার নেই, তবে ত্বক পরিষ্কার রাখুন এবং চিকিৎসকের পরামর্শ নিন।",
-        'advice': "বায়োপসি বা ছোট সার্জারির প্রয়োজন হতে পারে। দ্রুত ডাক্তার দেখান।"
-    },
-    'Benign keratosis': {
-        'desc': "এটি ক্ষতিকর নয়। সাধারণত বয়সের সাথে সাথে ত্বকে তিল বা আঁচিলের মতো কালো দাগ পড়ে।",
-        'cause': "বয়স বৃদ্ধি এবং কিছুটা জীনগত কারণ।",'home': "নারিকেল তেল বা ময়েশ্চারাইজার লাগাতে পারেন যদি চুলকানি হয়।",
-        'advice': "সাধারণত চিকিৎসার দরকার নেই, তবে দাগটি দ্রুত বড় হলে ডাক্তার দেখান।"
-    },
-    'Dermatofibroma': {
-        'desc': "ত্বকের নিচে ছোট শক্ত গুটির মতো। এটি ম্যালিগন্যান্ট বা ক্ষতিকর নয়।",
-        'cause': "পোকার কামড় বা ছোট কোনো আঘাতের প্রতিক্রিয়া।",
-        'home': "খুঁটবেন না। এটি নিজে থেকেই শক্ত হয়ে থাকে।",
-        'advice': "যদি ব্যথা হয় বা অস্বস্তি লাগে তবে ডাক্তার দেখিয়ে অপসারণ করতে পারেন।"
-    },
-    'Melanoma': {
-        'desc': "সবচেয়ে মারাত্মক স্কিন ক্যান্সার। এটি দ্রুত শরীরের অন্য অংশে ছড়িয়ে পড়ে।",
-        'cause': "জেনেটিক মিউটেশন এবং তীব্র রোদে পোড়া।",
-        'home': "ঘরোয়া কোনো চিকিৎসা নেই। সময় নষ্ট করা বিপজ্জনক।",
-        'advice': "জরুরি ভিত্তিতে একজন অনকোলজিস্ট বা ডার্মাটোলজিস্ট দেখান।"
-    },
-    'Nevus': {
-        'desc': "এটি আমাদের পরিচিত সাধারণ তিল। এটি নিয়ে চিন্তার কিছু নেই।",
-        'cause': "ত্বকের মেলানিন কোষগুলো এক জায়গায় জমা হওয়া।",
-        'home': "সূর্যের রোদ থেকে বাঁচলে নতুন তিল পড়া কমে।",
-        'advice': "যদি তিলের আকার বা রঙ হঠাৎ বদলে যায়, তবেই ডাক্তার দেখান।"
-    },
-    'Vascular lesions': {
-        'desc': "রক্তনালীর অস্বাভাবিকতার কারণে লাল বা বেগুনি দাগ।",
-        'cause': "জন্মগত কারণ বা রক্তনালীর প্রসারণ।",
-        'home': "বরফ দিতে পারেন যদি সামান্য ফোলা থাকে, তবে এটি স্থায়ী সমাধান নয়।",
-        'advice': "লেজার ট্রিটমেন্টের মাধ্যমে এটি পুরোপুরি দূর করা সম্ভব।"
-    }
-}
-
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (Fix: English vs Bangla/Banglish) ---
 def ask_ai(user_question, disease):
 
     if disease == "None":
-        return "দয়া করে আগে একটি ছবি আপলোড করুন।"
+        return "📷 আগে একটি ছবি আপলোড করুন, তারপর আমি আপনার প্রশ্নের উত্তর দিতে পারব।"
 
     prompt = f"""
 You are SkinAI Pro, an experienced dermatologist.
 
-The detected skin disease is:
+Detected skin condition:
 {disease}
 
-Rules:
-- Answer naturally like a human doctor.
-- Only answer what the user asks.
-- Don't always explain causes unless asked.
-- If the user greets you, greet back.
-- Reply in Bangla if the question is Bangla.
-- Reply in English if the question is English.
-- Keep answers short, friendly and helpful.
+Your personality:
+- Speak naturally like a friendly dermatologist.
+- Never sound robotic.
+- Don't always give numbered lists.
+- Keep answers short unless the user asks for details.
+- Reply in Bangla if the question is in Bangla.
+- Reply in English if the question is in English.
+- Be warm, friendly and conversational.
+- If you don't know something, say so honestly.
+- Never invent medical facts.
 
 User Question:
 {user_question}
 """
 
-    response = model_ai.generate_content(prompt)
-    return response.text
+    try:
+        response = model_ai.generate_content(prompt)
+        return response.text.strip()
+
+    except Exception as e:
+        return f"⚠️ Gemini Error:\n{str(e)}"
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
