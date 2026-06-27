@@ -554,11 +554,34 @@ for m in st.session_state.messages:
         st.markdown(m["content"])
 
 if prompt := st.chat_input("Ask me anything about your skin..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    if st.session_state.get('logged_in', False):
-        c.execute('INSERT INTO chat_history VALUES (?,?,?)', (st.session_state.user, "user", prompt))
-        conn.commit()
-        reply = ask_ai(prompt, st.session_state.last_res)
-        st.session_state.messages.append({"role": "assistant", "content": reply})
 
-        st.rerun()
+    st.session_state.messages.append({
+        "role": "user",
+        "content": prompt
+    })
+
+    # Login থাকলে শুধু history save করবে
+    if st.session_state.get("logged_in", False):
+        c.execute(
+            'INSERT INTO chat_history VALUES (?,?,?)',
+            (st.session_state.user, "user", prompt)
+        )
+        conn.commit()
+
+    # AI সবসময় উত্তর দেবে
+    reply = ask_ai(prompt, st.session_state.last_res)
+
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": reply
+    })
+
+    # Login থাকলে AI reply-ও save করবে
+    if st.session_state.get("logged_in", False):
+        c.execute(
+            'INSERT INTO chat_history VALUES (?,?,?)',
+            (st.session_state.user, "assistant", reply)
+        )
+        conn.commit()
+
+    st.rerun()
