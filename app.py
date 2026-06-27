@@ -239,9 +239,10 @@ User Question:
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
-    path = 'skin_cancer_model.h5'
-    if not os.path.exists(path): gdown.download(id='1JpKXUXu_DsXK5-uq7fpgg5aDY7hBhq9h', output=path, quiet=False)
-    return tf.keras.models.load_model(path, compile=False)
+    return tf.keras.models.load_model(
+        "skin_cancer_model.h5",
+        compile=False
+    )
 model = load_skin_model()
 disease_details = {
     'Actinic keratoses': {
