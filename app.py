@@ -534,30 +534,72 @@ with col2:
 st.markdown("---")
 
 # ---------------- CHAT ----------------
+from datetime import datetime
+
 for m in st.session_state.messages:
+
+    time_now = datetime.now().strftime("%I:%M %p")
 
     if m["role"] == "user":
 
-        st.markdown(f"""
-        <div style="display:flex;justify-content:flex-end;">
-            <div class="user-box">
-                <div class="chat-name">👤 You</div>
-                {m["content"]}
+        st.markdown(
+            f"""
+            <div style="display:flex;justify-content:flex-end;margin:18px 0;">
+                <div style="
+                    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+                    color:white;
+                    padding:14px 18px;
+                    border-radius:18px;
+                    max-width:65%;
+                    box-shadow:0 5px 12px rgba(0,0,0,.25);
+                ">
+                    <div style="font-size:13px;font-weight:bold;">
+                        👤 You
+                    </div>
+
+                    <div style="margin-top:8px;">
+                        {m["content"]}
+                    </div>
+
+                    <div style="font-size:11px;opacity:.6;text-align:right;margin-top:6px;">
+                        {time_now}
+                    </div>
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """,
+            unsafe_allow_html=True
+        )
 
     else:
 
-        st.markdown(f"""
-        <div style="display:flex;justify-content:flex-start;">
-            <div class="ai-box">
-                <div class="chat-name">🤖 SkinAI Assistant</div>
-                {m["content"]}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div style="display:flex;justify-content:flex-start;margin:18px 0;">
+                <div style="
+                    background:#1f2937;
+                    color:white;
+                    padding:14px 18px;
+                    border-radius:18px;
+                    border:1px solid #334155;
+                    max-width:65%;
+                    box-shadow:0 5px 12px rgba(0,0,0,.25);
+                ">
+                    <div style="font-size:13px;font-weight:bold;color:#60a5fa;">
+                        🩺 SkinAI Assistant
+                    </div>
 
+                    <div style="margin-top:8px;">
+                        {m["content"]}
+                    </div>
+
+                    <div style="font-size:11px;opacity:.6;margin-top:6px;">
+                        {time_now}
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 # নতুন মেসেজ
 prompt = st.chat_input("Ask me anything about your skin...")
 
