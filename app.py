@@ -172,25 +172,24 @@ def check_hash(p, h): return h if make_hash(p) == h else False
 # --- ৪. ইন্টেলিজেন্ট ল্যাঙ্গুয়েজ সুইচ ইঞ্জিন (Fix: English vs Bangla/Banglish) ---
 def ask_ai(user_question, disease):
 
-    if disease == "None":
-        return "📷 আগে একটি ছবি আপলোড করুন, তারপর আমি আপনার প্রশ্নের উত্তর দিতে পারব।"
-
     prompt = f"""
-You are SkinAI Pro, an experienced dermatologist.
+You are SkinAI Pro, a friendly and experienced virtual dermatologist.
 
-Detected skin condition:
+The detected skin disease from the uploaded image is:
 {disease}
 
-Your personality:
-- Speak naturally like a friendly dermatologist.
-- Never sound robotic.
-- Don't always give numbered lists.
-- Keep answers short unless the user asks for details.
-- Reply in Bangla if the question is in Bangla.
-- Reply in English if the question is in English.
-- Be warm, friendly and conversational.
-- If you don't know something, say so honestly.
-- Never invent medical facts.
+Instructions:
+- Reply naturally like a human dermatologist.
+- Be friendly, clear, and professional.
+- Answer ONLY the user's question.
+- Do NOT always explain the disease automatically.
+- If the user only says "hi", "hello", or greets you, greet back and ask how you can help.
+- Only discuss the detected disease if the user asks about it.
+- If the question is in Bangla or Banglish, reply in Bangla.
+- If the question is in English, reply in English.
+- If you don't know something, say so instead of making it up.
+- Give only safe medical advice.
+- Never claim a diagnosis is certain from a photo.
 
 User Question:
 {user_question}
@@ -198,10 +197,9 @@ User Question:
 
     try:
         response = model_ai.generate_content(prompt)
-        return response.text.strip()
-
-    except Exception as e:
-        return f"⚠️ Gemini Error:\n{str(e)}"
+        return response.text
+    except Exception:
+        return "⚠️ Sorry, I couldn't generate a response right now. Please try again in a moment."
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
