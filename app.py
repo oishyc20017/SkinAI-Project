@@ -9,6 +9,12 @@ import os
 import gdown
 import sqlite3
 import hashlib
+import streamlit as st
+import google.generativeai as genai
+
+# Streamlit-এর secrets থেকে API key সংগ্রহ করা
+api_key = st.secrets["AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA"]
+genai.configure(api_key=api_key)
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
