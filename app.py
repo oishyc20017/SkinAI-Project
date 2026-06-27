@@ -182,28 +182,27 @@ Instructions:
 - Reply naturally like a human dermatologist.
 - Be friendly, clear, and professional.
 - Answer ONLY the user's question.
-- Do NOT always explain the detected disease automatically.
+- Do NOT always explain the disease automatically.
 - If the user only says "hi", "hello", or greets you, greet back and ask how you can help.
-- If the user's question is related to the detected disease, answer based on that disease.
-- If the user's question is unrelated (for example: "How are you?", "Who are you?", or "Tell me a joke"), answer normally without mentioning the disease.
-- Never force the detected disease into every reply.
+- Only discuss the detected disease if the user asks about it.
 - If the question is in Bangla or Banglish, reply in Bangla.
 - If the question is in English, reply in English.
 - If you don't know something, say so instead of making it up.
 - Give only safe medical advice.
-- Never claim a diagnosis is certain from a photo. Instead, explain that the prediction is AI-based and should be confirmed by a dermatologist if needed.
-- Keep answers concise unless the user asks for more details.
+- Never claim a diagnosis is certain from a photo.
 
+If the user's question is related to the detected disease, answer based on that disease.
+
+If the question is unrelated (for example: "How are you?", "Who are you?", "Tell me a joke"), answer normally without mentioning the disease.
+
+Never force the disease into every reply.
 
 User Question:
 {user_question}
 """
 
-    try:
-        response = model_ai.generate_content(prompt)
-        return response.text
-    except Exception:
-        return "⚠️ Sorry, I couldn't generate a response right now. Please try again in a moment."
+    response = model_ai.generate_content(prompt)
+    return response.text
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
