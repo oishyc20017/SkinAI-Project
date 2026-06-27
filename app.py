@@ -13,7 +13,7 @@ import streamlit as st
 import google.generativeai as genai
 
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
-api_key = st.secrets["AIzaSyDdxIiL6woMlMxtQWlGSm3k3b93qp6XfRA"]
+api_key = st.secrets["API_KEY = "AIzaSyDdxIiL6woM1MxtQW1GSm3k3b93qp6XfRA""]
 genai.configure(api_key=api_key)
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
