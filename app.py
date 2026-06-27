@@ -505,10 +505,10 @@ st.markdown("---")
 # --- ৪. চ্যাট মেসেজ লুপ এবং ইনপুট (আগের মেইন কোড - সম্পূর্ণ নিরাপদ) ---
 for m in st.session_state.messages:
     with st.chat_message("assistant"):
-    with st.spinner("🩺 SkinAI is thinking..."):
-        reply = ask_ai(prompt, st.session_state.last_res)
+        with st.spinner("🩺 SkinAI is thinking..."):
+            reply = ask_ai(prompt, st.session_state.last_res)
 
-    st.markdown(reply)
+        st.markdown(reply)
 
 st.session_state.messages.append({
     "role": "assistant",
