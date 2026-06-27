@@ -264,7 +264,6 @@ def get_intelligent_response(query, res):
     Answer naturally like an experienced dermatologist.
 
     Rules:
-
     - Reply like a human.
     - Never answer like a robot.
     - Only answer what the user asked.
@@ -275,14 +274,12 @@ def get_intelligent_response(query, res):
     - Give safe medical advice.
 
     User Question:
-
     {user_question}
     """
 
-       response = model_ai.generate_content(prompt)
+        response = model_ai.generate_content(prompt)
 
-       return response.text
-    
+        return response.text
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
