@@ -15,6 +15,7 @@ import google.generativeai as genai
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
 # সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
 genai.configure(api_key=st.secrets["API_KEY"])
+model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
@@ -251,6 +252,36 @@ def get_intelligent_response(query, res):
         response += "---\n*Do you have any more questions about this?*"
     
     return response
+    def ask_ai(user_question, disease):
+
+    prompt = f"""
+You are SkinAI Pro.
+
+The detected skin disease is:
+
+{disease}
+
+Answer naturally like an experienced dermatologist.
+
+Rules:
+
+- Reply like a human.
+- Never answer like a robot.
+- Only answer what the user asked.
+- Don't always explain causes.
+- If the user greets you, greet back.
+- If the question is Bangla, answer Bangla.
+- If English, answer English.
+- Give safe medical advice.
+
+User Question:
+
+{user_question}
+"""
+
+    response = model_ai.generate_content(prompt)
+
+    return response.text
 # --- ৫. মডেল লোডিং ---
 @st.cache_resource
 def load_skin_model():
@@ -561,6 +592,6 @@ if prompt := st.chat_input("Ask me anything about your skin..."):
     with st.chat_message("user"):
         st.markdown(prompt)
     with st.chat_message("assistant"):
-        reply = get_intelligent_response(prompt, st.session_state.last_res)
+        reply = ask_ai(prompt,st.session_state.last_res)
         st.markdown(reply)
         st.session_state.messages.append({"role": "assistant", "content": reply})
