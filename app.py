@@ -187,6 +187,16 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
+    # ---------- Prediction History Table ----------
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS prediction_history(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_email TEXT,
+        disease TEXT,
+        confidence REAL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     # ---------- Conversations Table ----------
     c.execute("""
     CREATE TABLE IF NOT EXISTS conversations(
