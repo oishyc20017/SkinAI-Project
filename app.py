@@ -759,6 +759,26 @@ if st.session_state.last_res != "None":
         st.warning(f"**Advice:** {info['advice']}")
 
         st.error("⚠️ This AI prediction is not a confirmed medical diagnosis. Please consult a dermatologist before making any medical decision.")
+        st.markdown("---")
+        st.subheader("🧠 Top 3 AI Predictions")
+
+        # সব Probability বের করা
+        predictions = st.session_state.predictions
+
+        # Probability অনুযায়ী Sort করা
+        top_predictions = sorted(
+            zip(classes, predictions),
+            key=lambda x: x[1],
+            reverse=True
+        )[:3]
+
+        # দেখানো
+        for disease, prob in top_predictions:
+            percentage = prob * 100
+
+            st.write(f"**{disease}**")
+            st.progress(float(prob))
+            st.caption(f"{percentage:.2f}%")
 
     else:
          pass
