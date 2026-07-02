@@ -338,6 +338,11 @@ if 'messages' not in st.session_state: st.session_state.messages = []
 if "current_conversation_id" not in st.session_state:
         st.session_state.current_conversation_id = None
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+if "confidence" not in st.session_state:
+    st.session_state.confidence = 0.0
+
+if "predictions" not in st.session_state:
+    st.session_state.predictions = []
 if 'user' not in st.session_state: st.session_state.user = None
 
 with st.sidebar:
@@ -711,11 +716,20 @@ if file:
     x = np.asarray(img_res) / 255.0
     x = np.expand_dims(x, axis=0)
     pred = model.predict(x, verbose=0)
-    
-    # শনাক্তকরণের মান
+
+    # Prediction
     pred_index = np.argmax(pred)
-    res_name = classes[pred_index] # classes লিস্ট থেকে সঠিক নাম নিচ্ছে
-    st.session_state.last_res = res_name 
+
+    # Disease Name
+    res_name = classes[pred_index]
+
+    # Confidence (%)
+    confidence = float(pred[0][pred_index]) * 100
+
+    # Session
+    st.session_state.last_res = res_name
+    st.session_state.confidence = confidence
+    st.session_state.predictions = pred[0] 
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
 if st.session_state.last_res != "None":
