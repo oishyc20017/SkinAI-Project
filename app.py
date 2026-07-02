@@ -468,7 +468,7 @@ with st.sidebar:
 
         # ---------------- Logout ----------------
         st.markdown("---")
-        st.subheader("🕒 Recent Scans")
+        st.subheader("🩺 Recent Scans")
 
         try:
             conn = sqlite3.connect("skinai_wishy_v30.db")
