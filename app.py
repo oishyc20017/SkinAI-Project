@@ -383,11 +383,18 @@ with st.sidebar:
             e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
             p = st.text_input("🔑 Password", type="password", key="l_p", placeholder="••••••••")
             if st.button("Log In", use_container_width=True, key="unique_login_submit"):
-                c.execute('SELECT password FROM users WHERE email=?', (e,))
+                c.execute("""
+                SELECT fullname, username, password
+                FROM users
+                WHERE email=?
+                """, (e,))
+
                 data = c.fetchone()
-                if data and check_hash(p, data[0]):
+                if data and check_hash(p, data[2]):
                     st.session_state.logged_in = True
                     st.session_state.user = e
+                    st.session_state.fullname = data[0]
+                    st.session_state.username = data[1]
                     c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))
                     for msg in st.session_state.messages:
                         with st.chat_message(msg["role"]):
