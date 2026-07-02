@@ -739,7 +739,28 @@ if file:
     # Session
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
-    st.session_state.predictions = pred[0] 
+    st.session_state.predictions = pred[0]
+    # Save prediction to database
+    try:
+        conn = sqlite3.connect("skinai_wishy_v30.db")
+        c = conn.cursor()
+
+        user_email = (
+            st.session_state.user["email"]
+            if st.session_state.user and "email" in st.session_state.user
+            else "Guest"
+        )
+
+        c.execute("""
+            INSERT INTO prediction_history (user_email, disease, confidence)
+            VALUES (?, ?, ?)
+        """, (user_email, res_name, confidence))
+
+        conn.commit()
+        conn.close()
+
+    except Exception as e:
+        st.error(f"Prediction save failed: {e}")
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
 if st.session_state.last_res != "None":
