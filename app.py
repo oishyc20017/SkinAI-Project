@@ -437,17 +437,52 @@ with st.sidebar:
             )
             
             if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
-                if r_name == "":
-                    st.warning("Please fill in your Full Name!")
-                elif "@" in re and len(rp) > 3:
-                    try:
-                        c.execute('INSERT INTO users VALUES (?,?)', (re, make_hash(rp)))
-                        conn.commit()
-                        st.success(f"Account Created for {r_name}! Now Login.")
-                    except:
-                        st.error("User already exists.")
+
+                if not agree:
+                    st.warning("Please accept the Terms & Conditions.")
+
+                elif r_name.strip() == "":
+                    st.warning("Please enter your Full Name.")
+
+                elif r_username.strip() == "":
+                    st.warning("Please enter a Username.")
+
+                elif "@" not in re:
+                    st.warning("Please enter a valid Email Address.")
+
+                elif len(r_phone) < 11:
+                    st.warning("Please enter a valid Phone Number.")
+
+                elif len(rp) < 6:
+                    st.warning("Password must be at least 6 characters.")
+
+                elif rp != confirm_password:
+                    st.error("Passwords do not match!")
+
                 else:
-                    st.warning("Enter valid details.")
+                    try:
+                        c.execute("""
+                        INSERT INTO users
+                        (fullname, username, email, phone, dob, gender, country, password)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (
+                            r_name,
+                            r_username,
+                            re,
+                            r_phone,
+                            str(r_dob),
+                            r_gender,
+                            r_country,
+                            make_hash(rp)
+                        ))
+
+                        conn.commit()
+
+                        st.success("🎉 Account Created Successfully!")
+                        st.info("You can now login using your Email and Password.")
+
+                    except sqlite3.IntegrityError:
+                        st.error("Username or Email already exists.")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
