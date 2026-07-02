@@ -361,6 +361,50 @@ with st.sidebar:
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
+    if st.session_state.get("logged_in", False):
+
+        st.markdown(f"""
+        <div style="
+            background:#1f2937;
+            padding:15px;
+            border-radius:12px;
+            border:1px solid #374151;
+            margin-bottom:15px;
+        ">
+            <h4 style="margin:0;color:white;">👤 {st.session_state.fullname}</h4>
+            <p style="margin:3px 0 0 0;color:#9ca3af;font-size:13px;">
+            {st.session_state.user}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("➕ New Chat", use_container_width=True):
+
+            st.session_state.messages = []
+
+            st.rerun()
+
+    st.markdown("---")
+
+    st.subheader("🕒 Recent Chats")
+
+    if "chat_titles" not in st.session_state:
+        st.session_state.chat_titles = []
+
+    if len(st.session_state.chat_titles) == 0:
+        st.caption("No previous chats")
+
+    else:
+        for title in st.session_state.chat_titles:
+            st.button(title, use_container_width=True)
+
+    st.markdown("---")
+
+    if st.button("🚪 Logout", use_container_width=True):
+
+        st.session_state.clear()
+
+        st.rerun()
 
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.messages = []
