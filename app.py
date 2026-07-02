@@ -703,7 +703,16 @@ with st.sidebar:
                         conn.commit()
 
                         st.success("🎉 Account Created Successfully!")
-                        st.info("You can now login.")
+
+                        placeholder = st.empty()
+
+                        for i in range(5, 0, -1):
+                            placeholder.info(f"🔄 Redirecting to Login page in {i} seconds...")
+                            time.sleep(1)
+
+                        placeholder.empty()
+
+                        st.rerun()
 
                     except sqlite3.IntegrityError:
                         st.error("Username or Email already exists.")
