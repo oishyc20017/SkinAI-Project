@@ -385,6 +385,29 @@ with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
     if st.session_state.get("logged_in", False):
+        st.markdown("---")
+
+        st.subheader("🕒 Recent Chats")
+
+        if "chat_titles" not in st.session_state:
+            st.session_state.chat_titles = []
+
+        if len(st.session_state.chat_titles) == 0:
+            st.caption("No previous chats")
+
+        else:
+            for title in st.session_state.chat_titles:
+                st.button(title, use_container_width=True)
+
+        st.markdown("---")
+
+        if st.button("🚪 Logout", use_container_width=True):
+
+            st.session_state.clear()
+
+            st.rerun()
+
+    st.markdown("---")
 
         st.markdown(f"""
         <div style="
@@ -425,32 +448,8 @@ with st.sidebar:
             st.session_state.messages = []
 
             st.rerun()
-
-    st.markdown("---")
-
-    st.subheader("🕒 Recent Chats")
-
-    if "chat_titles" not in st.session_state:
-        st.session_state.chat_titles = []
-
-    if len(st.session_state.chat_titles) == 0:
-        st.caption("No previous chats")
-
-    else:
-        for title in st.session_state.chat_titles:
-            st.button(title, use_container_width=True)
-
-    st.markdown("---")
-
-    if st.button("🚪 Logout", use_container_width=True):
-
-        st.session_state.clear()
-
-        st.rerun()
-
-    st.markdown("---")
+        if not st.session_state.get("logged_in", False):
     
-    if not st.session_state.logged_in:
         # --- তোমার চাওয়া Facebook ও Gmail বাটন ---
         col1, col2 = st.columns(2)
         with col1:
