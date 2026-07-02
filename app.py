@@ -459,6 +459,7 @@ with st.sidebar:
             if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
         
         st.markdown("---")
+    if not st.session_state.get("logged_in", False):
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
             e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
