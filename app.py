@@ -735,24 +735,36 @@ if file:
 if st.session_state.last_res != "None":
     res_name = st.session_state.last_res
     info = disease_details.get(res_name)
+    confidence = st.session_state.confidence
 
     if info:
         st.markdown(f"""
         <div style="background: #1e293b; padding: 25px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+
             <h1 style="color: #ffffff; margin-bottom: 5px;">{res_name}</h1>
+
+            <h3 style="color:#58a6ff; margin-top:8px;">
+                🎯 Confidence: {confidence:.2f}%
+            </h3>
+
             <p style="color: #94a3b8; font-size: 16px;"><b>Description:</b> {info['desc']}</p>
             <p style="color: #cbd5e1;"><b>Cause:</b> {info['cause']}</p>
             <p style="color: #cbd5e1;"><b>Prevention:</b> {info['home']}</p>
             <p style="color: #ffcc00;"><b>Advice:</b> {info['advice']}</p>
+
         </div>
         """, unsafe_allow_html=True)
-    else:
-        # এখানে কোনো warning দেখানোর প্রয়োজন নেই যদি আপনি ক্লিন রাখতে চান
-        pass 
-else:
-    # ফাইল আপলোড না করলে একদম ক্লিন থাকবে
-    pass
-  # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
+
+# 👇 এই দুই লাইন এখানেই বসবে
+        st.progress(min(confidence / 100, 1.0))
+        st.caption(f"AI Confidence Score: {confidence:.2f}%")
+
+        else:
+            pass
+        else:
+            # ফাইল আপলোড না করলে একদম ক্লিন থাকবে
+            pass
+            # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
 
