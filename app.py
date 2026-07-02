@@ -738,26 +738,27 @@ if st.session_state.last_res != "None":
     confidence = st.session_state.confidence
 
     if info:
-        st.markdown(f"""
-        <div style="background: #1e293b; padding: 25px; border-radius: 20px; border-left: 8px solid #58a6ff; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+        st.subheader("🩺 AI Skin Analysis Report")
 
-            <h1 style="color: #ffffff; margin-bottom: 5px;">{res_name}</h1>
+        col1, col2 = st.columns([3, 1])
 
-            <h3 style="color:#58a6ff; margin-top:8px;">
-                🎯 Confidence: {confidence:.2f}%
-            </h3>
+        with col1:
+            st.success(f"**Detected Disease:** {res_name}")
 
-            <p style="color: #94a3b8; font-size: 16px;"><b>Description:</b> {info['desc']}</p>
-            <p style="color: #cbd5e1;"><b>Cause:</b> {info['cause']}</p>
-            <p style="color: #cbd5e1;"><b>Prevention:</b> {info['home']}</p>
-            <p style="color: #ffcc00;"><b>Advice:</b> {info['advice']}</p>
+        with col2:
+            st.metric("Confidence", f"{confidence:.2f}%")
 
-        </div>
-        """, unsafe_allow_html=True)
-
-# 👇 এই দুই লাইন এখানেই বসবে
         st.progress(min(confidence / 100, 1.0))
-        st.caption(f"AI Confidence Score: {confidence:.2f}%")
+
+        st.markdown("### 📋 Disease Information")
+
+        st.info(f"**Description:** {info['desc']}")
+
+        st.write(f"**Cause:** {info['cause']}")
+        st.write(f"**Prevention:** {info['home']}")
+        st.warning(f"**Advice:** {info['advice']}")
+
+        st.error("⚠️ This AI prediction is not a confirmed medical diagnosis. Please consult a dermatologist before making any medical decision.")
 
     else:
          pass
