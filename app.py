@@ -384,9 +384,53 @@ with st.sidebar:
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
+    # ==========================================================
+    # AUTHENTICATION AREA
+    # ==========================================================
+
     if st.session_state.get("logged_in", False):
+
+        # ---------------- User Card ----------------
+        st.markdown(f"""
+        <div style="
+            background:#1f2937;
+            padding:15px;
+            border-radius:12px;
+            border:1px solid #374151;
+            margin-bottom:15px;
+        ">
+            <h4 style="margin:0;color:white;">👤 {st.session_state.fullname}</h4>
+            <p style="margin:4px 0 0 0;color:#9ca3af;font-size:13px;">
+                {st.session_state.user}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # ---------------- New Chat ----------------
+        if st.button(
+            "➕ New Chat",
+            use_container_width=True,
+            key="sidebar_new_chat"
+        ):
+
+            c.execute("""
+                INSERT INTO conversations(user_email,title)
+                VALUES(?,?)
+            """, (
+                st.session_state.user,
+                "New Conversation"
+            ))
+
+            conn.commit()
+
+            st.session_state.current_conversation_id = c.lastrowid
+            st.session_state.messages = []
+
+            st.rerun()
+
         st.markdown("---")
 
+        # ---------------- Recent Chat ----------------
         st.subheader("🕒 Recent Chats")
 
         if "chat_titles" not in st.session_state:
@@ -396,158 +440,49 @@ with st.sidebar:
             st.caption("No previous chats")
 
         else:
+
             for title in st.session_state.chat_titles:
-                st.button(title, use_container_width=True)
+
+                st.button(
+                    title,
+                    use_container_width=True,
+                    key=f"chat_{title}"
+                )
 
         st.markdown("---")
 
-        if st.button("🚪 Logout", use_container_width=True):
+        # ---------------- Logout ----------------
+        if st.button(
+            "🚪 Logout",
+            use_container_width=True,
+            key="logout_btn"
+        ):
 
             st.session_state.clear()
 
             st.rerun()
 
-        if not st.session_state.get("logged_in", False):
-    
-        # --- তোমার চাওয়া Facebook ও Gmail বাটন ---
+    else:
+
+        # Social Login
         col1, col2 = st.columns(2)
+
         with col1:
-            if st.button("🔵 Facebook", use_container_width=True): st.info("Coming Soon!")
+            st.button(
+                "🔵 Facebook",
+                use_container_width=True,
+                key="facebook_btn"
+            )
+
         with col2:
-            if st.button("🔴 Gmail", use_container_width=True): st.info("Coming Soon!")
-        
+            st.button(
+                "🔴 Gmail",
+                use_container_width=True,
+                key="gmail_btn"
+            )
+
         st.markdown("---")
-    if not st.session_state.get("logged_in", False):
-        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
-        with t1:
-            e = st.text_input("✉️ Gmail Address", key="l_e", placeholder="username@gmail.com")
-            p = st.text_input("🔑 Password", type="password", key="l_p", placeholder="••••••••")
-            if st.button("Log In", use_container_width=True, key="unique_login_submit"):
-                c.execute("""
-                SELECT fullname, username, password
-                FROM users
-                WHERE email=?
-                """, (e,))
 
-                data = c.fetchone()
-                if data and check_hash(p, data[2]):
-                    st.session_state.logged_in = True
-                    st.session_state.user = e
-                    st.session_state.fullname = data[0]
-                    st.session_state.username = data[1]    
-                    
-                    st.success("Welcome back!")
-                    time.sleep(0.5)
-                    st.rerun()
-                else:
-                    st.error("Invalid Login Details.")
-        with t2:
-            r_name = st.text_input("👤 Full Name", key="r_name")
-
-            r_username = st.text_input("👤 Username", key="r_username")
-
-            re = st.text_input("📧 Email Address", key="r_e")
-
-            r_phone = st.text_input("📱 Phone Number", key="r_phone")
-
-            r_dob = st.date_input("🎂 Date of Birth", key="r_dob")
-
-            r_gender = st.selectbox(
-                "⚧ Gender",
-                [
-                    "Male",
-                    "Female",
-                    "Prefer not to say"
-                ],
-                key="r_gender"
-            )
-
-            r_country = st.selectbox(
-                "🌍 Country",
-                [
-                    "Bangladesh",
-                    "India",
-                    "Pakistan",
-                    "Nepal",
-                    "Bhutan",
-                    "Sri Lanka",
-                    "Myanmar",
-                    "Other"
-                ],
-                key="r_country"
-            )
-
-            rp = st.text_input(
-                "🔒 Password",
-                type="password",
-                key="r_p"
-            )
-
-            confirm_password = st.text_input(
-                "🔒 Confirm Password",
-                type="password",
-                key="confirm_password"
-            )
-
-            agree = st.checkbox(
-                "I agree to the Terms & Conditions"
-            )
-            remember = st.checkbox(
-                "Remember me on this device",
-                key="remember_me"
-            )
-            st.markdown("---")
-            if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
-
-                if not agree:
-                    st.warning("Please accept the Terms & Conditions.")
-
-                elif r_name.strip() == "":
-                    st.warning("Please enter your Full Name.")
-
-                elif r_username.strip() == "":
-                    st.warning("Please enter a Username.")
-
-                elif "@" not in re:
-                    st.warning("Please enter a valid Email Address.")
-
-                elif len(r_phone) < 11:
-                    st.warning("Please enter a valid Phone Number.")
-
-                elif len(rp) < 6:
-                    st.warning("Password must be at least 6 characters.")
-
-                elif rp != confirm_password:
-                    st.error("Passwords do not match!")
-
-                else:
-                    try:
-                        c.execute("""
-                        INSERT INTO users
-                        (fullname, username, email, phone, dob, gender, country, password)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                        """, (
-                            r_name,
-                            r_username,
-                            re,
-                            r_phone,
-                            str(r_dob),
-                            r_gender,
-                            r_country,
-                            make_hash(rp)
-                        ))
-
-                        conn.commit()
-
-                        st.success("🎉 Account Created Successfully!")
-                        st.info("You can now login using your Email and Password.")
-
-                    except sqlite3.IntegrityError:
-                        st.error("Username or Email already exists.")
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    st.markdown("---")
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
