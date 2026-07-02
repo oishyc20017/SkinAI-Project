@@ -761,9 +761,9 @@ if st.session_state.last_res != "None":
 
     else:
          pass
-     else:
+else:
             # ফাইল আপলোড না করলে একদম ক্লিন থাকবে
-         pass
+    pass
             # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
