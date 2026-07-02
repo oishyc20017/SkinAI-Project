@@ -407,47 +407,6 @@ with st.sidebar:
 
             st.rerun()
 
-    st.markdown("---")
-
-        st.markdown(f"""
-        <div style="
-            background:#1f2937;
-            padding:15px;
-            border-radius:12px;
-            border:1px solid #374151;
-            margin-bottom:15px;
-        ">
-            <h4 style="margin:0;color:white;">👤 {st.session_state.fullname}</h4>
-            <p style="margin:3px 0 0 0;color:#9ca3af;font-size:13px;">
-            {st.session_state.user}
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        if st.button(
-            "➕ New Chat",
-            use_container_width=True,
-            key="sidebar_new_chat_btn"
-        ):
-
-            # Create a new conversation
-            c.execute("""
-                INSERT INTO conversations (user_email, title)
-                VALUES (?, ?)
-            """, (
-                st.session_state.user,
-                "New Conversation"
-            ))
-
-            conn.commit()
-
-            # Get conversation id
-            st.session_state.current_conversation_id = c.lastrowid
-
-            # Clear current chat
-            st.session_state.messages = []
-
-            st.rerun()
         if not st.session_state.get("logged_in", False):
     
         # --- তোমার চাওয়া Facebook ও Gmail বাটন ---
