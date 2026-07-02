@@ -398,9 +398,43 @@ with st.sidebar:
                 else:
                     st.error("Invalid Login Details.")
         with t2:
-            r_name = st.text_input("👤 Full Name", key="r_name", placeholder="John Doe")
-            re = st.text_input("✉️ New Gmail", key="r_e", placeholder="newuser@gmail.com")
-            rp = st.text_input("🔑 New Password", type="password", key="r_p", placeholder="••••••••")
+            r_name = st.text_input("👤 Full Name", key="r_name")
+
+            r_username = st.text_input("👤 Username", key="r_username")
+
+            re = st.text_input("📧 Email Address", key="r_e")
+
+            r_phone = st.text_input("📱 Phone Number", key="r_phone")
+
+            r_dob = st.date_input("🎂 Date of Birth", key="r_dob")
+
+            r_gender = st.selectbox(
+                "⚧ Gender",
+                ["Male", "Female", "Other"],
+                key="r_gender"
+            )
+
+            r_country = st.selectbox(
+                "🌍 Country",
+                ["Bangladesh", "India", "Pakistan", "Nepal", "Other"],
+                key="r_country"
+            )
+
+            rp = st.text_input(
+                "🔒 Password",
+                type="password",
+                key="r_p"
+            )
+
+            confirm_password = st.text_input(
+                "🔒 Confirm Password",
+                type="password",
+                key="confirm_password"
+            )
+
+            agree = st.checkbox(
+                "I agree to the Terms & Conditions"
+            )
             
             if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
                 if r_name == "":
