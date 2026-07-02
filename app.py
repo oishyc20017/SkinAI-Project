@@ -482,6 +482,181 @@ with st.sidebar:
             )
 
         st.markdown("---")
+        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
+
+        with t1:
+
+            e = st.text_input(
+                "✉️ Gmail Address",
+                key="l_e",
+                placeholder="username@gmail.com"
+            )
+
+            p = st.text_input(
+                "🔑 Password",
+                type="password",
+                key="l_p",
+                placeholder="••••••••"
+            )
+
+            if st.button(
+                "Log In",
+                use_container_width=True,
+                key="unique_login_submit"
+            ):
+
+                c.execute("""
+                    SELECT fullname, username, password
+                    FROM users
+                    WHERE email=?
+                """, (e,))
+
+                data = c.fetchone()
+
+                if data and check_hash(p, data[2]):
+
+                    st.session_state.logged_in = True
+                    st.session_state.user = e
+                    st.session_state.fullname = data[0]
+                    st.session_state.username = data[1]
+
+                    st.success("✅ Welcome back!")
+
+                    time.sleep(0.5)
+
+                    st.rerun()
+
+                else:
+                    st.error("❌ Invalid Email or Password.")
+
+        with t2:
+
+            r_name = st.text_input(
+                "👤 Full Name",
+                key="r_name"
+            )
+
+            r_username = st.text_input(
+                "👤 Username",
+                key="r_username"
+            )
+
+            re = st.text_input(
+                "📧 Email Address",
+                key="r_e"
+            )
+
+            r_phone = st.text_input(
+                "📱 Phone Number",
+                key="r_phone"
+            )
+
+            r_dob = st.date_input(
+                "🎂 Date of Birth",
+                key="r_dob"
+            )
+
+            r_gender = st.selectbox(
+                "⚧ Gender",
+                [
+                    "Male",
+                    "Female",
+                    "Prefer not to say"
+                ],
+                key="r_gender"
+            )
+
+            r_country = st.selectbox(
+                "🌍 Country",
+                [
+                    "Bangladesh",
+                    "India",
+                    "Pakistan",
+                    "Nepal",
+                    "Bhutan",
+                    "Sri Lanka",
+                    "Myanmar",
+                    "Other"
+                ],
+                key="r_country"
+            )
+
+            rp = st.text_input(
+                "🔒 Password",
+                type="password",
+                key="r_p"
+            )
+
+            confirm_password = st.text_input(
+                "🔒 Confirm Password",
+                type="password",
+                key="confirm_password"
+            )
+
+            agree = st.checkbox(
+                "I agree to the Terms & Conditions"
+            )
+
+            remember = st.checkbox(
+                "Remember me on this device",
+                key="remember_me"
+            )
+
+            st.markdown("---")
+
+            if st.button(
+                "Create Account",
+                use_container_width=True,
+                key="unique_reg_submit"
+            ):
+
+                if not agree:
+                    st.warning("Please accept the Terms & Conditions.")
+
+                elif r_name.strip() == "":
+                    st.warning("Please enter your Full Name.")
+
+                elif r_username.strip() == "":
+                    st.warning("Please enter a Username.")
+
+                elif "@" not in re:
+                    st.warning("Please enter a valid Email Address.")
+
+                elif len(r_phone) < 11:
+                    st.warning("Please enter a valid Phone Number.")
+
+                elif len(rp) < 6:
+                    st.warning("Password must be at least 6 characters.")
+
+                elif rp != confirm_password:
+                    st.error("Passwords do not match!")
+
+                else:
+
+                    try:
+
+                        c.execute("""
+                            INSERT INTO users
+                            (fullname, username, email, phone, dob, gender, country, password)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (
+                            r_name,
+                            r_username,
+                            re,
+                            r_phone,
+                            str(r_dob),
+                            r_gender,
+                            r_country,
+                            make_hash(rp)
+                        ))
+
+                        conn.commit()
+
+                        st.success("🎉 Account Created Successfully!")
+                        st.info("You can now login.")
+
+                    except sqlite3.IntegrityError:
+                        st.error("Username or Email already exists.")
 
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
