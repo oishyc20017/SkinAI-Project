@@ -394,8 +394,7 @@ with st.sidebar:
                     st.session_state.logged_in = True
                     st.session_state.user = e
                     st.session_state.fullname = data[0]
-                    st.session_state.username = data[1]
-                    c.execute('SELECT role, content FROM chat_history WHERE email=?', (e,))     
+                    st.session_state.username = data[1]    
                     
                     st.success("Welcome back!")
                     time.sleep(0.5)
@@ -415,13 +414,26 @@ with st.sidebar:
 
             r_gender = st.selectbox(
                 "⚧ Gender",
-                ["Male", "Female", "Other"],
+                [
+                    "Male",
+                    "Female",
+                    "Prefer not to say"
+                ],
                 key="r_gender"
             )
 
             r_country = st.selectbox(
                 "🌍 Country",
-                ["Bangladesh", "India", "Pakistan", "Nepal", "Other"],
+                [
+                    "Bangladesh",
+                    "India",
+                    "Pakistan",
+                    "Nepal",
+                    "Bhutan",
+                    "Sri Lanka",
+                    "Myanmar",
+                    "Other"
+                ],
                 key="r_country"
             )
 
@@ -440,7 +452,11 @@ with st.sidebar:
             agree = st.checkbox(
                 "I agree to the Terms & Conditions"
             )
-            
+            remember = st.checkbox(
+                "Remember me on this device",
+                key="remember_me"
+            )
+            st.markdown("---")
             if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
 
                 if not agree:
