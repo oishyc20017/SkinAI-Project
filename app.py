@@ -467,6 +467,41 @@ with st.sidebar:
         st.markdown("---")
 
         # ---------------- Logout ----------------
+        st.markdown("---")
+        st.subheader("🕒 Recent Scans")
+
+        try:
+            conn = sqlite3.connect("skinai_wishy_v30.db")
+            c = conn.cursor()
+
+            user_email = (
+                st.session_state.user
+                if st.session_state.get("logged_in", False)
+                else "Guest"
+            )
+
+            c.execute("""
+                SELECT disease, confidence, created_at
+                FROM prediction_history
+                WHERE user_email = ?
+                ORDER BY id DESC
+                LIMIT 5
+            """, (user_email,))
+
+            history = c.fetchall()
+            conn.close()
+
+            if history:
+                for disease, confidence, created_at in history:
+                    st.caption(created_at[:10])  # শুধু Date দেখাবে
+                    st.write(f"**{disease}**")
+                    st.progress(min(confidence / 100, 1.0))
+                    st.caption(f"{confidence:.2f}%")
+            else:
+                st.info("No scan history yet.")
+
+        except Exception as e:
+            st.error(f"History Error: {e}")
         if st.button(
             "🚪 Logout",
             use_container_width=True,
