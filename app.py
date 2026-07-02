@@ -334,6 +334,9 @@ classes = list(disease_details.keys())
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (Buttons & History Fixed) ---
 if 'logged_in' not in st.session_state: st.session_state.logged_in = False
 if 'messages' not in st.session_state: st.session_state.messages = []
+    
+    if "current_conversation_id" not in st.session_state:
+        st.session_state.current_conversation_id = None
 if 'last_res' not in st.session_state: st.session_state.last_res = "None"
 if 'user' not in st.session_state: st.session_state.user = None
 
@@ -404,6 +407,21 @@ with st.sidebar:
             key="sidebar_new_chat_btn"
         ):
 
+            # Create a new conversation
+            c.execute("""
+                INSERT INTO conversations (user_email, title)
+                VALUES (?, ?)
+            """, (
+                st.session_state.user,
+                "New Conversation"
+            ))
+
+            conn.commit()
+
+            # Get conversation id
+            st.session_state.current_conversation_id = c.lastrowid
+
+            # Clear current chat
             st.session_state.messages = []
 
             st.rerun()
