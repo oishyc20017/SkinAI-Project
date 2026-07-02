@@ -759,11 +759,11 @@ if st.session_state.last_res != "None":
         st.progress(min(confidence / 100, 1.0))
         st.caption(f"AI Confidence Score: {confidence:.2f}%")
 
-        else:
-            pass
-        else:
+    else:
+         pass
+     else:
             # ফাইল আপলোড না করলে একদম ক্লিন থাকবে
-            pass
+         pass
             # --- গর্জিয়াস রেজাল্ট ডিজাইন শেষ ---
 
 st.markdown("---")
