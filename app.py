@@ -173,6 +173,20 @@ c = conn.cursor()
 def init_db():
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fullname TEXT NOT NULL,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        phone TEXT,
+        dob TEXT,
+        gender TEXT,
+        country TEXT,
+        password TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     
     # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
     c.execute('DROP TABLE IF EXISTS doctors')
