@@ -378,7 +378,11 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("➕ New Chat", use_container_width=True):
+        if st.button(
+            "➕ New Chat",
+            use_container_width=True,
+            key="sidebar_new_chat_btn"
+        ):
 
             st.session_state.messages = []
 
@@ -404,11 +408,6 @@ with st.sidebar:
 
         st.session_state.clear()
 
-        st.rerun()
-
-    if st.button("➕ New Chat", use_container_width=True):
-        st.session_state.messages = []
-        st.session_state.last_res = "None"
         st.rerun()
 
     st.markdown("---")
