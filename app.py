@@ -11,6 +11,22 @@ import sqlite3
 import hashlib
 import streamlit as st
 import google.generativeai as genai
+import pyrebase
+
+# আপনার Firebase কনফিগারেশন এভাবে পাইথন ডিকশনারি হিসেবে লিখতে হবে:
+firebaseConfig = {
+    "apiKey": "AIzaSyAzhopxnt3zx4PPG1_rMuC1jUAmDCgWG2I",
+    "authDomain": "skin-ai-2216c.firebaseapp.com",
+    "projectId": "skin-ai-2216c",
+    "storageBucket": "skin-ai-2216c.firebasestorage.app",
+    "messagingSenderId": "595245699429",
+    "appId": "1:595245699429:web:dafc714b1fe15264cf918c",
+    "measurementId": "G-951EKMSEDH"
+}
+
+# Firebase ইনিশিয়ালাইজ করুন
+firebase = pyrebase.initialize_app(firebaseConfig)
+auth = firebase.auth()
 
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
 # সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
