@@ -187,16 +187,6 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
-    # ---------- Prediction History Table ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS prediction_history(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_email TEXT,
-        disease TEXT,
-        confidence REAL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
     # ---------- Conversations Table ----------
     c.execute("""
     CREATE TABLE IF NOT EXISTS conversations(
@@ -467,41 +457,6 @@ with st.sidebar:
         st.markdown("---")
 
         # ---------------- Logout ----------------
-        st.markdown("---")
-        st.subheader("🩺 Recent Scans")
-
-        try:
-            conn = sqlite3.connect("skinai_wishy_v30.db")
-            c = conn.cursor()
-
-            user_email = (
-                st.session_state.user
-                if st.session_state.get("logged_in", False)
-                else "Guest"
-            )
-
-            c.execute("""
-                SELECT disease, confidence, created_at
-                FROM prediction_history
-                WHERE user_email = ?
-                ORDER BY id DESC
-                LIMIT 5
-            """, (user_email,))
-
-            history = c.fetchall()
-            conn.close()
-
-            if history:
-                for disease, confidence, created_at in history:
-                    st.caption(created_at[:10])  # শুধু Date দেখাবে
-                    st.write(f"**{disease}**")
-                    st.progress(min(confidence / 100, 1.0))
-                    st.caption(f"{confidence:.2f}%")
-            else:
-                st.info("No scan history yet.")
-
-        except Exception as e:
-            st.error(f"History Error: {e}")
         if st.button(
             "🚪 Logout",
             use_container_width=True,
@@ -703,16 +658,7 @@ with st.sidebar:
                         conn.commit()
 
                         st.success("🎉 Account Created Successfully!")
-
-                        placeholder = st.empty()
-
-                        for i in range(5, 0, -1):
-                            placeholder.info(f"🔄 Redirecting to Login page in {i} seconds...")
-                            time.sleep(1)
-
-                        placeholder.empty()
-
-                        st.rerun()
+                        st.info("You can now login.")
 
                     except sqlite3.IntegrityError:
                         st.error("Username or Email already exists.")
@@ -783,28 +729,7 @@ if file:
     # Session
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
-    st.session_state.predictions = pred[0]
-    # Save prediction to database
-    try:
-        conn = sqlite3.connect("skinai_wishy_v30.db")
-        c = conn.cursor()
-
-        user_email = (
-            st.session_state.user["email"]
-            if st.session_state.user and "email" in st.session_state.user
-            else "Guest"
-        )
-
-        c.execute("""
-            INSERT INTO prediction_history (user_email, disease, confidence)
-            VALUES (?, ?, ?)
-        """, (user_email, res_name, confidence))
-
-        conn.commit()
-        conn.close()
-
-    except Exception as e:
-        st.error(f"Prediction save failed: {e}")
+    st.session_state.predictions = pred[0] 
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
 if st.session_state.last_res != "None":
