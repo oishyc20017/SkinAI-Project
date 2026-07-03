@@ -14,7 +14,7 @@ import google.generativeai as genai
 
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
 # সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets["API_KEY"])
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
