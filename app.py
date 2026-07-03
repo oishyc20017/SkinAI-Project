@@ -54,7 +54,7 @@ def google_login():
     st.stop()
 
     st.link_button("Continue to Google", uri)
-model_ai = genai.GenerativeModel("gemini-2.5-flash")
+    model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 params = dict(st.query_params)
