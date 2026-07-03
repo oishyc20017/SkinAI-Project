@@ -21,7 +21,8 @@ firebaseConfig = {
     "storageBucket": "skin-ai-2216c.firebasestorage.app",
     "messagingSenderId": "595245699429",
     "appId": "1:595245699429:web:dafc714b1fe15264cf918c",
-    "measurementId": "G-951EKMSEDH"
+    "measurementId": "G-951EKMSEDH",
+    "databaseURL": "https://skin-ai-2216c-default-rtdb.firebaseio.com/" # এই লাইনটি যোগ করুন
 }
 
 # Firebase ইনিশিয়ালাইজ করুন
