@@ -32,6 +32,7 @@ SCOPES = [
     "profile"
 ]
 def google_login():
+    st.success("Google button clicked")
 
     state = secrets.token_urlsafe(16)
 
