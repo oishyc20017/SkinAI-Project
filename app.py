@@ -11,16 +11,15 @@ import sqlite3
 import hashlib
 import streamlit as st
 import google.generativeai as genai
-from authlib.integrations.requests_client import OAuth2Session
 import secrets
-import uuid
+
 
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
 # সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
 genai.configure(api_key=st.secrets["API_KEY"])
 GOOGLE_CLIENT_ID = st.secrets["CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = st.secrets["CLIENT_SECRET"]
-REDIRECT_URI = st.secrets["https://skinai-project-nrestssc836crjdgayhvxi.streamlit.app/oauth2callback"]
+REDIRECT_URI = st.secrets["REDIRECT_URI"]
 
 AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
