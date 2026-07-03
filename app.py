@@ -489,19 +489,18 @@ with st.sidebar:
 
         st.subheader("🔐 Sign in")
 
-        if not st.user.is_logged_in:
-            st.info("Continue with your Google account")
-
+        if not st.user.is_logged_in():
             if st.button("🔵 Continue with Google", use_container_width=True):
                 st.login()
                 st.stop()
 
         else:
+            user_info = st.user
             st.session_state.logged_in = True
-            st.session_state.user = st.user.email
-            st.session_state.fullname = st.user.name
+            st.session_state.user = user_info.email
+            st.session_state.fullname = user_info.name
 
-            st.success(f"Welcome {st.user.name} 👋")
+            st.success(f"Welcome {user_info.name} 👋")
             st.rerun()
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
