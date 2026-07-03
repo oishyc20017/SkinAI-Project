@@ -238,12 +238,12 @@ def init_db():
     conn.commit()
     conn.close()
     def load_chat_history(user_email):
-    conn = sqlite3.connect('skinai_wishy_v30.db')
-    c = conn.cursor()
-    c.execute("SELECT role, message FROM chat_history WHERE user_email=? ORDER BY created_at ASC", (user_email,))
-    rows = c.fetchall()
-    conn.close()
-    return [{"role": r[0], "content": r[1]} for r in rows]
+        conn = sqlite3.connect('skinai_wishy_v30.db')
+        c = conn.cursor()
+        c.execute("SELECT role, message FROM chat_history WHERE user_email=? ORDER BY created_at ASC", (user_email,))
+        rows = c.fetchall()
+        conn.close()
+        return [{"role": r[0], "content": r[1]} for r in rows]
 
 init_db()
 
