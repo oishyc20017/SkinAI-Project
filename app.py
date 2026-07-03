@@ -11,10 +11,26 @@ import sqlite3
 import hashlib
 import streamlit as st
 import google.generativeai as genai
+from authlib.integrations.requests_client import OAuth2Session
+import secrets
+import uuid
 
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
 # সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
 genai.configure(api_key=st.secrets["API_KEY"])
+GOOGLE_CLIENT_ID = st.secrets["CLIENT_ID"]
+GOOGLE_CLIENT_SECRET = st.secrets["CLIENT_SECRET"]
+REDIRECT_URI = st.secrets["https://skinai-project-nrestssc836crjdgayhvxi.streamlit.app/oauth2callback"]
+
+AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
+TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
+USERINFO_ENDPOINT = "https://openidconnect.googleapis.com/v1/userinfo"
+
+SCOPES = [
+    "openid",
+    "email",
+    "profile"
+]
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -344,6 +360,11 @@ if "confidence" not in st.session_state:
 if "predictions" not in st.session_state:
     st.session_state.predictions = []
 if 'user' not in st.session_state: st.session_state.user = None
+if "oauth_state" not in st.session_state:
+    st.session_state.oauth_state = None
+
+if "google_user" not in st.session_state:
+    st.session_state.google_user = None
 
 with st.sidebar:
     # ১. লোগো এরিয়া
@@ -475,20 +496,18 @@ with st.sidebar:
         with col1:
             st.button(
                 "🔵 Facebook",
-                use_container_width=True,
-                key="facebook_btn"
+                ...
             )
 
         with col2:
             st.button(
                 "🔴 Gmail",
-                use_container_width=True,
-                key="gmail_btn"
+                ...
             )
 
         st.markdown("---")
-        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
 
+        t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
 
             e = st.text_input(
