@@ -6,7 +6,6 @@ pillow
 gdown
 streamlit-lottie
 requests
-requests-oauthlib
 streamlit-javascript
 Authlib>=1.3.2
 streamlit-oauth
