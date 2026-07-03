@@ -8,3 +8,5 @@ streamlit-lottie
 requests
 streamlit-javascript
 Authlib>=1.3.2
+streamlit-oauth
+extra-streamlit-components
