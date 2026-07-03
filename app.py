@@ -11,7 +11,7 @@ import sqlite3
 import hashlib
 import streamlit as st
 import google.generativeai as genai
-from authlib.integrations.requests_client import OAuth2Session
+from requests_oauthlib import OAuth2Session
 import secrets
 
 
