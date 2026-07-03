@@ -53,17 +53,6 @@ oauth2 = OAuth2Component(
 
 )
 
-result = oauth2.authorize_button(
-
-    name="🔴 Continue with Google",
-
-    redirect_uri=REDIRECT_URI,
-
-    scope="openid email profile",
-
-    key="google_login_btn"
-
-)
 if result and "token" in result:
 
     token = result["token"]
