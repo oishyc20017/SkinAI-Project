@@ -50,6 +50,8 @@ def google_login():
         access_type="offline",
         prompt="select_account"
     )
+    st.write(uri)
+    st.stop()
 
     st.markdown(
         f"""
