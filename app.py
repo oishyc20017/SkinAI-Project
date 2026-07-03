@@ -47,8 +47,6 @@ oauth2 = OAuth2Component(
 
     TOKEN_ENDPOINT,
 
-    TOKEN_ENDPOINT,
-
     USERINFO_ENDPOINT,
 
 )
