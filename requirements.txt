@@ -6,3 +6,4 @@ pillow
 gdown
 streamlit-lottie
 requests
+authlib
