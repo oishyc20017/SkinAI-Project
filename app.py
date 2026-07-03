@@ -512,11 +512,13 @@ with st.sidebar:
             )
 
         with col2:
-            st.button(
-                "🔴 Gmail",
-                use_container_width=True,
-                key="gmail_btn"
-            )
+            if st.button("🔴 Gmail", use_container_width=True, key="gmail_btn"):
+                try:
+                    # Firebase Auth এর মাধ্যমে রিডাইরেক্ট বা সাইন-ইন লজিক
+                    st.info("Google Login প্রসেস শুরু হচ্ছে...")
+                    # ভবিষ্যতে এখানে তুমি গুগল সাইন-ইন এর জন্য সরাসরি Auth উইন্ডো খুলতে পারবে
+                except Exception as e:
+                    st.error(f"লগইন এরর: {e}")
 
         st.markdown("---")
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
