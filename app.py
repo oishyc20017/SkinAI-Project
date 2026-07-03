@@ -585,8 +585,18 @@ with st.sidebar:
             )
 
             if result and "token" in result:
-                pass   # আপাতত এটা রাখো
+                token = result["token"]
 
+                headers = {
+                    "Authorization": f"Bearer {token['access_token']}"
+                }
+
+                user_info = requests.get(
+                    USERINFO_ENDPOINT,
+                    headers=headers
+                ).json()
+
+                st.write(user_info)   # test
         st.markdown("---")
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
