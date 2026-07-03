@@ -51,8 +51,6 @@ oauth2 = OAuth2Component(
 
 )
 
-if result and "token" in result:
-
     token = result["token"]
 
     headers = {
