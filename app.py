@@ -50,9 +50,9 @@ oauth2 = OAuth2Component(
     USERINFO_ENDPOINT,
 
 )
-if result and "token" in result:
+if result:
 
-    token = result["token"]
+    token = result.get("token") or result
 
     headers = {
         "Authorization": f"Bearer {token['access_token']}"
@@ -62,10 +62,6 @@ if result and "token" in result:
         USERINFO_ENDPOINT,
         headers=headers
     ).json()
-
-    email = user_info.get("email")
-    fullname = user_info.get("name", "Google User")
-    username = email.split("@")[0]
 
     email = user_info.get("email")
     fullname = user_info.get("name", "Google User")
