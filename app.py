@@ -57,7 +57,10 @@ def google_login():
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+params = dict(st.query_params)
 
+st.write(params)
+st.write("Redirect URI:", REDIRECT_URI)
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
 <style>
