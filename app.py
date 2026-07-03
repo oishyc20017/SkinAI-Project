@@ -9,10 +9,12 @@ import os
 import gdown
 import sqlite3
 import hashlib
+import json
+
 import google.generativeai as genai
 import pyrebase
+
 from streamlit_javascript import st_javascript
-import json
 
 # আপনার Firebase কনফিগারেশন এভাবে পাইথন ডিকশনারি হিসেবে লিখতে হবে:
 firebaseConfig = {
