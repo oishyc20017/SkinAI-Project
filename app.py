@@ -573,14 +573,12 @@ with st.sidebar:
             ):
                 st.info("🚧 Facebook Login Coming Soon")
         with col2:
-
             result = oauth2.authorize_button(
                 name="🔴 Continue with Google",
                 redirect_uri=REDIRECT_URI,
                 scope="openid email profile",
-                key="google_login_btn"
+                key="google_login_btn_1"
             )
-
             if result and "token" in result:
 
                 token = result["token"]
