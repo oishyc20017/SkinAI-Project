@@ -50,17 +50,16 @@ oauth2 = OAuth2Component(
     USERINFO_ENDPOINT,
 
 )
+token = result["token"]
 
-    token = result["token"]
+headers = {
+    "Authorization": f"Bearer {token['access_token']}"
+}
 
-    headers = {
-        "Authorization": f"Bearer {token['access_token']}"
-    }
-
-    user_info = requests.get(
-        USERINFO_ENDPOINT,
-        headers=headers
-    ).json()
+user_info = requests.get(
+    USERINFO_ENDPOINT,
+    headers=headers
+).json()
 
     email = user_info.get("email")
     fullname = user_info.get("name", "Google User")
