@@ -14,6 +14,7 @@ import google.generativeai as genai
 import pyrebase
 
 # আপনার Firebase কনফিগারেশন এভাবে পাইথন ডিকশনারি হিসেবে লিখতে হবে:
+# Firebase কনফিগারেশন
 firebaseConfig = {
     "apiKey": "AIzaSyAzhopxnt3zx4PPG1_rMuC1jUAmDCgWG2I",
     "authDomain": "skin-ai-2216c.firebaseapp.com",
@@ -21,12 +22,13 @@ firebaseConfig = {
     "storageBucket": "skin-ai-2216c.firebasestorage.app",
     "messagingSenderId": "595245699429",
     "appId": "1:595245699429:web:dafc714b1fe15264cf918c",
-    "measurementId": "G-951EKMSEDH",
-    "databaseURL": "https://skin-ai-2216c-default-rtdb.firebaseio.com/" # এই লাইনটি যোগ করুন
+    "measurementId": "G-951EKMSEDH"
+    # databaseURL লাইনটি মুছে দিন
 }
 
-# Firebase ইনিশিয়ালাইজ করুন
+# ইনিশিয়ালাইজ করার সময় এটি ব্যবহার করুন
 firebase = pyrebase.initialize_app(firebaseConfig)
+# আপনি যদি শুধু অথেন্টিকেশন ব্যবহার করেন, তবে এই লাইনটি যথেষ্ট:
 auth = firebase.auth()
 
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
