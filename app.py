@@ -11,6 +11,7 @@ import sqlite3
 import hashlib
 import streamlit as st
 import google.generativeai as genai
+from authlib.integrations.requests_client import OAuth2Session
 import secrets
 
 
@@ -30,6 +31,31 @@ SCOPES = [
     "email",
     "profile"
 ]
+def google_login():
+
+    state = secrets.token_urlsafe(16)
+
+    st.session_state.oauth_state = state
+
+    client = OAuth2Session(
+        GOOGLE_CLIENT_ID,
+        GOOGLE_CLIENT_SECRET,
+        scope="openid email profile",
+        redirect_uri=REDIRECT_URI
+    )
+
+    uri, state = client.create_authorization_url(
+        AUTHORIZATION_ENDPOINT,
+        access_type="offline",
+        prompt="select_account"
+    )
+
+    st.markdown(
+        f"""
+        <meta http-equiv="refresh" content="0; url={uri}">
+        """,
+        unsafe_allow_html=True
+    )
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
@@ -493,16 +519,20 @@ with st.sidebar:
         col1, col2 = st.columns(2)
 
         with col1:
-            st.button(
+
+            if st.button(
                 "🔵 Facebook",
-                ...
-            )
+                use_container_width=True
+            ):
+                st.info("🚧 Facebook Login Coming Soon")
 
         with col2:
-            st.button(
-                "🔴 Gmail",
-                ...
-            )
+
+            if st.button(
+                "🔴 Continue with Google",
+                use_container_width=True
+            ):
+                google_login()
 
         st.markdown("---")
 
