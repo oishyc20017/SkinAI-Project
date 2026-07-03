@@ -187,6 +187,15 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
+    # চ্যাট হিস্ট্রি টেবিল যোগ করা
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS chat_history(
+        user_email TEXT,
+        role TEXT,
+        message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     # ---------- Conversations Table ----------
     c.execute("""
     CREATE TABLE IF NOT EXISTS conversations(
@@ -228,6 +237,13 @@ def init_db():
     
     conn.commit()
     conn.close()
+    def load_chat_history(user_email):
+    conn = sqlite3.connect('skinai_wishy_v30.db')
+    c = conn.cursor()
+    c.execute("SELECT role, message FROM chat_history WHERE user_email=? ORDER BY created_at ASC", (user_email,))
+    rows = c.fetchall()
+    conn.close()
+    return [{"role": r[0], "content": r[1]} for r in rows]
 
 init_db()
 
@@ -519,6 +535,7 @@ with st.sidebar:
                 data = c.fetchone()
 
                 if data and check_hash(p, data[2]):
+                    st.session_state.messages = load_chat_history(e)
 
                     st.session_state.logged_in = True
                     st.session_state.user = e
