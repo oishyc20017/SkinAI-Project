@@ -7,3 +7,4 @@ gdown
 streamlit-lottie
 requests
 streamlit-javascript
+Authlib>=1.3.2
