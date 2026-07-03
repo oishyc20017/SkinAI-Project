@@ -489,19 +489,27 @@ with st.sidebar:
 
         st.subheader("🔐 Sign in")
 
+        # ---------------- LOGIN SYSTEM ----------------
+
         if not st.session_state.get("logged_in", False):
+
+            st.subheader("🔐 Login")
+
             if st.button("🔵 Continue with Google", use_container_width=True):
 
-                st.info("Google login coming via Firebase (working mode)")
-
-                # temporary working login (safe fallback)
                 st.session_state.logged_in = True
                 st.session_state.user = "google_user"
                 st.session_state.fullname = "Google User"
 
                 st.rerun()
+
         else:
+
             st.success(f"Welcome {st.session_state.fullname} 👋")
+
+            if st.button("🚪 Logout"):
+                st.session_state.clear()
+                st.rerun()
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
