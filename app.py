@@ -489,27 +489,32 @@ with st.sidebar:
 
         st.subheader("🔐 Sign in")
 
-        # ---------------- LOGIN SYSTEM ----------------
+    # ---------------- LOGIN SYSTEM ----------------
 
-        if not st.session_state.get("logged_in", False):
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
 
-            st.subheader("🔐 Login")
+    if not st.session_state.logged_in:
 
-            if st.button("🔵 Continue with Google", use_container_width=True):
+        st.subheader("🔐 Login")
 
-                st.session_state.logged_in = True
-                st.session_state.user = "google_user"
-                st.session_state.fullname = "Google User"
+        if st.button("🔵 Continue with Google", use_container_width=True):
 
-                st.rerun()
+            st.session_state.logged_in = True
+            st.session_state.user = "google_user"
+            st.session_state.fullname = "Google User"
 
-        else:
+            st.rerun()
 
-            st.success(f"Welcome {st.session_state.fullname} 👋")
+    else:
 
-            if st.button("🚪 Logout"):
-                st.session_state.clear()
-                st.rerun()
+        st.success(f"Welcome {st.session_state.fullname} 👋")
+
+        if st.button("🚪 Logout"):
+            st.session_state.logged_in = False
+            st.session_state.user = None
+            st.session_state.fullname = None
+            st.rerun()
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
