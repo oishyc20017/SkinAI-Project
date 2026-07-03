@@ -500,8 +500,8 @@ with st.sidebar:
                 st.session_state.fullname = "Google User"
 
                 st.rerun()
-else:
-    st.success(f"Welcome {st.session_state.fullname} 👋")
+    else:
+        st.success(f"Welcome {st.session_state.fullname} 👋")
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
