@@ -589,19 +589,16 @@ with st.sidebar:
         with col2:
 
             result = oauth2.authorize_button(
-            name="🔴 Continue with Google",
-            redirect_uri=REDIRECT_URI,
-            scope="openid email profile",
-            key="google_login_btn"
-        )
+                name="🔴 Continue with Google",
+                redirect_uri=REDIRECT_URI,
+                scope="openid email profile",
+                key="google_login_btn"
+            )
 
-        if result and "token" in result:
-            # login code
-                
-
+            if result and "token" in result:
+                pass   # আপাতত এটা রাখো
 
         st.markdown("---")
-
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
 
