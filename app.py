@@ -586,7 +586,7 @@ with st.sidebar:
                 use_container_width=True
             ):
                 st.info("🚧 Facebook Login Coming Soon")
-         with col2:
+        with col2:
 
             result = oauth2.authorize_button(
             name="🔴 Continue with Google",
