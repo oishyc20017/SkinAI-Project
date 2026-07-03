@@ -583,6 +583,7 @@ with st.sidebar:
             )
 
             if result and "token" in result:
+
                 token = result["token"]
 
                 headers = {
@@ -594,7 +595,7 @@ with st.sidebar:
                     headers=headers
                 ).json()
 
-                st.write(user_info)   # test
+                st.write(user_info)
         st.markdown("---")
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
         with t1:
