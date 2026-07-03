@@ -13,6 +13,7 @@ import streamlit as st
 import google.generativeai as genai
 from authlib.integrations.requests_client import OAuth2Session
 import secrets
+from streamlit_oauth import OAuth2Component
 
 
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
@@ -31,31 +32,94 @@ SCOPES = [
     "email",
     "profile"
 ]
-def google_login():
-    st.success("Google button clicked")
-
-    state = secrets.token_urlsafe(16)
-
-    st.session_state.oauth_state = state
-
-    client = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
-        scope="openid email profile",
-        redirect_uri=REDIRECT_URI
-    )
-
-    uri, state = client.create_authorization_url(
-        AUTHORIZATION_ENDPOINT,
-        access_type="offline",
-        prompt="select_account"
-    )
-    st.link_button("Continue to Google", uri)
 
 
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
+oauth2 = OAuth2Component(
+
+GOOGLE_CLIENT_ID,
+
+GOOGLE_CLIENT_SECRET,
+
+AUTHORIZATION_ENDPOINT,
+
+TOKEN_ENDPOINT,
+
+TOKEN_ENDPOINT,
+
+USERINFO_ENDPOINT,
+
+)
+
+result = oauth2.authorize_button(
+
+name="🔴 Continue with Google",
+
+redirect_uri=REDIRECT_URI,
+
+scope="openid email profile",
+
+key="google_login_btn"
+
+)
+
+if result and "token" in result:
+
+token = result["token"]
+
+headers = {"Authorization": f"Bearer {token['access_token']}"}
+
+user_info = requests.get(USERINFO_ENDPOINT, headers=headers).json()
+
+email = user_info.get("email")
+
+fullname = user_info.get("name", "Google User")
+
+username = email.split("@")[0]
+
+c.execute("SELECT * FROM users WHERE email=?", (email,))
+
+existing = c.fetchone()
+
+if not existing:
+
+c.execute("""
+
+INSERT INTO users
+
+(fullname, username, email, phone, dob, gender, country, password)
+
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+
+""", (
+
+fullname,
+
+username,
+
+email,
+
+"", "", "", "",
+
+"GOOGLE_AUTH"
+
+))
+
+conn.commit()
+
+st.session_state.logged_in = True
+
+st.session_state.user = email
+
+st.session_state.fullname = fullname
+
+st.session_state.username = username
+
+st.success(f"Welcome {fullname} 🎉")
+
+st.rerun()
 
 params = dict(st.query_params)
 
@@ -527,13 +591,6 @@ with st.sidebar:
             ):
                 st.info("🚧 Facebook Login Coming Soon")
 
-        with col2:
-
-            if st.button(
-                "🔴 Continue with Google",
-                use_container_width=True
-            ):
-                google_login()
 
         st.markdown("---")
 
