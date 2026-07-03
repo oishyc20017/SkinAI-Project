@@ -6,5 +6,4 @@ pillow
 gdown
 streamlit-lottie
 requests
-pyrebase4
 streamlit-javascript
