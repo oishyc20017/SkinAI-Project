@@ -39,87 +39,83 @@ model_ai = genai.GenerativeModel("gemini-2.5-flash")
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 oauth2 = OAuth2Component(
 
-GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_ID,
 
-GOOGLE_CLIENT_SECRET,
+    GOOGLE_CLIENT_SECRET,
 
-AUTHORIZATION_ENDPOINT,
+    AUTHORIZATION_ENDPOINT,
 
-TOKEN_ENDPOINT,
+    TOKEN_ENDPOINT,
 
-TOKEN_ENDPOINT,
+    TOKEN_ENDPOINT,
 
-USERINFO_ENDPOINT,
+    USERINFO_ENDPOINT,
 
 )
 
 result = oauth2.authorize_button(
 
-name="🔴 Continue with Google",
+    name="🔴 Continue with Google",
 
-redirect_uri=REDIRECT_URI,
+    redirect_uri=REDIRECT_URI,
 
-scope="openid email profile",
+    scope="openid email profile",
 
-key="google_login_btn"
+    key="google_login_btn"
 
 )
-
 if result and "token" in result:
 
-token = result["token"]
+    token = result["token"]
 
-headers = {"Authorization": f"Bearer {token['access_token']}"}
+    headers = {
+        "Authorization": f"Bearer {token['access_token']}"
+    }
 
-user_info = requests.get(USERINFO_ENDPOINT, headers=headers).json()
+    user_info = requests.get(
+        USERINFO_ENDPOINT,
+        headers=headers
+    ).json()
 
-email = user_info.get("email")
+    email = user_info.get("email")
+    fullname = user_info.get("name", "Google User")
+    username = email.split("@")[0]
 
-fullname = user_info.get("name", "Google User")
+    c.execute(
+        "SELECT * FROM users WHERE email=?",
+        (email,)
+    )
 
-username = email.split("@")[0]
+    existing = c.fetchone()
 
-c.execute("SELECT * FROM users WHERE email=?", (email,))
+    if not existing:
 
-existing = c.fetchone()
+        c.execute("""
+            INSERT INTO users(
+                fullname,
+                username,
+                email,
+                password
+            )
+            VALUES(?,?,?,?)
+        """, (
+            fullname,
+            username,
+            email,
+            ""
+        ))
 
-if not existing:
+        conn.commit()
 
-c.execute("""
+    st.session_state.logged_in = True
+    st.session_state.user = email
+    st.session_state.fullname = fullname
+    st.session_state.username = username
 
-INSERT INTO users
+    st.success("Google Login Successful")
 
-(fullname, username, email, phone, dob, gender, country, password)
+    st.rerun()
 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-
-""", (
-
-fullname,
-
-username,
-
-email,
-
-"", "", "", "",
-
-"GOOGLE_AUTH"
-
-))
-
-conn.commit()
-
-st.session_state.logged_in = True
-
-st.session_state.user = email
-
-st.session_state.fullname = fullname
-
-st.session_state.username = username
-
-st.success(f"Welcome {fullname} 🎉")
-
-st.rerun()
 
 params = dict(st.query_params)
 
