@@ -6,4 +6,4 @@ pillow
 gdown
 streamlit-lottie
 requests
-authlib
+pyrebase4
