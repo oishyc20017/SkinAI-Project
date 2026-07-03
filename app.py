@@ -492,14 +492,14 @@ with st.sidebar:
         if not st.session_state.get("logged_in", False):
             if st.button("🔵 Continue with Google", use_container_width=True):
 
-            st.info("Google login coming via Firebase (working mode)")
+                st.info("Google login coming via Firebase (working mode)")
 
-            # temporary working login (safe fallback)
-            st.session_state.logged_in = True
-            st.session_state.user = "google_user"
-            st.session_state.fullname = "Google User"
+                # temporary working login (safe fallback)
+                st.session_state.logged_in = True
+                st.session_state.user = "google_user"
+                st.session_state.fullname = "Google User"
 
-            st.rerun()
+                st.rerun()
 else:
     st.success(f"Welcome {st.session_state.fullname} 👋")
     with st.expander("❓ Help & Information"):
