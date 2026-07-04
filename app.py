@@ -46,12 +46,13 @@ def google_callback():
         client = OAuth2Session(
             GOOGLE_CLIENT_ID,
             GOOGLE_CLIENT_SECRET,
-            redirect_uri=REDIRECT_URI
+            redirect_uri=REDIRECT_URI,
+            state=st.session_state.get("oauth_state")
         )
-
         token = client.fetch_token(
             TOKEN_ENDPOINT,
-            code=params["code"]
+            code=params["code"],
+            client_secret=GOOGLE_CLIENT_SECRET
         )
 
         resp = client.get(USERINFO_ENDPOINT, token=token)
@@ -109,9 +110,15 @@ def google_callback():
         st.session_state.username = email.split("@")[0]
         st.session_state.google_user = user
 
+        conn.close()
+
+        st.session_state.oauth_state = None
+
         st.query_params.clear()
 
-        conn.close()
+        st.success("Google Login Successful")
+
+        time.sleep(1)
 
         st.rerun()
 
@@ -135,15 +142,12 @@ def google_login():
         access_type="offline",
         prompt="select_account"
     )
-    st.write(uri)
-    st.stop()
 
     st.link_button("Continue to Google", uri)
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 google_callback()
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
-st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
