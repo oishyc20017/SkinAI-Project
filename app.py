@@ -279,6 +279,15 @@ def init_db():
         FOREIGN KEY(conversation_id) REFERENCES conversations(id)
     )
     """)
+    # ---------- Chat History ----------
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS chat_history(
+        user_email TEXT,
+        role TEXT,
+        message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     
     # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
     c.execute('DROP TABLE IF EXISTS doctors')
@@ -421,6 +430,14 @@ if "oauth_state" not in st.session_state:
 
 if "google_user" not in st.session_state:
     st.session_state.google_user = None
+if "google_email" not in st.session_state:
+    st.session_state.google_email = ""
+
+if "google_name" not in st.session_state:
+    st.session_state.google_name = ""
+
+if "google_picture" not in st.session_state:
+    st.session_state.google_picture = ""
 
 with st.sidebar:
     # ১. লোগো এরিয়া
