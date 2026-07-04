@@ -121,11 +121,14 @@ def google_login():
         scope="openid email profile",
         redirect_uri=REDIRECT_URI
     )
+    st.write("REDIRECT_URI =", REDIRECT_URI)
+    st.write("CLIENT_ID =", GOOGLE_CLIENT_ID)
 
     st.write("Redirect URI:", REDIRECT_URI)
     st.write("Current URL:", st.query_params)
     
     uri, state = client.create_authorization_url(
+        st.write(uri)
         AUTHORIZATION_ENDPOINT,
         access_type="offline",
         prompt="select_account"
