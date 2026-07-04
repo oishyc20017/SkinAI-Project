@@ -31,15 +31,38 @@ SCOPES = [
     "email",
     "profile"
 ]
-# ===============================
-# Google OAuth Callback Check
-# ===============================
-query_params = st.query_params
+# ====================================================
+# GOOGLE OAUTH CALLBACK
+# ====================================================
 
-if "code" in query_params:
-    st.success("✅ Google returned successfully!")
-    st.write("Authorization Code:")
-    st.code(query_params["code"])
+params = st.query_params
+
+if "code" in params:
+
+    code = params["code"]
+
+    client = OAuth2Session(
+        GOOGLE_CLIENT_ID,
+        GOOGLE_CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI
+    )
+
+    try:
+
+        token = client.fetch_token(
+            TOKEN_ENDPOINT,
+            code=code
+        )
+
+        user = client.get(USERINFO_ENDPOINT).json()
+
+        st.success("Google Login Success")
+
+        st.write(user)
+
+    except Exception as e:
+
+        st.error(e)
 def google_login():
     st.success("Google button clicked")
 
