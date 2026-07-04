@@ -31,6 +31,15 @@ SCOPES = [
     "email",
     "profile"
 ]
+# ===============================
+# Google OAuth Callback Check
+# ===============================
+query_params = st.query_params
+
+if "code" in query_params:
+    st.success("✅ Google returned successfully!")
+    st.write("Authorization Code:")
+    st.code(query_params["code"])
 def google_login():
     st.success("Google button clicked")
 
