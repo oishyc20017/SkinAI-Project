@@ -53,11 +53,7 @@ def google_callback():
             redirect_uri=REDIRECT_URI,
             state=st.session_state.get("oauth_state")
         )
-        token = client.fetch_token(
-            TOKEN_ENDPOINT,
-            code=params["code"],
-            client_secret=GOOGLE_CLIENT_SECRET
-        )
+        client_secret=GOOGLE_CLIENT_SECRET
 
         resp = client.get(USERINFO_ENDPOINT, token=token)
 
