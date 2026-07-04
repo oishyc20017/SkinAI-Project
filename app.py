@@ -31,9 +31,91 @@ SCOPES = [
     "email",
     "profile"
 ]
-def google_login():
-    st.success("Google button clicked")
+def google_callback():
 
+    params = st.query_params
+
+    if "code" not in params:
+        return
+
+    try:
+
+        client = OAuth2Session(
+            GOOGLE_CLIENT_ID,
+            GOOGLE_CLIENT_SECRET,
+            redirect_uri=REDIRECT_URI
+        )
+
+        token = client.fetch_token(
+            TOKEN_ENDPOINT,
+            code=params["code"]
+        )
+
+        resp = client.get(USERINFO_ENDPOINT, token=token)
+
+        user = resp.json()
+
+        email = user["email"]
+        fullname = user["name"]
+
+        conn = sqlite3.connect(
+            "skinai_wishy_v30.db",
+            check_same_thread=False
+        )
+
+        c = conn.cursor()
+
+        c.execute(
+            "SELECT fullname, username FROM users WHERE email=?",
+            (email,)
+        )
+
+        data = c.fetchone()
+
+        if data is None:
+
+            username = email.split("@")[0]
+
+            random_password = make_hash(
+                secrets.token_hex(16)
+            )
+
+            c.execute(
+                """
+                INSERT INTO users
+                (fullname,username,email,phone,dob,gender,country,password)
+                VALUES(?,?,?,?,?,?,?,?)
+                """,
+                (
+                    fullname,
+                    username,
+                    email,
+                    "",
+                    "",
+                    "",
+                    "",
+                    random_password
+                )
+            )
+
+            conn.commit()
+
+        st.session_state.logged_in = True
+        st.session_state.user = email
+        st.session_state.fullname = fullname
+        st.session_state.username = email.split("@")[0]
+        st.session_state.google_user = user
+
+        st.query_params.clear()
+
+        conn.close()
+
+        st.rerun()
+
+    except Exception as e:
+
+        st.error(e)
+def google_login():
     state = secrets.token_urlsafe(16)
 
     st.session_state.oauth_state = state
@@ -50,9 +132,13 @@ def google_login():
         access_type="offline",
         prompt="select_account"
     )
-    st.link_button("Continue to Google", uri)
+    st.markdown(
+        f'<meta http-equiv="refresh" content="0; url={uri}">',
+        unsafe_allow_html=True
+    )
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
+google_callback()
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 st.set_page_config(page_title="SkinAI Pro - Wishy", layout="wide")
 
