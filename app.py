@@ -115,18 +115,17 @@ def google_login():
 # ---------------- MAIN APP ----------------
 def main():
 
-    st.title("SkinAI App")
+    google_callback()  # keep ONLY for redirect handling
 
-    if not st.session_state.get("logged_in"):
+    if st.session_state.get("logged_in"):
 
-        if st.button("Login with Google"):
-            google_login()
-
-        google_callback()
-
-    else:
+        st.title("SkinAI Assistant")
         st.success("Logged in successfully!")
         st.write(st.session_state.fullname)
+
+    else:
+        st.title("SkinAI Assistant")
+        st.info("Please login from sidebar 👈")
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
