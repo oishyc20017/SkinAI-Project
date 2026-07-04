@@ -133,6 +133,8 @@ def google_login():
         access_type="offline",
         prompt="select_account"
     )
+    st.code(uri)
+    st.stop()
     st.markdown(
         f'<meta http-equiv="refresh" content="0; url={uri}">',
         unsafe_allow_html=True
