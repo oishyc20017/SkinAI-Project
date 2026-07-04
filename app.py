@@ -151,7 +151,7 @@ def google_login():
 
     st.write("REDIRECT_URI =", REDIRECT_URI)
     st.write("GOOGLE URL =", uri)
-    st.stop()
+   
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 google_callback()
