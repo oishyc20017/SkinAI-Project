@@ -114,17 +114,17 @@ def google_login():
     st.markdown(f"[Login with Google]({authorization_url})")
     def main():
 
-    google_callback()  # keep ONLY for redirect handling
+        google_callback()  # keep ONLY for redirect handling
 
-    if st.session_state.get("logged_in"):
+        if st.session_state.get("logged_in"):
 
-        st.title("SkinAI Assistant")
-        st.success("Logged in successfully!")
-        st.write(st.session_state.fullname)
+            st.title("SkinAI Assistant")
+            st.success("Logged in successfully!")
+            st.write(st.session_state.fullname)
 
-# ---------------- RUN ----------------
-if __name__ == "__main__":
-    main()
+    # ---------------- RUN ----------------
+    if __name__ == "__main__":
+        main()
 
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
