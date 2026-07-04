@@ -35,6 +35,7 @@ SCOPES = [
     "profile"
 ]
 def google_callback():
+    st.write("QUERY PARAMS:", st.query_params)
 
     params = st.query_params
 
