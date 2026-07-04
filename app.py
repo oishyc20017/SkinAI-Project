@@ -31,83 +31,6 @@ SCOPES = [
     "email",
     "profile"
 ]
-# ====================================================
-# GOOGLE OAUTH CALLBACK
-# ====================================================
-
-params = st.query_params
-
-if "code" in params:
-
-    try:
-
-        client = OAuth2Session(
-            GOOGLE_CLIENT_ID,
-            GOOGLE_CLIENT_SECRET,
-            redirect_uri=REDIRECT_URI
-        )
-
-        token = client.fetch_token(
-            TOKEN_ENDPOINT,
-            code=params["code"]
-        )
-
-        user = client.get(USERINFO_ENDPOINT).json()
-
-        email = user.get("email")
-        fullname = user.get("name", "")
-        picture = user.get("picture", "")
-
-        # ---------- Auto Register ----------
-        c.execute(
-            "SELECT fullname, username FROM users WHERE email=?",
-            (email,)
-        )
-
-        data = c.fetchone()
-
-        if data is None:
-
-            username = email.split("@")[0]
-
-            c.execute(
-                """
-                INSERT INTO users
-                (fullname, username, email, phone, dob, gender, country, password)
-                VALUES (?,?,?,?,?,?,?,?)
-                """,
-                (
-                    fullname,
-                    username,
-                    email,
-                    "",
-                    "",
-                    "",
-                    "",
-                    make_hash(secrets.token_hex(16))
-                )
-            )
-
-            conn.commit()
-
-        # ---------- Login Session ----------
-        st.session_state.logged_in = True
-        st.session_state.user = email
-        st.session_state.fullname = fullname
-        st.session_state.google_email = email
-        st.session_state.google_name = fullname
-        st.session_state.google_picture = picture
-
-        # URL থেকে code remove
-        st.query_params.clear()
-
-        st.success(f"Welcome {fullname}")
-
-        st.rerun()
-
-    except Exception as e:
-
-        st.error(f"Google Login Error: {e}")
 def google_login():
     st.success("Google button clicked")
 
@@ -121,18 +44,12 @@ def google_login():
         scope="openid email profile",
         redirect_uri=REDIRECT_URI
     )
-    st.write("REDIRECT_URI =", REDIRECT_URI)
-    st.write("CLIENT_ID =", GOOGLE_CLIENT_ID)
 
-    st.write("Redirect URI:", REDIRECT_URI)
-    st.write("Current URL:", st.query_params)
-    
     uri, state = client.create_authorization_url(
         AUTHORIZATION_ENDPOINT,
         access_type="offline",
         prompt="select_account"
     )
-    st.write(uri)
     st.link_button("Continue to Google", uri)
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
@@ -327,15 +244,6 @@ def init_db():
         FOREIGN KEY(conversation_id) REFERENCES conversations(id)
     )
     """)
-    # ---------- Chat History ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS chat_history(
-        user_email TEXT,
-        role TEXT,
-        message TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
     
     # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
     c.execute('DROP TABLE IF EXISTS doctors')
@@ -478,14 +386,6 @@ if "oauth_state" not in st.session_state:
 
 if "google_user" not in st.session_state:
     st.session_state.google_user = None
-if "google_email" not in st.session_state:
-    st.session_state.google_email = ""
-
-if "google_name" not in st.session_state:
-    st.session_state.google_name = ""
-
-if "google_picture" not in st.session_state:
-    st.session_state.google_picture = ""
 
 with st.sidebar:
     # ১. লোগো এরিয়া
