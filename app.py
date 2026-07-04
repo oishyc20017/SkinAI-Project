@@ -14,7 +14,10 @@ import google.generativeai as genai
 from authlib.integrations.requests_client import OAuth2Session
 import secrets
 
-
+st.set_page_config(
+    page_title="SkinAI Pro - Wishy",
+    layout="wide"
+)
 # Streamlit-এর secrets থেকে API key সংগ্রহ করা
 # সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
 genai.configure(api_key=st.secrets["API_KEY"])
