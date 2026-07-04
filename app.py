@@ -117,7 +117,6 @@ def google_callback():
         st.error(e)
 def google_login():
     state = secrets.token_urlsafe(16)
-
     st.session_state.oauth_state = state
 
     client = OAuth2Session(
@@ -133,12 +132,8 @@ def google_login():
         access_type="offline",
         prompt="select_account"
     )
-    st.code(uri)
-    st.stop()
-    st.markdown(
-        f'<meta http-equiv="refresh" content="0; url={uri}">',
-        unsafe_allow_html=True
-    )
+
+    st.link_button("Continue to Google", uri)
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 google_callback()
