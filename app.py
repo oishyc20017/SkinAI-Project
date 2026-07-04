@@ -10,17 +10,17 @@ import gdown
 import sqlite3
 import hashlib
 import streamlit as st
+import sqlite3
+import time
+import secrets
 import google.generativeai as genai
 from authlib.integrations.requests_client import OAuth2Session
-import secrets
 
-st.set_page_config(
-    page_title="SkinAI Pro - Wishy",
-    layout="wide"
-)
-# Streamlit-এর secrets থেকে API key সংগ্রহ করা
-# সঠিক পদ্ধতি: শুধুমাত্র কি-এর নাম ব্যবহার করবেন
+# ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
+model_ai = genai.GenerativeModel("gemini-2.5-flash")
+
+
 GOOGLE_CLIENT_ID = st.secrets["CLIENT_ID"]
 GOOGLE_CLIENT_SECRET = st.secrets["CLIENT_SECRET"]
 REDIRECT_URI = st.secrets["REDIRECT_URI"]
@@ -29,16 +29,10 @@ AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
 USERINFO_ENDPOINT = "https://openidconnect.googleapis.com/v1/userinfo"
 
-SCOPES = [
-    "openid",
-    "email",
-    "profile"
-]
-def google_callback():
-    st.write("CURRENT URL:", st.query_params)
-    st.write("FULL QUERY:", dict(st.query_params))
-    
+SCOPES = ["openid", "email", "profile"]
 
+# ---------------- CALLBACK ----------------
+def google_callback():
 
     params = st.query_params
 
@@ -46,118 +40,102 @@ def google_callback():
         return
 
     try:
-
         client = OAuth2Session(
             GOOGLE_CLIENT_ID,
-            GOOGLE_CLIENT_SECRET,
             redirect_uri=REDIRECT_URI,
             state=st.session_state.get("oauth_state")
         )
 
         token = client.fetch_token(
             TOKEN_ENDPOINT,
-            code=params["code"]
+            code=params["code"],
+            client_secret=GOOGLE_CLIENT_SECRET
         )
 
-        resp = client.get(
-            USERINFO_ENDPOINT,
-            token=token
-        )
-
+        resp = client.get(USERINFO_ENDPOINT)
         user = resp.json()
 
         email = user["email"]
         fullname = user["name"]
 
-        conn = sqlite3.connect(
-            "skinai_wishy_v30.db",
-            check_same_thread=False
-        )
-
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
 
-        c.execute(
-            "SELECT fullname, username FROM users WHERE email=?",
-            (email,)
-        )
-
+        c.execute("SELECT fullname FROM users WHERE email=?", (email,))
         data = c.fetchone()
 
         if data is None:
-
             username = email.split("@")[0]
+            random_password = secrets.token_hex(16)
 
-            random_password = make_hash(
-                secrets.token_hex(16)
-            )
-
-            c.execute(
-                """
+            c.execute("""
                 INSERT INTO users
                 (fullname,username,email,phone,dob,gender,country,password)
                 VALUES(?,?,?,?,?,?,?,?)
-                """,
-                (
-                    fullname,
-                    username,
-                    email,
-                    "",
-                    "",
-                    "",
-                    "",
-                    random_password
-                )
-            )
+            """, (
+                fullname,
+                username,
+                email,
+                "", "", "", "",
+                random_password
+            ))
 
             conn.commit()
 
         st.session_state.logged_in = True
         st.session_state.user = email
         st.session_state.fullname = fullname
-        st.session_state.username = email.split("@")[0]
-        st.session_state.google_user = user
 
         conn.close()
-
-        st.session_state.oauth_state = None
 
         st.query_params.clear()
 
         st.success("Google Login Successful")
-
         time.sleep(1)
-
         st.rerun()
 
     except Exception as e:
-
         st.error(e)
+
+# ---------------- LOGIN ----------------
 def google_login():
-    state = secrets.token_urlsafe(16)
+
+    google = OAuth2Session(
+        GOOGLE_CLIENT_ID,
+        redirect_uri=REDIRECT_URI,
+        scope=SCOPES
+    )
+
+    authorization_url, state = google.authorization_url(
+        AUTHORIZATION_ENDPOINT
+    )
+
     st.session_state.oauth_state = state
 
-    client = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
-        scope="openid email profile",
-        redirect_uri=REDIRECT_URI
-    )
+    st.markdown(f"[Login with Google]({authorization_url})")
 
-    st.write("REDIRECT_URI =", REDIRECT_URI)
+# ---------------- MAIN APP ----------------
+def main():
 
-    uri, state = client.create_authorization_url(
-        AUTHORIZATION_ENDPOINT,
-        state=state,
-        access_type="offline",
-        prompt="select_account"
-    )
+    st.title("SkinAI App")
 
-    st.write("REDIRECT_URI =", REDIRECT_URI)
-    st.write("GOOGLE URL =", uri)
+    if not st.session_state.get("logged_in"):
+
+        if st.button("Login with Google"):
+            google_login()
+
+        google_callback()
+
+    else:
+        st.success("Logged in successfully!")
+        st.write(st.session_state.fullname)
+
+# ---------------- RUN ----------------
+if __name__ == "__main__":
+    main()
    
     
-model_ai = genai.GenerativeModel("gemini-2.5-flash")
-google_callback()
+
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
