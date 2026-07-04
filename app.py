@@ -128,11 +128,11 @@ def google_login():
     st.write("Current URL:", st.query_params)
     
     uri, state = client.create_authorization_url(
-        st.write(uri)
         AUTHORIZATION_ENDPOINT,
         access_type="offline",
         prompt="select_account"
     )
+    st.write(uri)
     st.link_button("Continue to Google", uri)
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
