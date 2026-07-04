@@ -39,30 +39,75 @@ params = st.query_params
 
 if "code" in params:
 
-    code = params["code"]
-
-    client = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
-        redirect_uri=REDIRECT_URI
-    )
-
     try:
+
+        client = OAuth2Session(
+            GOOGLE_CLIENT_ID,
+            GOOGLE_CLIENT_SECRET,
+            redirect_uri=REDIRECT_URI
+        )
 
         token = client.fetch_token(
             TOKEN_ENDPOINT,
-            code=code
+            code=params["code"]
         )
 
         user = client.get(USERINFO_ENDPOINT).json()
 
-        st.success("Google Login Success")
+        email = user.get("email")
+        fullname = user.get("name", "")
+        picture = user.get("picture", "")
 
-        st.write(user)
+        # ---------- Auto Register ----------
+        c.execute(
+            "SELECT fullname, username FROM users WHERE email=?",
+            (email,)
+        )
+
+        data = c.fetchone()
+
+        if data is None:
+
+            username = email.split("@")[0]
+
+            c.execute(
+                """
+                INSERT INTO users
+                (fullname, username, email, phone, dob, gender, country, password)
+                VALUES (?,?,?,?,?,?,?,?)
+                """,
+                (
+                    fullname,
+                    username,
+                    email,
+                    "",
+                    "",
+                    "",
+                    "",
+                    make_hash(secrets.token_hex(16))
+                )
+            )
+
+            conn.commit()
+
+        # ---------- Login Session ----------
+        st.session_state.logged_in = True
+        st.session_state.user = email
+        st.session_state.fullname = fullname
+        st.session_state.google_email = email
+        st.session_state.google_name = fullname
+        st.session_state.google_picture = picture
+
+        # URL থেকে code remove
+        st.query_params.clear()
+
+        st.success(f"Welcome {fullname}")
+
+        st.rerun()
 
     except Exception as e:
 
-        st.error(e)
+        st.error(f"Google Login Error: {e}")
 def google_login():
     st.success("Google button clicked")
 
