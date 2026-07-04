@@ -144,7 +144,24 @@ def google_login():
         prompt="select_account"
     )
 
-    st.link_button("Continue to Google", uri)
+    st.markdown(
+        f"""
+    <a href="{uri}" target="_self">
+    <button style="
+    width:100%;
+    padding:12px;
+    background:#4285F4;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;">
+    Continue with Google
+    </button>
+    </a>
+    """,
+    unsafe_allow_html=True
+    )
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 google_callback()
