@@ -35,6 +35,8 @@ SCOPES = [
     "profile"
 ]
 def google_callback():
+    st.write("CURRENT URL:", st.query_params)
+    st.write("FULL QUERY:", dict(st.query_params))
     st.write("CURRENT URL:", st.context.url if hasattr(st, "context") else "No context")
     st.write("QUERY PARAMS:", dict(st.query_params))
 
