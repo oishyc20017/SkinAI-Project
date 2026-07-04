@@ -48,14 +48,21 @@ def google_callback():
     try:
 
         client = OAuth2Session(
-            GOOGLE_CLIENT_ID,
-            GOOGLE_CLIENT_SECRET,
+            client_id=GOOGLE_CLIENT_ID,
             redirect_uri=REDIRECT_URI,
             state=st.session_state.get("oauth_state")
         )
-        client_secret=GOOGLE_CLIENT_SECRET
 
-        resp = client.get(USERINFO_ENDPOINT, token=token)
+        token = client.fetch_token(
+            TOKEN_ENDPOINT,
+            code=params["code"],
+            client_secret=GOOGLE_CLIENT_SECRET
+        )
+
+        resp = client.get(
+            USERINFO_ENDPOINT,
+            token=token
+        )
 
         user = resp.json()
 
