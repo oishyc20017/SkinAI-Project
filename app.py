@@ -139,6 +139,8 @@ def google_login():
         redirect_uri=REDIRECT_URI
     )
 
+    st.write("REDIRECT_URI =", REDIRECT_URI)
+
     uri, state = client.create_authorization_url(
         AUTHORIZATION_ENDPOINT,
         state=state,
@@ -146,7 +148,9 @@ def google_login():
         prompt="select_account"
     )
 
-    st.link_button("Continue with Google", uri)
+    st.write("REDIRECT_URI =", REDIRECT_URI)
+    st.write("GOOGLE URL =", uri)
+    st.stop()
     
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
 google_callback()
