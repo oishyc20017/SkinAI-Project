@@ -985,35 +985,44 @@ for m in st.session_state.messages:
 prompt = st.chat_input("Ask me anything about your skin...")
 
 if prompt:
+
     st.session_state.messages.append({
         "role": "user",
         "content": prompt
     })
-  
+
     # Login থাকলে user message save করো
     if st.session_state.get("logged_in", False):
-        c.execute(
-            "INSERT INTO chat_history VALUES (?,?,?)",
-            (st.session_state.user, "user", prompt)
-        )
+        c.execute("""
+            INSERT INTO messages (conversation_id, role, message)
+            VALUES (?, ?, ?)
+        """, (
+            st.session_state.current_conversation_id,
+            "user",
+            prompt
+        ))
         conn.commit()
 
     # AI উত্তর তৈরি
     with st.spinner("🩺 SkinAI is thinking..."):
         reply = ask_ai(prompt, st.session_state.last_res)
 
-    # AI message save
+    # AI message show
     st.session_state.messages.append({
         "role": "assistant",
         "content": reply
     })
 
-    # Login থাকলে AI message save
+    # Login থাকলে AI message save করো
     if st.session_state.get("logged_in", False):
-        c.execute(
-            "INSERT INTO chat_history VALUES (?,?,?)",
-            (st.session_state.user, "assistant", reply)
-        )
+        c.execute("""
+            INSERT INTO messages (conversation_id, role, message)
+            VALUES (?, ?, ?)
+        """, (
+            st.session_state.current_conversation_id,
+            "assistant",
+            reply
+        ))
         conn.commit()
 
     st.rerun()
