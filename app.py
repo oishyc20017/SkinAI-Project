@@ -14,7 +14,7 @@ import sqlite3
 import time
 import secrets
 import google.generativeai as genai
-from authlib.integrations.requests_client import OAuth2Session
+from requests_oauthlib import OAuth2Session
 
 # ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
@@ -99,7 +99,6 @@ def google_callback():
 
 # ---------------- LOGIN ----------------
 def google_login():
-
     google = OAuth2Session(
         GOOGLE_CLIENT_ID,
         redirect_uri=REDIRECT_URI,
@@ -113,7 +112,6 @@ def google_login():
     st.session_state.oauth_state = state
 
     st.markdown(f"[Login with Google]({authorization_url})")
-
 # ---------------- MAIN APP ----------------
 def main():
 
