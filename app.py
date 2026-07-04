@@ -54,6 +54,9 @@ def google_login():
         redirect_uri=REDIRECT_URI
     )
 
+    st.write("Redirect URI:", REDIRECT_URI)
+    st.write("Current URL:", st.query_params)
+    
     uri, state = client.create_authorization_url(
         AUTHORIZATION_ENDPOINT,
         access_type="offline",
