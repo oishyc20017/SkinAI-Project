@@ -129,6 +129,7 @@ def google_login():
 
     uri, state = client.create_authorization_url(
         AUTHORIZATION_ENDPOINT,
+        state=state,
         access_type="offline",
         prompt="select_account"
     )
