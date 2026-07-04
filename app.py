@@ -112,20 +112,24 @@ def google_login():
     st.session_state.oauth_state = state
 
     st.markdown(f"[Login with Google]({authorization_url})")
-    def main():
+def main():
 
-        google_callback()  # keep ONLY for redirect handling
+    st.title("SkinAI App")
 
-        if st.session_state.get("logged_in"):
+    if not st.session_state.get("logged_in"):
 
-            st.title("SkinAI Assistant")
-            st.success("Logged in successfully!")
-            st.write(st.session_state.fullname)
+        if st.button("Login with Google"):
+            google_login()
 
-    # ---------------- RUN ----------------
-    if __name__ == "__main__":
-        main()
+        google_callback()
 
+    else:
+        st.success("Logged in successfully!")
+        st.write(st.session_state.fullname)
+
+# ---------------- RUN ----------------
+if __name__ == "__main__":
+    main()
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 
