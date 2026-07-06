@@ -1090,9 +1090,7 @@ for m in st.session_state.messages:
 # নতুন মেসেজ
 prompt = st.chat_input("Ask me anything about your skin...")
 
-st.write("Conversation ID:", st.session_state.current_conversation_id)
-st.write("Logged In:", st.session_state.logged_in)
-st.write("Current Conversation:", st.session_state.current_conversation_id)
+
 if prompt:
 
     st.session_state.messages.append({
