@@ -1110,6 +1110,31 @@ if prompt:
         conn.commit()
 
     # AI উত্তর তৈরি
+    # প্রথম Message হলে Conversation Title Update
+    if st.session_state.get("logged_in", False):
+
+        c.execute("""
+        SELECT title
+        FROM conversations
+        WHERE id=?
+        """, (st.session_state.current_conversation_id,))
+
+        current_title = c.fetchone()
+
+        if current_title and current_title[0] == "New Conversation":
+
+            new_title = prompt[:40]
+
+            c.execute("""
+            UPDATE conversations
+            SET title=?
+            WHERE id=?
+            """, (
+                new_title,
+                st.session_state.current_conversation_id
+            ))
+
+            conn.commit()
     with st.spinner("🩺 SkinAI is thinking..."):
         reply = ask_ai(prompt, st.session_state.last_res)
 
