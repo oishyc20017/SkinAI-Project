@@ -1085,6 +1085,24 @@ if prompt:
         "content": prompt
     })
 
+    # ---------------- Create Conversation On First Message ----------------
+
+    if (
+        st.session_state.get("logged_in", False)
+        and st.session_state.current_conversation_id is None
+    ):
+
+        c.execute("""
+        INSERT INTO conversations(user_email, title)
+        VALUES (?, ?)
+        """, (
+            st.session_state.user,
+            "New Conversation"
+        ))
+
+        conn.commit()
+
+        st.session_state.current_conversation_id = c.lastrowid
     # Login থাকলে user message save করো
     if st.session_state.get("logged_in", False):
         c.execute("""
