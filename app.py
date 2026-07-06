@@ -598,26 +598,15 @@ with st.sidebar:
             key="sidebar_new_chat"
         ):
 
-            c.execute("""
-                INSERT INTO conversations(user_email,title)
-                VALUES(?,?)
-            """, (
-                st.session_state.user,
-                "New Conversation"
-            ))
-
-            conn.commit()
-
-            st.session_state.current_conversation_id = c.lastrowid
-
-            # Reset current chat
+            # শুধু Session Reset হবে
+            st.session_state.current_conversation_id = None
             st.session_state.messages = []
             st.session_state.last_res = None
             st.session_state.predictions = []
             st.session_state.confidence = 0.0
             st.session_state.uploader_key += 1
-            st.rerun()
 
+            st.rerun()
         st.markdown("---")
 
         # ---------------- Recent Chat ----------------
