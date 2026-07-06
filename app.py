@@ -275,6 +275,14 @@ div.stButton > button:first-child:hover {
     margin-bottom:6px;
     opacity:.8;
 }
+        /* Recent Chats Button */
+        div.stButton > button {
+            border-radius: 10px !important;
+            text-align: left !important;
+            justify-content: flex-start !important;
+            padding: 8px 12px !important;
+        }
+    
 
 </style>
 """, unsafe_allow_html=True)
@@ -631,10 +639,23 @@ with st.sidebar:
 
             for chat_id, title in st.session_state.chat_titles:
 
+                # Title বেশি বড় হলে ছোট করে দেখাবে
+                if len(title) > 28:
+                    title = title[:28] + "..."
+
+                # Current chat highlight
+                if chat_id == st.session_state.current_conversation_id:
+                    label = f"🟢 {title}"
+                    btn_type = "primary"
+                else:
+                    label = f"💬 {title}"
+                    btn_type = "secondary"
+
                 if st.button(
-                    title,
+                    label,
                     use_container_width=True,
-                    key=f"chat_{chat_id}"
+                    key=f"chat_{chat_id}",
+                    type=btn_type
                 ):
 
                     st.session_state.current_conversation_id = chat_id
@@ -657,7 +678,6 @@ with st.sidebar:
                     ]
 
                     st.rerun()
-
                     
         st.markdown("---")
 
