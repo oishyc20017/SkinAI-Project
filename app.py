@@ -631,7 +631,6 @@ with st.sidebar:
 
         st.session_state.chat_titles = c.fetchall()
 
-        st.write("Conversations:", st.session_state.chat_titles)
         st.subheader("🕒 Recent Chats")
 
         if "chat_titles" not in st.session_state:
