@@ -533,14 +533,6 @@ with st.sidebar:
     if "chat_titles" not in st.session_state:
         st.session_state.chat_titles = []
 
-    c.execute("""
-    SELECT id, title
-    FROM conversations
-    WHERE user_email = ?
-    ORDER BY created_at DESC
-    """, (st.session_state.user,))
-
-    st.session_state.chat_titles = c.fetchall()
     # Auto select first conversation
     if (
         st.session_state.current_conversation_id is None
@@ -549,6 +541,10 @@ with st.sidebar:
         st.session_state.current_conversation_id = (
             st.session_state.chat_titles[0][0]
         )
+
+    # সবসময় current conversation-এর message load হবে
+    if st.session_state.current_conversation_id is not None:
+
         c.execute("""
         SELECT role, message
         FROM messages
