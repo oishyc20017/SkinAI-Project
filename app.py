@@ -444,25 +444,40 @@ disease_details = {
 classes = list(disease_details.keys())
 
 # --- ৬. সেশন ও সাইডবার ম্যানেজমেন্ট (Buttons & History Fixed) ---
-if 'logged_in' not in st.session_state: st.session_state.logged_in = False
-if 'messages' not in st.session_state: st.session_state.messages = []
-    
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "user" not in st.session_state:
+    st.session_state.user = None
+
 if "current_conversation_id" not in st.session_state:
-        st.session_state.current_conversation_id = None
-if 'last_res' not in st.session_state: st.session_state.last_res = "None"
+    st.session_state.current_conversation_id = None
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+if "chat_titles" not in st.session_state:
+    st.session_state.chat_titles = []
+
+if "last_res" not in st.session_state:
+    st.session_state.last_res = None
+
+if "uploaded_image" not in st.session_state:
+    st.session_state.uploaded_image = None
+
 if "confidence" not in st.session_state:
     st.session_state.confidence = 0.0
 
 if "predictions" not in st.session_state:
     st.session_state.predictions = []
-if 'user' not in st.session_state: st.session_state.user = None
+
 if "oauth_state" not in st.session_state:
     st.session_state.oauth_state = None
 
 if "google_user" not in st.session_state:
     st.session_state.google_user = None
+
 google_callback()
-    
 
 with st.sidebar:
     # ১. লোগো এরিয়া
@@ -581,12 +596,14 @@ with st.sidebar:
             conn.commit()
 
             st.session_state.current_conversation_id = c.lastrowid
-            st.session_state.messages = []
-            st.session_state.chat_titles.insert(
-                0,
-                (c.lastrowid, "New Conversation")
-            )
 
+            # Reset current chat
+            st.session_state.messages = []
+            st.session_state.last_res = None
+            st.session_state.predictions = []
+            st.session_state.confidence = 0.0
+            if "uploaded_image" in st.session_state:
+                del st.session_state["uploaded_image"]
             st.rerun()
 
         st.markdown("---")
@@ -888,7 +905,11 @@ st.markdown(
     unsafe_allow_html=True)
 
 # --- ইমেজ প্রসেসিং এবং রেজাল্ট ---
-file = st.file_uploader("Upload Skin Photo", type=["jpg", "png", "jpeg"])
+file = st.file_uploader(
+    "Upload Skin Photo",
+    type=["jpg", "png", "jpeg"],
+    key="uploaded_image"
+)
 
 if file:
     # যখন ফাইল আপলোড হবে, তখনই কেবল প্রসেসিং শুরু হবে
