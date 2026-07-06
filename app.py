@@ -549,6 +549,10 @@ with st.sidebar:
 
             st.session_state.current_conversation_id = c.lastrowid
             st.session_state.messages = []
+            st.session_state.chat_titles.insert(
+                0,
+                (c.lastrowid, "New Conversation")
+            )
 
             st.rerun()
 
@@ -565,13 +569,34 @@ with st.sidebar:
 
         else:
 
-            for title in st.session_state.chat_titles:
+            for chat_id, title in st.session_state.chat_titles:
 
-                st.button(
+                if st.button(
                     title,
                     use_container_width=True,
-                    key=f"chat_{title}"
-                )
+                    key=f"chat_{chat_id}"
+                ):
+
+                    st.session_state.current_conversation_id = chat_id
+
+                    c.execute("""
+                    SELECT role, message
+                    FROM messages
+                    WHERE conversation_id=?
+                    ORDER BY id
+                    """, (chat_id,))
+
+                    rows = c.fetchall()
+
+                    st.session_state.messages = [
+                        {
+                            "role": role,
+                            "content": message
+                        }
+                        for role, message in rows
+                    ]
+
+                    st.rerun()
 
         st.markdown("---")
 
