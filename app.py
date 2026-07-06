@@ -619,6 +619,16 @@ with st.sidebar:
         st.markdown("---")
 
         # ---------------- Recent Chat ----------------
+        c.execute("""
+        SELECT id, title
+        FROM conversations
+        WHERE user_email=?
+        ORDER BY id DESC
+        """, (st.session_state.user,))
+
+        st.session_state.chat_titles = c.fetchall()
+
+        st.write("Conversations:", st.session_state.chat_titles)
         st.subheader("🕒 Recent Chats")
 
         if "chat_titles" not in st.session_state:
