@@ -562,6 +562,15 @@ with st.sidebar:
             }
             for role, message in rows
         ]
+        # Load all conversations for this user
+        c.execute("""
+        SELECT id, title
+        FROM conversations
+        WHERE user_email=?
+        ORDER BY created_at DESC
+        """, (st.session_state.user,))
+
+        st.session_state.chat_titles = c.fetchall()
     if st.session_state.get("logged_in", False):
 
         # ---------------- User Card ----------------
@@ -627,6 +636,27 @@ with st.sidebar:
                     use_container_width=True,
                     key=f"chat_{chat_id}"
                 ):
+
+                    st.session_state.current_conversation_id = chat_id
+
+                    c.execute("""
+                        SELECT role, message
+                        FROM messages
+                        WHERE conversation_id=?
+                        ORDER BY id
+                    """, (chat_id,))
+
+                    rows = c.fetchall()
+
+                    st.session_state.messages = [
+                        {
+                            "role": role,
+                            "content": message
+                        }
+                        for role, message in rows
+                    ]
+
+                    st.rerun()
 
                     st.session_state.current_conversation_id = chat_id
 
