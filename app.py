@@ -111,7 +111,7 @@ def google_login():
 
     st.session_state.oauth_state = state
 
-    st.markdown(f"[Login with Google]({authorization_url})")
+    return authorization_url
     import streamlit.components.v1 as components
 
     components.html(
@@ -601,12 +601,13 @@ with st.sidebar:
 
         with col2:
 
-            if st.button(
-                "🔴 Continue with Google",
-                use_container_width=True
-            ):
-                google_login()
+            google_url = google_login()
 
+            st.link_button(
+                "🔴 Continue with Google",
+                google_url,
+                use_container_width=True
+            )
         st.markdown("---")
 
         t1, t2 = st.tabs(["🔑 Login", "🆕 Register"])
