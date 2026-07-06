@@ -1134,6 +1134,35 @@ if prompt:
             ))
 
             conn.commit()
+            # ---------------- Auto Conversation Title ----------------
+
+            if st.session_state.get("logged_in", False):
+
+                c.execute("""
+                SELECT title
+                FROM conversations
+                WHERE id=?
+                """, (st.session_state.current_conversation_id,))
+
+                row = c.fetchone()
+
+                if row and row[0] == "New Conversation":
+
+                    title = prompt.strip()
+
+                    if len(title) > 40:
+                        title = title[:40] + "..."
+
+                    c.execute("""
+                    UPDATE conversations
+                    SET title=?
+                    WHERE id=?
+                    """, (
+                        title,
+                        st.session_state.current_conversation_id
+                    ))
+
+                    conn.commit()
     with st.spinner("🩺 SkinAI is thinking..."):
         reply = ask_ai(prompt, st.session_state.last_res)
 
