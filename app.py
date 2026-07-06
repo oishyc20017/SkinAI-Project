@@ -112,24 +112,7 @@ def google_login():
     st.session_state.oauth_state = state
 
     st.markdown(f"[Login with Google]({authorization_url})")
-def main():
 
-    st.title("SkinAI App")
-
-    if not st.session_state.get("logged_in"):
-
-        if st.button("Login with Google"):
-            google_login()
-
-        google_callback()
-
-    else:
-        st.success("Logged in successfully!")
-        st.write(st.session_state.fullname)
-
-# ---------------- RUN ----------------
-if __name__ == "__main__":
-    main()
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 
@@ -463,6 +446,8 @@ if "oauth_state" not in st.session_state:
 
 if "google_user" not in st.session_state:
     st.session_state.google_user = None
+google_callback()
+    
 
 with st.sidebar:
     # ১. লোগো এরিয়া
