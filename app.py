@@ -658,27 +658,7 @@ with st.sidebar:
 
                     st.rerun()
 
-                    st.session_state.current_conversation_id = chat_id
-
-                    c.execute("""
-                    SELECT role, message
-                    FROM messages
-                    WHERE conversation_id=?
-                    ORDER BY id
-                    """, (chat_id,))
-
-                    rows = c.fetchall()
-
-                    st.session_state.messages = [
-                        {
-                            "role": role,
-                            "content": message
-                        }
-                        for role, message in rows
-                    ]
-
-                    st.rerun()
-
+                    
         st.markdown("---")
 
         # ---------------- Logout ----------------
