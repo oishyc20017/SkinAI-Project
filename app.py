@@ -661,15 +661,15 @@ with st.sidebar:
                     },
                     "icon": {
                         "color": "#60a5fa",
-                        "font-size": "15px",
+                        "font-size": "13px",
                     },
                     "nav-link": {
-                        "font-size": "14px",
+                        "font-size": "12px",
                         "text-align": "left",
-                        "margin": "2px 0",
-                        "border-radius": "10px",
-                        "padding": "10px",
-                        "--hover-color": "#1f2937",
+                        "margin": "0px",
+                        "border-radius": "6px",
+                        "padding": "5px 7px",
+                        "--hover-color": "#2d2d2d",
                     },
                     "nav-link-selected": {
                         "background-color": "#1f2937",
