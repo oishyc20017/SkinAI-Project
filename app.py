@@ -512,6 +512,39 @@ with st.sidebar:
     # AUTHENTICATION AREA
     # ==========================================================
 
+    if "chat_titles" not in st.session_state:
+        st.session_state.chat_titles = []
+
+    c.execute("""
+    SELECT id, title
+    FROM conversations
+    WHERE user_email = ?
+    ORDER BY created_at DESC
+    """, (st.session_state.user,))
+
+    st.session_state.chat_titles = c.fetchall()
+    if (
+        st.session_state.current_conversation_id is None
+        and st.session_state.chat_titles
+    ):
+        st.session_state.current_conversation_id = st.session_state.chat_titles[0][0]
+
+        c.execute("""
+        SELECT role, message
+        FROM messages
+        WHERE conversation_id=?
+        ORDER BY id
+        """, (st.session_state.current_conversation_id,))
+
+        rows = c.fetchall()
+
+        st.session_state.messages = [
+            {
+                "role": role,
+                "content": message
+            }
+            for role, message in rows
+        ]
     if st.session_state.get("logged_in", False):
 
         # ---------------- User Card ----------------
