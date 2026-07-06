@@ -111,6 +111,8 @@ def google_login():
 
     st.session_state.oauth_state = state
 
+    return authorization_url
+
     import streamlit.components.v1 as components
 
     components.html(
@@ -593,11 +595,26 @@ with st.sidebar:
 
         with col2:
 
-            if st.button(
-                "🔴 Continue with Google",
-                use_container_width=True
-            ):
-                google_login()
+            url = google_login()
+
+            st.markdown(
+               f"""
+               <a href="{url}" target="_self">
+                   <button style="
+                       width:100%;
+                       background:#2563eb;
+                       color:white;
+                       border:none;
+                       padding:12px;
+                       border-radius:8px;
+                       font-size:16px;
+                       cursor:pointer;">
+                       🔴 Continue with Google
+                   </button>
+               </a>
+               """,
+               unsafe_allow_html=True
+           )
 
         st.markdown("---")
 
