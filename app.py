@@ -10,6 +10,7 @@ import gdown
 import sqlite3
 import hashlib
 import streamlit as st
+from streamlit_option_menu import option_menu
 import sqlite3
 import time
 import secrets
@@ -627,45 +628,69 @@ with st.sidebar:
 
         st.session_state.chat_titles = c.fetchall()
 
+        # ---------------- Recent Chats ----------------
+
         st.subheader("🕒 Recent Chats")
 
-        if "chat_titles" not in st.session_state:
-            st.session_state.chat_titles = []
-
         if len(st.session_state.chat_titles) == 0:
+
             st.caption("No previous chats")
 
         else:
 
+            chat_labels = []
+            chat_map = {}
+
             for chat_id, title in st.session_state.chat_titles:
 
-                # Title বেশি বড় হলে ছোট করে দেখাবে
-                if len(title) > 28:
-                    title = title[:28] + "..."
+                if len(title) > 30:
+                    title = title[:30] + "..."
 
-                # Current chat highlight
-                if chat_id == st.session_state.current_conversation_id:
-                    label = f"🟢 {title}"
-                    btn_type = "primary"
-                else:
-                    label = f"💬 {title}"
-                    btn_type = "secondary"
+                chat_labels.append(title)
+                chat_map[title] = chat_id
 
-                if st.button(
-                    label,
-                    use_container_width=True,
-                    key=f"chat_{chat_id}",
-                    type=btn_type
-                ):
+            selected = option_menu(
+                menu_title=None,
+                options=chat_labels,
+                icons=["chat-left-text"] * len(chat_labels),
+                default_index=0,
+                styles={
+                    "container": {
+                        "padding": "0!important",
+                        "background-color": "transparent",
+                    },
+                    "icon": {
+                        "color": "#60a5fa",
+                        "font-size": "15px",
+                    },
+                    "nav-link": {
+                        "font-size": "14px",
+                        "text-align": "left",
+                        "margin": "2px 0",
+                        "border-radius": "10px",
+                        "padding": "10px",
+                        "--hover-color": "#1f2937",
+                    },
+                    "nav-link-selected": {
+                        "background-color": "#2563eb",
+                    },
+                },
+            )
 
-                    st.session_state.current_conversation_id = chat_id
+            if selected:
+
+                selected_id = chat_map[selected]
+
+                if selected_id != st.session_state.current_conversation_id:
+
+                    st.session_state.current_conversation_id = selected_id
 
                     c.execute("""
                         SELECT role, message
                         FROM messages
                         WHERE conversation_id=?
                         ORDER BY id
-                    """, (chat_id,))
+                    """, (selected_id,))
 
                     rows = c.fetchall()
 
