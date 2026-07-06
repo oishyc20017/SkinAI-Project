@@ -530,10 +530,22 @@ with st.sidebar:
     # AUTHENTICATION AREA
     # ==========================================================
 
+    # ---------------- Conversation Loader ----------------
+
     if "chat_titles" not in st.session_state:
         st.session_state.chat_titles = []
 
-    # Auto select first conversation
+    # Load all conversations
+    c.execute("""
+    SELECT id, title
+    FROM conversations
+    WHERE user_email=?
+    ORDER BY id DESC
+    """, (st.session_state.user,))
+
+    st.session_state.chat_titles = c.fetchall()
+
+    # Auto select latest conversation
     if (
         st.session_state.current_conversation_id is None
         and st.session_state.chat_titles
@@ -542,7 +554,7 @@ with st.sidebar:
             st.session_state.chat_titles[0][0]
         )
 
-    # সবসময় current conversation-এর message load হবে
+    # Load current conversation messages
     if st.session_state.current_conversation_id is not None:
 
         c.execute("""
@@ -561,15 +573,6 @@ with st.sidebar:
             }
             for role, message in rows
         ]
-        # Load all conversations for this user
-        c.execute("""
-        SELECT id, title
-        FROM conversations
-        WHERE user_email=?
-        ORDER BY created_at DESC
-        """, (st.session_state.user,))
-
-        st.session_state.chat_titles = c.fetchall()
     if st.session_state.get("logged_in", False):
 
         # ---------------- User Card ----------------
