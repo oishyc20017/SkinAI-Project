@@ -672,7 +672,7 @@ with st.sidebar:
                         "--hover-color": "#1f2937",
                     },
                     "nav-link-selected": {
-                        "background-color": "#1f2937",
+                        "background-color": "#2d2d2d",
                         "color": "white",
                     },
                 },
