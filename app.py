@@ -473,6 +473,8 @@ if "predictions" not in st.session_state:
 
 if "oauth_state" not in st.session_state:
     st.session_state.oauth_state = None
+if "uploader_key" not in st.session_state:
+    st.session_state.uploader_key = 0
 
 if "google_user" not in st.session_state:
     st.session_state.google_user = None
@@ -602,8 +604,7 @@ with st.sidebar:
             st.session_state.last_res = None
             st.session_state.predictions = []
             st.session_state.confidence = 0.0
-            if "uploaded_image" in st.session_state:
-                del st.session_state["uploaded_image"]
+            st.session_state.uploader_key += 1
             st.rerun()
 
         st.markdown("---")
@@ -908,7 +909,7 @@ st.markdown(
 file = st.file_uploader(
     "Upload Skin Photo",
     type=["jpg", "png", "jpeg"],
-    key="uploaded_image"
+    key=f"uploader_{st.session_state.uploader_key}"
 )
 
 if file:
