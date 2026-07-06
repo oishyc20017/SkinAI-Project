@@ -16,6 +16,7 @@ import secrets
 import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
 
+
 # ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
 model_ai = genai.GenerativeModel("gemini-2.5-flash")
@@ -540,12 +541,14 @@ with st.sidebar:
     """, (st.session_state.user,))
 
     st.session_state.chat_titles = c.fetchall()
+    # Auto select first conversation
     if (
         st.session_state.current_conversation_id is None
         and st.session_state.chat_titles
     ):
-        st.session_state.current_conversation_id = st.session_state.chat_titles[0][0]
-
+        st.session_state.current_conversation_id = (
+            st.session_state.chat_titles[0][0]
+        )
         c.execute("""
         SELECT role, message
         FROM messages
@@ -1068,6 +1071,8 @@ with col2:
 st.markdown("---")
 
 # ---------------- CHAT ----------------
+if st.session_state.current_conversation_id is None:
+    st.caption("No conversation selected")
 for m in st.session_state.messages:
 
     avatar = "👤" if m["role"] == "user" else "🩺"
