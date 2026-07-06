@@ -111,7 +111,11 @@ def google_login():
 
     st.session_state.oauth_state = state
 
-    st.markdown(f"[Login with Google]({authorization_url})")
+    st.link_button(
+        "Continue with Google",
+        authorization_url,
+        use_container_width=True
+    )
 
 
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
