@@ -111,8 +111,7 @@ def google_login():
 
     st.session_state.oauth_state = state
 
-    return authorization_url
-
+    st.markdown(f"[Login with Google]({authorization_url})")
     import streamlit.components.v1 as components
 
     components.html(
@@ -123,7 +122,14 @@ def google_login():
         """,
         height=0,
     )
-# --- পেজ কনফিগারেশন (একটিই থাকবে) ---
+    def main():
+        google_callback()
+
+
+    # ---------------- RUN ----------------
+    if __name__ == "__main__":
+        main()
+
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
@@ -595,26 +601,11 @@ with st.sidebar:
 
         with col2:
 
-            url = google_login()
-
-            st.markdown(
-               f"""
-               <a href="{url}" target="_self">
-                   <button style="
-                       width:100%;
-                       background:#2563eb;
-                       color:white;
-                       border:none;
-                       padding:12px;
-                       border-radius:8px;
-                       font-size:16px;
-                       cursor:pointer;">
-                       🔴 Continue with Google
-                   </button>
-               </a>
-               """,
-               unsafe_allow_html=True
-           )
+            if st.button(
+                "🔴 Continue with Google",
+                use_container_width=True
+            ):
+                google_login()
 
         st.markdown("---")
 
