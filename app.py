@@ -111,13 +111,16 @@ def google_login():
 
     st.session_state.oauth_state = state
 
-    st.link_button(
-        "Continue with Google",
-        authorization_url,
-        use_container_width=True
+    import streamlit.components.v1 as components
+
+    components.html(
+        f"""
+        <script>
+            window.top.location.href = "{authorization_url}";
+        </script>
+        """,
+        height=0,
     )
-
-
 # --- পেজ কনফিগারেশন (একটিই থাকবে) ---
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
