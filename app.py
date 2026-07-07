@@ -1132,28 +1132,44 @@ def doctor_booking_popup():
         
         st.markdown("### Book Your Appointment")
 
+        # Form-এর বাইরে
+        doctor_names = [f"{d[0]} ({d[2]})" for d in doctor_list]
+
+        selected_name = st.selectbox(
+            "Select Specialist",
+            doctor_names,
+            key="doctor_select"
+        )
+
+        selected_doctor = next(
+            d for d in doctor_list
+            if f"{d[0]} ({d[2]})" == selected_name
+        )
+
+        st.info(
+            f"🏥 Hospital: {selected_doctor[4]} | ⏰ Available: {selected_doctor[3]}"
+        )
+
         with st.form(key="popup_booking_form_final"):
+
             patient_name = st.text_input("Patient Name")
             phone_number = st.text_input("Phone Number")
-            
+
             col1, col2 = st.columns(2)
             with col1:
                 age = st.number_input("Age", min_value=0, max_value=100)
+
             with col2:
                 gmail_address = st.text_input("Gmail Address")
-            
-            doctor_names = [f"{d[0]} ({d[2]})" for d in doctor_list]
-            selected_name = st.selectbox("Select Specialist", doctor_names)
-            selected_doctor = next(d for d in doctor_list if f"{d[0]} ({d[2]})" == selected_name)
-            st.write(selected_name)
-            st.write(selected_doctor)
-            
-            st.info(f"🏥 **Hospital:** {selected_doctor[4]} | ⏰ **Available:** {selected_doctor[3]}")
-            
+
             preferred_date = st.date_input("Preferred Date")
             symptoms = st.text_area("Brief description of symptoms/issues")
-            payment_method = st.radio("Select Payment Method", ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"])
-            
+
+            payment_method = st.radio(
+                "Select Payment Method",
+                ["বিকাশ/নগদ/রকেট", "Bank Transfer", "Credit/Debit Card"]
+            )
+
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
