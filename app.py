@@ -636,6 +636,13 @@ with st.sidebar:
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("🕒 Recent Chats")
+    # ---------------- Search Chats ----------------
+
+    search_chat = st.text_input(
+        "🔍 Search chats",
+        placeholder="Type to search...",
+        key="search_chat"
+    )
 
         if len(st.session_state.chat_titles) == 0:
 
@@ -647,6 +654,13 @@ with st.sidebar:
             chat_map = {}
 
             for chat_id, title in st.session_state.chat_titles:
+                    # Search Filter
+                    if search_chat:
+                        if search_chat.lower() not in title.lower():
+                            continue
+
+                    if len(title) > 30:
+                        title = title[:30] + "..."
 
                 if len(title) > 30:
                     title = title[:30] + "..."
