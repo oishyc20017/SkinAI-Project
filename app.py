@@ -1189,6 +1189,10 @@ def doctor_booking_popup():
 
             conn.commit()
             st.success("✅ Appointment Booked Successfully!")
+            st.write("Booking Saved Successfully")
+
+            c.execute("SELECT COUNT(*) FROM bookings")
+            st.write("Total Bookings:", c.fetchone()[0])
 
             st.info(f"""
             📌 Booking ID: {booking_id}
