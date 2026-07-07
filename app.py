@@ -1188,6 +1188,10 @@ def doctor_booking_popup():
             ))
 
             conn.commit()
+            c.execute("SELECT * FROM bookings")
+            rows = c.fetchall()
+
+            st.write("Bookings Rows:", rows)
             st.success("Reached after commit")
             st.success("✅ Appointment Booked Successfully!")
             st.write("Booking Saved Successfully")
