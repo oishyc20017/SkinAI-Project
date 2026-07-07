@@ -767,13 +767,21 @@ with st.sidebar:
             total_messages = c.fetchone()[0]
 
             # Total Bookings
-            c.execute("SELECT COUNT(*) FROM bookings")
-            total_bookings = c.fetchone()[0]
+            # Total Bookings
+            conn2 = sqlite3.connect("skinai_wishy_v30.db")
+            c2 = conn2.cursor()
+
+            c2.execute("SELECT COUNT(*) FROM bookings")
+            total_bookings = c2.fetchone()[0]
+
+            st.metric("📅 Bookings", total_bookings)
+
+            conn2.close()
 
             st.metric("👤 Registered Users", total_users)
             st.metric("💬 Conversations", total_conversations)
             st.metric("🩺 Messages", total_messages)
-            st.metric("📅 Bookings", total_bookings)
+           
 
         # ---------------- Logout ----------------
         if st.button(
