@@ -682,6 +682,52 @@ with st.sidebar:
                     },
                 },
             )
+                    # ---------------- Rename Chat ----------------
+
+                    col1, col2 = st.columns([4, 1])
+
+                    with col2:
+                        if st.button("✏️", key="rename_chat"):
+                            st.session_state.show_rename = True
+
+                    if "show_rename" not in st.session_state:
+                        st.session_state.show_rename = False
+        if st.session_state.show_rename:
+
+            new_title = st.text_input(
+                "Rename Chat",
+                value=selected,
+                key="rename_input"
+            )
+
+            c1, c2 = st.columns(2)
+
+            with c1:
+
+                if st.button("💾 Save", key="save_chat_name"):
+
+                    c.execute("""
+                        UPDATE conversations
+                        SET title=?
+                        WHERE id=?
+                    """, (
+                        new_title,
+                        st.session_state.current_conversation_id
+                    ))
+
+                    conn.commit()
+
+                    st.session_state.show_rename = False
+
+                    st.rerun()
+
+            with c2:
+
+                if st.button("❌ Cancel", key="cancel_rename"):
+
+                    st.session_state.show_rename = False
+
+                    st.rerun()
 
             if selected:
 
