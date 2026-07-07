@@ -337,7 +337,6 @@ def init_db():
     """)
     
     # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
-    c.execute('DROP TABLE IF EXISTS doctors')
     c.execute('''CREATE TABLE IF NOT EXISTS doctors
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
@@ -354,7 +353,6 @@ def init_db():
     # একসাথে সব ডাটা ইনসার্ট করা
     c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
     # ---------- Bookings Table ----------
-    c.execute("DROP TABLE IF EXISTS bookings")
     c.execute("""
     CREATE TABLE IF NOT EXISTS bookings(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
