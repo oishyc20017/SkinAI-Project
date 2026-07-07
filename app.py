@@ -1145,6 +1145,8 @@ def doctor_booking_popup():
             doctor_names = [f"{d[0]} ({d[2]})" for d in doctor_list]
             selected_name = st.selectbox("Select Specialist", doctor_names)
             selected_doctor = next(d for d in doctor_list if f"{d[0]} ({d[2]})" == selected_name)
+            st.write(selected_name)
+            st.write(selected_doctor)
             
             st.info(f"🏥 **Hospital:** {selected_doctor[4]} | ⏰ **Available:** {selected_doctor[3]}")
             
