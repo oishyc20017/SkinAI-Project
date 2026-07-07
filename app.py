@@ -1162,6 +1162,7 @@ def doctor_booking_popup():
                     min_value=1,
                     max_value=120,
                     value=18 
+                )
             with col2:
                 gmail_address = st.text_input(
                     "Gmail Address",
