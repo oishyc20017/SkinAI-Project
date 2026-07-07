@@ -636,13 +636,13 @@ with st.sidebar:
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("🕒 Recent Chats")
-    # ---------------- Search Chats ----------------
+        # ---------------- Search Chats ----------------
 
-    search_chat = st.text_input(
-        "🔍 Search chats",
-        placeholder="Type to search...",
-        key="search_chat"
-    )
+        search_chat = st.text_input(
+            "🔍 Search chats",
+            placeholder="Type to search...",
+            key="search_chat"
+        )
 
         if len(st.session_state.chat_titles) == 0:
 
@@ -662,11 +662,8 @@ with st.sidebar:
                     if len(title) > 30:
                         title = title[:30] + "..."
 
-                if len(title) > 30:
-                    title = title[:30] + "..."
-
-                chat_labels.append(title)
-                chat_map[title] = chat_id
+                    chat_labels.append(title)
+                    chat_map[title] = chat_id
 
             selected = option_menu(
                 menu_title=None,
