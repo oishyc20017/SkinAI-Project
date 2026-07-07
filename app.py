@@ -1188,8 +1188,6 @@ def doctor_booking_popup():
             ))
 
             conn.commit()
-
-            conn.commit()
             st.success("✅ Appointment Booked Successfully!")
 
             st.info(f"""
