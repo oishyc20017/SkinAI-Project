@@ -744,6 +744,36 @@ with st.sidebar:
                     st.rerun()
                     
         st.markdown("---")
+        # ==========================
+        # ADMIN DASHBOARD
+        # ==========================
+        if (
+            st.session_state.get("logged_in", False)
+            and st.session_state.user == "oishyc89@gmail.com"
+        ):
+
+            st.markdown("---")
+            st.subheader("📊 Admin Dashboard")
+            # Total Users
+            c.execute("SELECT COUNT(*) FROM users")
+            total_users = c.fetchone()[0]
+
+            # Total Conversations
+            c.execute("SELECT COUNT(*) FROM conversations")
+            total_conversations = c.fetchone()[0]
+
+            # Total Messages
+            c.execute("SELECT COUNT(*) FROM messages")
+            total_messages = c.fetchone()[0]
+
+            # Total Bookings
+            c.execute("SELECT COUNT(*) FROM bookings")
+            total_bookings = c.fetchone()[0]
+
+            st.metric("👤 Registered Users", total_users)
+            st.metric("💬 Conversations", total_conversations)
+            st.metric("🩺 Messages", total_messages)
+            st.metric("📅 Bookings", total_bookings)
 
         # ---------------- Logout ----------------
         if st.button(
