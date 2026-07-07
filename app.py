@@ -1157,10 +1157,16 @@ def doctor_booking_popup():
 
             col1, col2 = st.columns(2)
             with col1:
-                age = st.number_input("Age", min_value=0, max_value=100)
-
+                age = st.number_input(
+                    "Age",
+                    min_value=1,
+                    max_value=120,
+                    value=18 
             with col2:
-                gmail_address = st.text_input("Gmail Address")
+                gmail_address = st.text_input(
+                    "Gmail Address",
+                    value=st.session_state.get("user", "")
+                )
 
             preferred_date = st.date_input("Preferred Date")
             symptoms = st.text_area("Brief description of symptoms/issues")
@@ -1173,45 +1179,62 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-            import random
 
-            booking_id = f"BK-{random.randint(100000,999999)}"
+            if not patient_name.strip():
+                st.error("Please enter Patient Name.")
 
-            c.execute("""
-            INSERT INTO bookings
-            (
-            booking_id,
-            patient_name,
-            user_email,
-            phone_number,
-            age,
-            doctor_name,
-            specialty,
-            hospital_name,
-            booking_date,
-            booking_time,
-            symptoms,
-            payment_method,
-            status
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                booking_id,
-                patient_name,
-                gmail_address,
-                phone_number,
-                age,
-                selected_doctor[0],
-                selected_doctor[1],
-                selected_doctor[4],
-                str(preferred_date),
-                selected_doctor[3],
-                symptoms,
-                payment_method,
-                "Confirmed"
-            ))
+            elif not phone_number.strip():
+                st.error("Please enter Phone Number.")
 
-            conn.commit()
+            elif not gmail_address.strip():
+                st.error("Please enter Gmail Address.")
+
+            elif "@" not in gmail_address:
+                st.error("Please enter a valid Gmail Address.")
+
+            else:
+
+                import random
+
+                booking_id = f"BK-{random.randint(100000,999999)}"
+
+                c.execute("""
+                INSERT INTO bookings
+                (
+                    booking_id,
+                    patient_name,
+                    user_email,
+                    phone_number,
+                    age,
+                    doctor_name,
+                    specialty,
+                    hospital_name,
+                    booking_date,
+                    booking_time,
+                    symptoms,
+                    payment_method,
+                    status
+                )
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """,(
+                    booking_id,
+                    patient_name,
+                    gmail_address,
+                    phone_number,
+                    age,
+                    selected_doctor[0],
+                    selected_doctor[1],
+                    selected_doctor[4],
+                    str(preferred_date),
+                    selected_doctor[3],
+                    symptoms,
+                    payment_method,
+                    "Confirmed"
+                ))
+
+                conn.commit()
+
+        # এরপর তোমার success/info/balloons কোডগুলো আগের মতো থাকবে
 
             st.success("Reached after commit")
             st.success("✅ Appointment Booked Successfully!")
