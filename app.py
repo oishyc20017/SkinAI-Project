@@ -283,6 +283,12 @@ div.stButton > button:first-child:hover {
             justify-content: flex-start !important;
             padding: 8px 12px !important;
         }
+                /* New Chat Button */
+                div[data-testid="stButton"] button {
+                    border-radius: 10px;
+                    padding: 7px 10px;
+                    font-size: 14px;
+                }
     
 
 </style>
@@ -506,11 +512,11 @@ with st.sidebar:
     st.markdown("""
     <div style="
         background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
-        padding: 15px; 
+        padding: 12px; 
         border-radius: 10px; 
         border: 1px solid #4338ca; 
         text-align: center; 
-        margin-bottom: 15px;">
+        margin-bottom: 10px;">
         <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
@@ -628,8 +634,7 @@ with st.sidebar:
 
         st.session_state.chat_titles = c.fetchall()
 
-        # ---------------- Recent Chats ----------------
-
+        st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("🕒 Recent Chats")
 
         if len(st.session_state.chat_titles) == 0:
