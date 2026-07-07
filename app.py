@@ -354,14 +354,23 @@ def init_db():
     # একসাথে সব ডাটা ইনসার্ট করা
     c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
     # ---------- Bookings Table ----------
+    c.execute("DROP TABLE IF EXISTS bookings")
     c.execute("""
     CREATE TABLE IF NOT EXISTS bookings(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        booking_id TEXT UNIQUE,
+        patient_name TEXT NOT NULL,
         user_email TEXT NOT NULL,
+        phone_number TEXT,
+        age INTEGER,
         doctor_name TEXT NOT NULL,
+        specialty TEXT,
         hospital_name TEXT,
         booking_date TEXT,
         booking_time TEXT,
+        symptoms TEXT,
+        payment_method TEXT,
+        status TEXT DEFAULT 'Pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
