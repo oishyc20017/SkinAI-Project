@@ -1188,6 +1188,7 @@ def doctor_booking_popup():
             ))
 
             conn.commit()
+            st.success("Reached after commit")
             st.success("✅ Appointment Booked Successfully!")
             st.write("Booking Saved Successfully")
 
