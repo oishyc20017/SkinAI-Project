@@ -1119,22 +1119,64 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-            # ১. সাকসেস মেসেজ এবং বেলুন
-            # Save booking into database
+            import random
+
+            booking_id = f"BK-{random.randint(100000,999999)}"
+
             c.execute("""
             INSERT INTO bookings
-            (user_email, doctor_name, hospital_name, booking_date, booking_time)
-            VALUES (?, ?, ?, ?, ?)
+            (
+            booking_id,
+            patient_name,
+            user_email,
+            phone_number,
+            age,
+            doctor_name,
+            specialty,
+            hospital_name,
+            booking_date,
+            booking_time,
+            symptoms,
+            payment_method,
+            status
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
+                booking_id,
+                patient_name,
                 gmail_address,
+                phone_number,
+                age,
                 selected_doctor[0],
+                selected_doctor[1],
                 selected_doctor[4],
                 str(preferred_date),
-                selected_doctor[3]
+                selected_doctor[3],
+                symptoms,
+                payment_method,
+                "Confirmed"
             ))
 
             conn.commit()
-            st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
+
+            conn.commit()
+            st.success("✅ Appointment Booked Successfully!")
+
+            st.info(f"""
+            📌 Booking ID: {booking_id}
+
+           👤 Patient: {patient_name}
+
+           👨‍⚕️ Doctor: {selected_doctor[0]}
+
+           🏥 Hospital: {selected_doctor[4]}
+
+            📅 Date: {preferred_date}
+
+            ⏰ Time: {selected_doctor[3]}
+
+           📌 Status: Confirmed
+            """)
             st.info("Booking details have been sent to your provided email and phone number.")
             st.balloons()
             
