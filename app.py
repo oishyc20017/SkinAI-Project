@@ -1111,6 +1111,20 @@ def doctor_booking_popup():
 
         if submit_button:
             # ১. সাকসেস মেসেজ এবং বেলুন
+            # Save booking into database
+            c.execute("""
+            INSERT INTO bookings
+            (user_email, doctor_name, hospital_name, booking_date, booking_time)
+            VALUES (?, ?, ?, ?, ?)
+            """, (
+                gmail_address,
+                selected_doctor[0],
+                selected_doctor[4],
+                str(preferred_date),
+                selected_doctor[3]
+            ))
+
+            conn.commit()
             st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
             st.info("Booking details have been sent to your provided email and phone number.")
             st.balloons()
