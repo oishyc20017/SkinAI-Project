@@ -293,16 +293,6 @@ def init_db():
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
         c.execute("""
-        CREATE TABLE IF NOT EXISTS bookings(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_email TEXT NOT NULL,
-            doctor_name TEXT NOT NULL,
-            appointment_date TEXT NOT NULL, 
-            appointment_time TEXT NOT NULL,
-            status TEXT
-        )
-        """)
-        c.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             fullname TEXT NOT NULL,
@@ -336,6 +326,16 @@ def init_db():
             FOREIGN KEY(conversation_id) REFERENCES conversations(id)
         )
         """)
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS prediction_history(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_email TEXT NOT NULL,
+            disease TEXT,
+            confidence REAL,
+            image_path TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
     
         # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
         c.execute('''CREATE TABLE IF NOT EXISTS doctors
@@ -352,6 +352,10 @@ def init_db():
         ]
     
         # একসাথে সব ডাটা ইনসার্ট করা
+        c.execute("SELECT COUNT(*) FROM doctors")
+        count = c.fetchone()[0]
+
+        if count == 0:
         c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
         # ---------- Bookings Table ----------
         c.execute("""
