@@ -583,6 +583,8 @@ with st.sidebar:
         st.session_state.chat_titles = []
 
     # Load all conversations
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    c = conn.cursor()
     c.execute("""
     SELECT id, title
     FROM conversations
@@ -591,6 +593,7 @@ with st.sidebar:
     """, (st.session_state.user,))
 
     st.session_state.chat_titles = c.fetchall()
+    conn.close()
 
     # Auto select latest conversation
     if (
