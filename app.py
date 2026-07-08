@@ -1198,7 +1198,7 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-                     try:
+            try:
                 conn = sqlite3.connect('skinai_wishy_v30.db')
                 c = conn.cursor()
                 c.execute("""
