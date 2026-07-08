@@ -355,7 +355,7 @@ def init_db():
         c.execute("SELECT COUNT(*) FROM doctors")
         count = c.fetchone()[0]
 
-        if count == 0:
+    if doctor_count == 0:
         c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
         # ---------- Bookings Table ----------
         c.execute("""
