@@ -305,6 +305,16 @@ def init_db():
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
         c.execute("""
+        CREATE TABLE IF NOT EXISTS bookings(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_email TEXT NOT NULL,
+            doctor_name TEXT NOT NULL,
+            appointment_date TEXT NOT NULL,
+            appointment_time TEXT NOT NULL,
+            status TEXT
+        )
+        """)
+        c.execute("""
         CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             fullname TEXT NOT NULL,
@@ -1188,6 +1198,22 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
+                     try:
+                conn = sqlite3.connect('skinai_wishy_v30.db')
+                c = conn.cursor()
+                c.execute("""
+                    INSERT INTO bookings (user_email, doctor_name, appointment_date, appointment_time, status)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (gmail_address, selected_doctor[0], str(preferred_date), selected_doctor[3], 'Pending'))
+                conn.commit() # ডাটা সেভ করার জন্য এটি আবশ্যিক
+                conn.close()
+                
+                st.success(f"🎉 Appointment successfully confirmed with {selected_doctor[0]}!")
+                st.balloons()
+                time.sleep(2)
+                st.rerun()
+            except Exception as e:
+                st.error(f"Database error: {e}")
 
             if not patient_name.strip():
                 st.error("Please enter Patient Name.")
