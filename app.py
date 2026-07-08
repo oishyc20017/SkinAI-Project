@@ -116,23 +116,14 @@ def google_login():
     st.session_state.oauth_state = state
 
     return authorization_url
-    import streamlit.components.v1 as components
-
-    components.html(
-        f"""
-        <script>
-            window.top.location.href = "{authorization_url}";
-        </script>
-        """,
-        height=0,
-    )
-    def main():
-        google_callback()
+    
+ def main():
+     google_callback()
 
 
-    # ---------------- RUN ----------------
-    if __name__ == "__main__":
-        main()
+# ---------------- RUN ----------------
+if __name__ == "__main__":
+     main()
 
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
