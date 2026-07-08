@@ -117,7 +117,7 @@ def google_login():
 
     return authorization_url
     
- def main():
+def main():
      google_callback()
 
 
