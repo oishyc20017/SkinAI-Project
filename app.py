@@ -301,11 +301,9 @@ c = conn.cursor()
 
 # আপনার ডাটাবেস ফাংশনে এই পরিবর্তনটি করুন
 def init_db():
-    import os
-
-    st.write("DB PATH:", os.path.abspath("skinai_wishy_v30.db"))
-    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-    c = conn.cursor()
+    try:
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        c = conn.cursor()
     c.execute("""
     CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -320,6 +318,7 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
+    st.write("✅ users created")
     # ---------- Conversations Table ----------
     c.execute("""
     CREATE TABLE IF NOT EXISTS conversations(
@@ -329,6 +328,7 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
+    st.write("✅ conversations created")
     # ---------- Messages Table ----------
     c.execute("""
     CREATE TABLE IF NOT EXISTS messages(
@@ -340,11 +340,13 @@ def init_db():
         FOREIGN KEY(conversation_id) REFERENCES conversations(id)
     )
     """)
+    st.write("✅ messages created")
     
     # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
     c.execute('''CREATE TABLE IF NOT EXISTS doctors
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
+    st.write("✅ doctors created")
                   
     # একাধিক ডাক্তার যোগ করার তালিকা
     doctors_list = [
@@ -377,9 +379,15 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """)
+    st.write("✅ bookings created")
     
     conn.commit()
-    st.success("init_db executed")
+    st.success("init_db success")
+
+except Exception as e:
+    st.error(f"init_db error: {e}")
+
+finally:
     conn.close()
 
 init_db()
