@@ -61,8 +61,6 @@ def google_callback():
         fullname = user["name"]
 
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
-        import os
-        st.write("Database Path:", os.path.abspath("skinai_wishy_v30.db"))
         c = conn.cursor()
 
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
@@ -89,7 +87,7 @@ def google_callback():
         st.session_state.logged_in = True
         st.session_state.user = email
         st.session_state.fullname = fullname
-
+    if conn:
         conn.close()
 
         st.query_params.clear()
