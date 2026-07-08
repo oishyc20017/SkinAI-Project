@@ -301,6 +301,9 @@ c = conn.cursor()
 
 # আপনার ডাটাবেস ফাংশনে এই পরিবর্তনটি করুন
 def init_db():
+    import os
+
+    st.write("DB PATH:", os.path.abspath("skinai_wishy_v30.db"))
     conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
     c = conn.cursor()
     c.execute("""
@@ -376,6 +379,7 @@ def init_db():
     """)
     
     conn.commit()
+    st.success("init_db executed")
     conn.close()
 
 init_db()
