@@ -304,91 +304,91 @@ def init_db():
     try:
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fullname TEXT NOT NULL,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        phone TEXT,
-        dob TEXT,
-        gender TEXT,
-        country TEXT,
-        password TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    st.write("✅ users created")
-    # ---------- Conversations Table ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS conversations(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_email TEXT NOT NULL,
-        title TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    st.write("✅ conversations created")
-    # ---------- Messages Table ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS messages(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        conversation_id INTEGER,
-        role TEXT,
-        message TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(conversation_id) REFERENCES conversations(id)
-    )
-    """)
-    st.write("✅ messages created")
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fullname TEXT NOT NULL,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            phone TEXT,
+            dob TEXT,
+            gender TEXT,
+            country TEXT,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        st.write("✅ users created")
+        # ---------- Conversations Table ----------
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS conversations(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_email TEXT NOT NULL,
+            title TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        st.write("✅ conversations created")
+        # ---------- Messages Table ----------
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS messages(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id INTEGER,
+            role TEXT,
+            message TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(conversation_id) REFERENCES conversations(id)
+        )
+        """)
+        st.write("✅ messages created")
     
-    # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
-    c.execute('''CREATE TABLE IF NOT EXISTS doctors
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
-    st.write("✅ doctors created")
+        # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
+        c.execute('''CREATE TABLE IF NOT EXISTS doctors
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
+        st.write("✅ doctors created")
                   
-    # একাধিক ডাক্তার যোগ করার তালিকা
-    doctors_list = [
-        ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM', 'Dhaka Medical Center'),
-        ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM', 'City Skin Hospital'),
-        ('Dr. Farhana Begum', 'Dermatologist', '1500 BDT', '10:00 AM - 12:00 PM', 'Apollo Skin Clinic'),
-        ('Dr. M. Rahman', 'Cosmetic Dermatologist', '1100 BDT', '2:00 PM - 4:00 PM', 'Square Hospital'),
-        ('Dr. Tasnim Kabir', 'Skin Specialist', '900 BDT', '6:00 PM - 8:00 PM', 'Popular Medical')
-    ]
+        # একাধিক ডাক্তার যোগ করার তালিকা
+        doctors_list = [
+            ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM', 'Dhaka Medical Center'),
+            ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM', 'City Skin Hospital'),
+            ('Dr. Farhana Begum', 'Dermatologist', '1500 BDT', '10:00 AM - 12:00 PM', 'Apollo Skin Clinic'),
+            ('Dr. M. Rahman', 'Cosmetic Dermatologist', '1100 BDT', '2:00 PM - 4:00 PM', 'Square Hospital'),
+            ('Dr. Tasnim Kabir', 'Skin Specialist', '900 BDT', '6:00 PM - 8:00 PM', 'Popular Medical')
+        ]
     
-    # একসাথে সব ডাটা ইনসার্ট করা
-    c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
-    # ---------- Bookings Table ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS bookings(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        booking_id TEXT UNIQUE,
-        patient_name TEXT NOT NULL,
-        user_email TEXT NOT NULL,
-        phone_number TEXT,
-        age INTEGER,
-        doctor_name TEXT NOT NULL,
-        specialty TEXT,
-        hospital_name TEXT,
-        booking_date TEXT,
-        booking_time TEXT,
-        symptoms TEXT,
-        payment_method TEXT,
-        status TEXT DEFAULT 'Pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    st.write("✅ bookings created")
+        # একসাথে সব ডাটা ইনসার্ট করা
+        c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
+        # ---------- Bookings Table ----------
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS bookings(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            booking_id TEXT UNIQUE,
+            patient_name TEXT NOT NULL,
+            user_email TEXT NOT NULL,
+            phone_number TEXT,
+            age INTEGER,
+            doctor_name TEXT NOT NULL,
+            specialty TEXT,
+            hospital_name TEXT,
+            booking_date TEXT,
+            booking_time TEXT,
+            symptoms TEXT,
+            payment_method TEXT,
+            status TEXT DEFAULT 'Pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        st.write("✅ bookings created")
     
-    conn.commit()
-    st.success("init_db success")
+        conn.commit()
+        st.success("init_db success")
 
-except Exception as e:
-    st.error(f"init_db error: {e}")
+    except Exception as e:
+        st.error(f"init_db error: {e}")
 
-finally:
-    conn.close()
+    finally:
+        conn.close()
 
 init_db()
 
