@@ -87,17 +87,17 @@ def google_callback():
         st.session_state.logged_in = True
         st.session_state.user = email
         st.session_state.fullname = fullname
-    if conn:
-        conn.close()
+        if conn:
+            conn.close()
 
-        st.query_params.clear()
+            st.query_params.clear()
 
-        st.success("Google Login Successful")
-        time.sleep(1)
-        st.rerun()
+            st.success("Google Login Successful")
+            time.sleep(1)
+            st.rerun()
 
-    except Exception as e:
-        st.error(e)
+        except Exception as e:
+            st.error(e)
 
 # ---------------- LOGIN ----------------
 def google_login():
