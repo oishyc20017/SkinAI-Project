@@ -309,7 +309,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_email TEXT NOT NULL,
             doctor_name TEXT NOT NULL,
-            appointment_date TEXT NOT NULL,
+            appointment_date TEXT NOT NULL, 
             appointment_time TEXT NOT NULL,
             status TEXT
         )
