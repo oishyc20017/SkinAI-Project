@@ -289,6 +289,64 @@ div.stButton > button:first-child:hover {
 # --- ১. ডাটাবেস ও সিকিউরিটি ---
 conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
 c = conn.cursor()
+# ---------- Create Tables ----------
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fullname TEXT,
+    username TEXT UNIQUE,
+    email TEXT UNIQUE,
+    phone TEXT,
+    dob TEXT,
+    gender TEXT,
+    country TEXT,
+    password TEXT
+)
+""")
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS conversations(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_email TEXT,
+    title TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS messages(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id INTEGER,
+    sender TEXT,
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS prediction_history(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_email TEXT,
+    disease TEXT,
+    confidence REAL,
+    image_path TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS doctors(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    doctor_name TEXT,
+    specialization TEXT,
+    hospital TEXT,
+    chamber TEXT,
+    phone TEXT
+)
+""")
+
+conn.commit()
 
 # আপনার ডাটাবেস ফাংশনে এই পরিবর্তনটি করুন
 def init_db():
