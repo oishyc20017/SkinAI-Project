@@ -318,7 +318,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
-        st.write("✅ users created")
         # ---------- Conversations Table ----------
         c.execute("""
         CREATE TABLE IF NOT EXISTS conversations(
@@ -328,7 +327,6 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
-        st.write("✅ conversations created")
         # ---------- Messages Table ----------
         c.execute("""
         CREATE TABLE IF NOT EXISTS messages(
@@ -340,13 +338,11 @@ def init_db():
             FOREIGN KEY(conversation_id) REFERENCES conversations(id)
         )
         """)
-        st.write("✅ messages created")
     
         # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
         c.execute('''CREATE TABLE IF NOT EXISTS doctors
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                       name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
-        st.write("✅ doctors created")
                   
         # একাধিক ডাক্তার যোগ করার তালিকা
         doctors_list = [
@@ -379,10 +375,8 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
-        st.write("✅ bookings created")
     
         conn.commit()
-        st.success("init_db success")
 
     except Exception as e:
         st.error(f"init_db error: {e}")
