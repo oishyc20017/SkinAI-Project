@@ -66,28 +66,28 @@ def google_callback():
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
         data = c.fetchone()
 
-    if data is None:
-        username = email.split("@")[0]
-        random_password = secrets.token_hex(16)
+        if data is None:
+            username = email.split("@")[0]
+            random_password = secrets.token_hex(16)
 
-        c.execute("""
-            INSERT INTO users
-            (fullname,username,email,phone,dob,gender,country,password)
-            VALUES(?,?,?,?,?,?,?,?)
-        """, (
-            fullname,
-            username,
-            email,
-            "", "", "", "",
-            random_password
-        ))
+            c.execute("""
+                INSERT INTO users
+                (fullname,username,email,phone,dob,gender,country,password)
+                VALUES(?,?,?,?,?,?,?,?)
+            """, (
+                fullname,
+                username,
+                email,
+                "", "", "", "",
+                random_password
+            ))
 
-        conn.commit()
+            conn.commit()
 
         st.session_state.logged_in = True
         st.session_state.user = email
         st.session_state.fullname = fullname
-    if conn:
+    
         conn.close()
 
         st.query_params.clear()
@@ -97,6 +97,8 @@ def google_callback():
         st.rerun()
 
     except Exception as e:
+        if 'conn' in locals():
+            conn.close()
         st.error(e)
 
 # ---------------- LOGIN ----------------
