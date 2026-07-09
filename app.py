@@ -1540,27 +1540,28 @@ if prompt:
             "assistant",
             reply
         ))
+        conn = get_db()
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM users")
+        st.write(c.fetchall())
+
+        conn.close()
+        conn = get_db()
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM doctors")
+        st.write(c.fetchall())
+
+        conn.close()
+        conn = get_db()
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM bookings")
+        st.write(c.fetchall())
+
+    conn.close()
         conn.commit()
     conn.close()
     st.rerun()
-    conn = get_db()
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM users")
-    st.write(c.fetchall())
-
-    conn.close()
-    conn = get_db()
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM doctors")
-    st.write(c.fetchall())
-
-    conn.close()
-    conn = get_db()
-    c = conn.cursor()
-
-    c.execute("SELECT * FROM bookings")
-    st.write(c.fetchall())
-
-    conn.close()
+    
