@@ -774,32 +774,32 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
-            # Total Users
-            
 
-            # Total Conversations
-            c.execute("SELECT COUNT(*) FROM conversations")
-            total_conversations = c.fetchone()[0]
-
-            # Total Messages
-            c.execute("SELECT COUNT(*) FROM messages")
-            total_messages = c.fetchone()[0]
-
-            # Total Bookings
-            # Total Bookings
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
 
-            
+            # Total Users
+            c2.execute("SELECT COUNT(*) FROM users")
+            total_users = c2.fetchone()[0]
 
-            st.metric("📅 Bookings", total_bookings)
+            # Total Conversations
+            c2.execute("SELECT COUNT(*) FROM conversations")
+            total_conversations = c2.fetchone()[0]
+
+            # Total Messages
+            c2.execute("SELECT COUNT(*) FROM messages")
+            total_messages = c2.fetchone()[0]
+
+            # Total Bookings
+            c2.execute("SELECT COUNT(*) FROM bookings")
+            total_bookings = c2.fetchone()[0]
 
             conn2.close()
 
             st.metric("👤 Registered Users", total_users)
             st.metric("💬 Conversations", total_conversations)
             st.metric("🩺 Messages", total_messages)
-           
+            st.metric("📅 Bookings", total_bookings)
 
         # ---------------- Logout ----------------
         if st.button(
