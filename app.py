@@ -545,6 +545,9 @@ with st.sidebar:
 
     st.markdown("<br>", unsafe_allow_html=True)
     # ... আগের বাটনগুলো (যেমন: New Chat) ...
+    import os
+
+    st.write("DB Path:", os.path.abspath("skinai_wishy_v30.db"))
     conn = get_db()
     c = conn.cursor()
 
