@@ -534,6 +534,18 @@ if "google_user" not in st.session_state:
 google_callback()
 
 with st.sidebar:
+    conn = sqlite3.connect("skinai_wishy_v30.db")
+    c = conn.cursor()
+
+    st.subheader("Users Table")
+    c.execute("SELECT * FROM users")
+    st.write(c.fetchall())
+
+    st.subheader("Bookings Table")
+    c.execute("SELECT * FROM bookings")
+    st.write(c.fetchall())
+
+    conn.close()
     # ১. লোগো এরিয়া
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
