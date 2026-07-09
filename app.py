@@ -553,6 +553,8 @@ with st.sidebar:
 
     c.execute("SELECT COUNT(*) FROM users")
     st.write("Users:", c.fetchone()[0])
+    c.execute("SELECT id, fullname, email FROM users")
+    st.write(c.fetchall())
 
     conn.close()
     st.markdown("---") # আপনার ডিভাইডার লাইন
