@@ -988,6 +988,8 @@ with st.sidebar:
                 else:
 
                     try:
+                        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                        c = conn.cursor()
 
                         c.execute("""
                             INSERT INTO users
@@ -1005,6 +1007,7 @@ with st.sidebar:
                         ))
 
                         conn.commit()
+                        conn.close()
 
                         st.success("🎉 Account Created Successfully!")
                         st.info("You can now login.")
