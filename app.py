@@ -1457,5 +1457,5 @@ if prompt:
             reply
         ))
         conn.commit()
-
+    conn.close()
     st.rerun()
