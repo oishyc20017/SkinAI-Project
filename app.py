@@ -1560,7 +1560,7 @@ if prompt:
         c.execute("SELECT * FROM bookings")
         st.write(c.fetchall())
 
-    conn.close()
+        conn.close()
         conn.commit()
     conn.close()
     st.rerun()
