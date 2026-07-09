@@ -1208,26 +1208,7 @@ def doctor_booking_popup():
 
         if submit_button:
             try:
-                conn = sqlite3.connect('skinai_wishy_v30.db')
-                c = conn.cursor()
-                # এখানে নিশ্চিত করুন যে কলামের নামগুলো ডাটাবেসের সাথে হুবহু মিলছে
-                c.execute("""
-                    INSERT INTO bookings (
-                        user_email,
-                        doctor_name,
-                        booking_date,
-                        booking_time,
-                        status
-                    )
-                    VALUES (?, ?, ?, ?, ?)
-                """, (gmail_address, selected_doctor[0], str(preferred_date), selected_doctor[3], 'Pending'))
-                conn.commit()
-                conn.close()
-        
-                st.success("✅ Appointment Booked Successfully!")
-                st.balloons()
-                time.sleep(2)
-                st.rerun()
+            
             except Exception as e:
                 st.error(f"Database error: {e}")
 
@@ -1284,6 +1265,11 @@ def doctor_booking_popup():
                 ))
 
                 conn.commit()
+                conn.close()
+                st.success(...)
+                st.balloons()
+                time.sleep(2)
+                st.rerun()
 
         # এরপর তোমার success/info/balloons কোডগুলো আগের মতো থাকবে
 
