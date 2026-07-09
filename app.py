@@ -811,7 +811,7 @@ with st.sidebar:
 
             st.metric("🧬 Predictions", total_predictions)
 
-            conn2.close()
+            
 
             st.metric("👤 Registered Users", total_users)
             st.metric("👨‍⚕️ Doctors", total_doctors)
@@ -819,7 +819,64 @@ with st.sidebar:
             st.metric("💬 Conversations", total_conversations)
             st.metric("🩺 Messages", total_messages)
             st.metric("🧬 Predictions", total_predictions)
-            
+            st.markdown("### 👥 Recent Users")
+
+            c2.execute("""
+            SELECT fullname, username, email, created_at
+            FROM users
+            ORDER BY id DESC
+            LIMIT 10
+            """)
+
+            users = c2.fetchall()
+
+            st.table(users)
+            st.markdown("### 📅 Recent Bookings")
+
+            c2.execute("""
+            SELECT patient_name,
+                   doctor_name,
+                   booking_date,
+                   status
+            FROM bookings
+            ORDER BY id DESC
+            LIMIT 10
+            """)
+
+            bookings = c2.fetchall()
+
+            st.table(bookings)
+            st.markdown("### 🧬 Prediction History")
+
+            c2.execute("""
+            SELECT user_email,
+                   disease,
+                   confidence,
+                   created_at
+            FROM prediction_history
+            ORDER BY id DESC
+            LIMIT 10
+            """)
+
+            predictions = c2.fetchall()
+
+            st.table(predictions)
+            st.markdown("### 👨‍⚕️ Doctors")
+
+            c2.execute("""
+            SELECT
+            name,
+            specialty,
+            fee,
+            available_time,
+            hospital_name
+            FROM doctors
+            """)
+
+            doctor_list = c2.fetchall()
+
+            st.table(doctor_list)
+            conn2.close()
 
         # ---------------- Logout ----------------
         if st.button(
