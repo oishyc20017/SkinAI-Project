@@ -1267,10 +1267,10 @@ def doctor_booking_popup():
                     conn.close()
                     
 
-                    # এরপর তোমার success/info/balloons কোডগুলো আগের মতো থাকবে
                     st.success("✅ Appointment Booked Successfully!")
-               except Exception as e:
-                   st.error(f"Database error: {e}")
+                    
+                except Exception as e:
+                    st.error(f"Database error: {e}")
             
             st.info(f"""
             📌 Booking ID: {booking_id}
