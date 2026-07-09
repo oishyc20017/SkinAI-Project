@@ -1170,11 +1170,7 @@ if file:
     # Prediction History Save
     if st.session_state.get("logged_in", False):
     
-        st.write("Logged In:", st.session_state.get("logged_in"))
-        st.write("User:", st.session_state.get("user"))
-        st.write("Disease:", res_name)
-        st.write("Image:", file.name)
-
+        
         conn = sqlite3.connect("skinai_wishy_v30.db")
         c = conn.cursor()
 
@@ -1195,9 +1191,6 @@ if file:
         ))
 
         conn.commit()
-        st.success("Prediction Saved Successfully")
-        c.execute("SELECT COUNT(*) FROM prediction_history")
-        st.write("Prediction rows:", c.fetchone()[0])
         conn.close()
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
