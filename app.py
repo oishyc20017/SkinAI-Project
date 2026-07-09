@@ -545,18 +545,7 @@ with st.sidebar:
 
     st.markdown("<br>", unsafe_allow_html=True)
     # ... আগের বাটনগুলো (যেমন: New Chat) ...
-    import os
-
-    st.write("DB Path:", os.path.abspath("skinai_wishy_v30.db"))
-    conn = get_db()
-    c = conn.cursor()
-
-    c.execute("SELECT COUNT(*) FROM users")
-    st.write("Users:", c.fetchone()[0])
-    c.execute("SELECT id, fullname, email FROM users")
-    st.write(c.fetchall())
-
-    conn.close()
+    
     st.markdown("---") # আপনার ডিভাইডার লাইন
     
     # ২. সিকিউরিটি গেটওয়ে কার্ড
