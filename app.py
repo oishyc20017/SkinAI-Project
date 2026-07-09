@@ -1086,6 +1086,8 @@ with st.sidebar:
                         ))
 
                         conn.commit()
+                        c.execute("SELECT COUNT(*) FROM users")
+                        st.write("Users after register:", c.fetchone()[0])
                         conn.close()
 
                         st.success("🎉 Account Created Successfully!")
