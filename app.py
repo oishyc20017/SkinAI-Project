@@ -545,7 +545,13 @@ with st.sidebar:
 
     st.markdown("<br>", unsafe_allow_html=True)
     # ... আগের বাটনগুলো (যেমন: New Chat) ...
-    
+    conn = get_db()
+    c = conn.cursor()
+
+    c.execute("SELECT COUNT(*) FROM users")
+    st.write("Users:", c.fetchone()[0])
+
+    conn.close()
     st.markdown("---") # আপনার ডিভাইডার লাইন
     
     # ২. সিকিউরিটি গেটওয়ে কার্ড
