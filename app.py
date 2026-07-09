@@ -391,6 +391,13 @@ def init_db():
         conn.close()
 
 init_db()
+def get_db():
+    conn = sqlite3.connect(
+        "skinai_wishy_v30.db",
+        check_same_thread=False
+    )
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
