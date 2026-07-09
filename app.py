@@ -1206,7 +1206,13 @@ def doctor_booking_popup():
                 c = conn.cursor()
                 # এখানে নিশ্চিত করুন যে কলামের নামগুলো ডাটাবেসের সাথে হুবহু মিলছে
                 c.execute("""
-                    INSERT INTO bookings (user_email, doctor_name, appointment_date, appointment_time, status)
+                    INSERT INTO bookings (
+                        user_email,
+                        doctor_name,
+                        booking_date,
+                        booking_time,
+                        status
+                    )
                     VALUES (?, ?, ?, ?, ?)
                 """, (gmail_address, selected_doctor[0], str(preferred_date), selected_doctor[3], 'Pending'))
                 conn.commit()
