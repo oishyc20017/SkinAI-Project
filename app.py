@@ -858,6 +858,8 @@ with st.sidebar:
                 use_container_width=True,
                 key="unique_login_submit"
             ):
+                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                c = conn.cursor()
 
                 c.execute("""
                     SELECT fullname, username, password
@@ -866,6 +868,7 @@ with st.sidebar:
                 """, (e,))
 
                 data = c.fetchone()
+                conn.close()
 
                 if data and check_hash(p, data[2]):
 
