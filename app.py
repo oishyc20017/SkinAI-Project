@@ -381,7 +381,31 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
-    
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_users_email
+        ON users(email)
+        """)
+
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_conversations_user
+        ON conversations(user_email)
+        """)
+
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_messages_conversation
+        ON messages(conversation_id)
+        """)
+
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_prediction_user
+        ON prediction_history(user_email)
+        """)
+
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_booking_user
+        ON bookings(user_email)
+        """)
+       
         conn.commit()
 
     except Exception as e:
