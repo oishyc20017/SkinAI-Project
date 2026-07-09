@@ -1345,7 +1345,8 @@ prompt = st.chat_input("Ask me anything about your skin...")
 
 
 if prompt:
-
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    c = conn.cursor()
     st.session_state.messages.append({
         "role": "user",
         "content": prompt
