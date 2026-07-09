@@ -391,13 +391,7 @@ def init_db():
         conn.close()
 
 init_db()
-conn = sqlite3.connect("skinai_wishy_v30.db")
-c = conn.cursor()
 
-c.execute("PRAGMA database_list")
-st.write(c.fetchall())
-
-conn.close()
 def get_db():
     conn = sqlite3.connect(
         "skinai_wishy_v30.db",
