@@ -594,8 +594,7 @@ with st.sidebar:
     """, (st.session_state.user,))
 
     st.session_state.chat_titles = c.fetchall()
-    conn.close()
-
+    
     # Auto select latest conversation
     if (
         st.session_state.current_conversation_id is None
@@ -624,6 +623,8 @@ with st.sidebar:
             }
             for role, message in rows
         ]
+    conn.close()
+
     if st.session_state.get("logged_in", False):
 
         # ---------------- User Card ----------------
