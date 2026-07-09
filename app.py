@@ -63,6 +63,9 @@ def google_callback():
 
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
+        import os
+
+        st.write("Current DB Path:", os.path.abspath("skinai_wishy_v30.db"))
 
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
         data = c.fetchone()
