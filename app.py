@@ -903,6 +903,24 @@ with st.sidebar:
             doctor_list = c2.fetchall()
 
             st.table(doctor_list)
+            import os
+
+            st.markdown("---")
+            st.subheader("💾 Database Backup")
+
+            db_path = "skinai_wishy_v30.db"
+
+            if os.path.exists(db_path):
+                with open(db_path, "rb") as f:
+                    st.download_button(
+                        label="📥 Download SQLite Database",
+                        data=f,
+                        file_name="skinai_wishy_v30.db",
+                        mime="application/octet-stream",
+                        use_container_width=True
+                    )
+            else:
+                st.error("Database file not found.")
             conn2.close()
 
         # ---------------- Logout ----------------
