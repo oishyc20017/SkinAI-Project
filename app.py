@@ -1009,8 +1009,8 @@ with st.sidebar:
                         st.success("🎉 Account Created Successfully!")
                         st.info("You can now login.")
 
-                    except sqlite3.IntegrityError:
-                        st.error("Username or Email already exists.")
+                    except Exception as e:
+                        st.error(f"Database Error: {e}")
 
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
