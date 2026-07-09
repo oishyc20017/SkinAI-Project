@@ -421,7 +421,10 @@ def get_db():
         "skinai_wishy_v30.db",
         check_same_thread=False
     )
+
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+
     return conn
 
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
