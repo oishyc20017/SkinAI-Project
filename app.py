@@ -800,6 +800,23 @@ with st.sidebar:
             st.metric("💬 Conversations", total_conversations)
             st.metric("🩺 Messages", total_messages)
             st.metric("📅 Bookings", total_bookings)
+            conn = sqlite3.connect("skinai_wishy_v30.db")
+            c = conn.cursor()
+
+            tables = [
+               "users",
+               "doctors",
+               "bookings",
+               "conversations",
+               "messages",
+               "prediction_history"
+            ]
+
+            for table in tables:
+                c.execute(f"SELECT COUNT(*) FROM {table}")
+                st.write(f"{table}: {c.fetchone()[0]}")
+
+            conn.close()
 
         # ---------------- Logout ----------------
         if st.button(
