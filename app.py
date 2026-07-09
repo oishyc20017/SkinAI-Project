@@ -775,8 +775,7 @@ with st.sidebar:
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
             # Total Users
-            c.execute("SELECT COUNT(*) FROM users")
-            total_users = c.fetchone()[0]
+            
 
             # Total Conversations
             c.execute("SELECT COUNT(*) FROM conversations")
@@ -791,8 +790,7 @@ with st.sidebar:
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
 
-            c2.execute("SELECT COUNT(*) FROM bookings")
-            total_bookings = c2.fetchone()[0]
+            
 
             st.metric("📅 Bookings", total_bookings)
 
