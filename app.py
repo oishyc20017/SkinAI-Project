@@ -547,7 +547,19 @@ with st.sidebar:
     # ... আগের বাটনগুলো (যেমন: New Chat) ...
     
     st.markdown("---") # আপনার ডিভাইডার লাইন
-        
+    import os
+
+    st.write("DB Path:", os.path.abspath("skinai_wishy_v30.db")) 
+    conn = get_db()
+    c = conn.cursor()
+
+    c.execute("SELECT COUNT(*) FROM users")
+    st.write("Users:", c.fetchone()[0])
+
+    c.execute("SELECT COUNT(*) FROM bookings")
+    st.write("Bookings:", c.fetchone()[0])
+
+    conn.close()
     # ২. সিকিউরিটি গেটওয়ে কার্ড
     st.markdown("""
     <div style="
