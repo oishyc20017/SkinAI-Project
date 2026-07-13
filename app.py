@@ -385,14 +385,17 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_users_email
         ON users(email)
         """)
+        
         c.execute("""
         CREATE INDEX IF NOT EXISTS idx_conversations_user
         ON conversations(user_email)
         """)
+        
         c.execute("""
         CREATE INDEX IF NOT EXISTS idx_messages_conversation
         ON messages(conversation_id)
         """)
+        
         c.execute("""
         CREATE INDEX IF NOT EXISTS idx_prediction_user
         ON prediction_history(user_email)
@@ -650,6 +653,7 @@ with st.sidebar:
             }
             for role, message in rows
         ]
+    conn.close()
     if st.session_state.get("logged_in", False):
 
         # ---------------- User Card ----------------
@@ -801,6 +805,7 @@ with st.sidebar:
             
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
+            
             # Total Users
             c2.execute("SELECT COUNT(*) FROM users")
             total_users = c2.fetchone()[0]
@@ -856,8 +861,10 @@ with st.sidebar:
             """)
 
             bookings = c2.fetchall()
+            
             st.table(bookings)
             st.markdown("### 🧬 Prediction History")
+            
             c2.execute("""
             SELECT user_email,
                    disease,
@@ -869,8 +876,8 @@ with st.sidebar:
             """)
 
             predictions = c2.fetchall()
+            
             st.table(predictions)
-        
             st.markdown("### 👨‍⚕️ Doctors")
         
             c2.execute("""
@@ -886,25 +893,7 @@ with st.sidebar:
             doctor_list = c2.fetchall()
 
             st.table(doctor_list)
-            import os
-
-            st.markdown("---")
-            st.subheader("💾 Database Backup")
-
-            db_path = "skinai_wishy_v30.db"
-
-            if os.path.exists(db_path):
-                with open(db_path, "rb") as f:
-                    st.download_button(
-                        label="📥 Download SQLite Database",
-                        data=f,
-                        file_name="skinai_wishy_v30.db",
-                        mime="application/octet-stream",
-                        use_container_width=True
-                    )
-            else:
-                st.error("Database file not found.")
-       
+                   
             conn2.close()
         # ---------------- Logout ----------------
         if st.button(
@@ -1283,7 +1272,7 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
@@ -1318,8 +1307,7 @@ def doctor_booking_popup():
                 age = st.number_input(
                     "Age",
                     min_value=1,
-                    max_value=120,
-                    value=18 
+                    max_value=120, 
                 )
             with col2:
                 gmail_address = st.text_input(
@@ -1394,6 +1382,7 @@ def doctor_booking_popup():
 
                     conn.commit()
                     conn.close()
+                    
                     st.success("✅ Appointment Booked Successfully!")
        
                 except Exception as e:
@@ -1568,6 +1557,7 @@ if prompt:
             "assistant",
             reply
         ))
+        
         conn.commit()
-
+    conn.close()
     st.rerun()
