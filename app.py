@@ -1272,7 +1272,7 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
@@ -1307,7 +1307,8 @@ def doctor_booking_popup():
                 age = st.number_input(
                     "Age",
                     min_value=1,
-                    max_value=120, 
+                    max_value=120,
+                    value=15
                 )
             with col2:
                 gmail_address = st.text_input(
