@@ -1202,7 +1202,10 @@ if file:
     st.session_state.confidence = confidence
     st.session_state.predictions = pred[0]
     # Prediction History Save
-    if st.session_state.get("logged_in", False):
+    if (
+        st.session_state.get("logged_in", False)
+        and not st.session_state.prediction_saved
+    ):
 
         conn = sqlite3.connect("skinai_wishy_v30.db")
         c = conn.cursor()
@@ -1224,8 +1227,10 @@ if file:
         ))
 
         conn.commit()
+        
         conn.close()
 
+        st.session_state.prediction_saved = True
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
 if st.session_state.last_res is not None:
     res_name = st.session_state.last_res
