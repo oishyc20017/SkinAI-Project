@@ -1258,7 +1258,7 @@ if st.session_state.last_res != "None":
             st.caption(f"{percentage:.2f}%")
 
     else:
-         pass
+        pass
 else:
             # ফাইল আপলোড না করলে একদম ক্লিন থাকবে
     pass
