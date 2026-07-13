@@ -1,5 +1,6 @@
 import streamlit as st
-import requestsfrom streamlit_lottie 
+import requests
+from streamlit_lottie 
 import st_lottie
 import time
 import tensorflow as tffrom PIL 
