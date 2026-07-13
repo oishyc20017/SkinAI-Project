@@ -66,7 +66,7 @@ def google_callback():
 
         if data is None:
             username = email.split("@")[0]
-            random_password = secrets.token_hex(16)
+            random_password = make_hash(secrets.token_hex(16))
 
             c.execute("""
                 INSERT INTO users
