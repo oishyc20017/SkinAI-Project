@@ -1,23 +1,22 @@
 import streamlit as st
 import requests
-from streamlit_lottie 
-import st_lottie
+from streamlit_lottie import st_lottie
 import time
-import tensorflow as tffrom PIL 
-import Image
+import tensorflow as tf
+from PIL import Image
 import numpy as np
 import os
 import random
 import gdown
 import sqlite3
 import hashlib
-import streamlit as stfrom streamlit_option_menu 
-import option_menu
+import streamlit as st
+from streamlit_option_menu import option_menu
 import sqlite3
 import time
 import secrets
-import google.generativeai as genaifrom requests_oauthlib 
-import OAuth2Session
+import google.generativeai as genai
+from requests_oauthlib import OAuth2Session
 
 # ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
