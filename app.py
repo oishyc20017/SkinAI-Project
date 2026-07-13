@@ -824,8 +824,6 @@ with st.sidebar:
             c2.execute("SELECT COUNT(*) FROM prediction_history")
             total_predictions = c2.fetchone()[0]
 
-            conn2.close()
-
             st.metric("👤 Registered Users", total_users)
             st.metric("👨‍⚕️ Doctors", total_doctors)
             st.metric("📅 Bookings", total_bookings)
