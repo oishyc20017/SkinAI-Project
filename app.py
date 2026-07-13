@@ -1206,6 +1206,10 @@ if file:
         ))
 
         conn.commit()
+
+        c.execute("SELECT COUNT(*) FROM prediction_history")
+        st.write("Prediction Count:", c.fetchone()[0])
+
         conn.close()
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
