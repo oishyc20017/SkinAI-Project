@@ -1405,6 +1405,11 @@ def doctor_booking_popup():
                     ))
 
                     conn.commit()
+                    c.execute("SELECT COUNT(*) FROM bookings")
+                    st.write("Bookings =", c.fetchone()[0])
+
+                    c.execute("SELECT * FROM bookings")
+                    st.write(c.fetchall())
                     conn.close()
                     
                     st.success("✅ Appointment Booked Successfully!")
@@ -1493,6 +1498,12 @@ if prompt:
         ))
 
         conn.commit()
+         
+        c.execute("SELECT COUNT(*) FROM conversations")
+        st.write("Conversation =", c.fetchone()[0])
+
+        c.execute("SELECT * FROM conversations")
+        st.write(c.fetchall())
 
         st.session_state.current_conversation_id = c.lastrowid
     # Login থাকলে user message save করো
