@@ -290,6 +290,28 @@ div.stButton > button:first-child:hover {
 
 # আপনার ডাটাবেস ফাংশনে এই পরিবর্তনটি করুন
 def init_db():
+    import os
+
+    st.write("===== DATABASE DEBUG =====")
+    st.write("Current Working Directory:", os.getcwd())
+    st.write("Absolute DB Path:", os.path.abspath("skinai_wishy_v30.db"))
+    st.write("DB Exists:", os.path.exists("skinai_wishy_v30.db"))
+
+    conn = sqlite3.connect("skinai_wishy_v30.db")
+
+    c = conn.cursor()
+
+    c.execute("SELECT COUNT(*) FROM users")
+    st.write("Users:", c.fetchone()[0])
+
+    c.execute("SELECT COUNT(*) FROM conversations")
+    st.write("Conversations:", c.fetchone()[0])
+
+    c.execute("SELECT COUNT(*) FROM messages")
+    st.write("Messages:", c.fetchone()[0])
+
+    c.execute("SELECT COUNT(*) FROM bookings")
+    st.write("Bookings:", c.fetchone()[0])
     try:
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
