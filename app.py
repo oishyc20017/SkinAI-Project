@@ -1,22 +1,20 @@
-import streamlit as st
-import requests
-from streamlit_lottie import st_lottie
-import time
-import tensorflow as tf
-from PIL import Image
-import numpy as np
+import hashlib
 import os
 import random
-import gdown
-import sqlite3
-import hashlib
-import streamlit as st
-from streamlit_option_menu import option_menu
+import secrets
 import sqlite3
 import time
-import secrets
+
+import gdown
 import google.generativeai as genai
+import numpy as np
+import requests
+import streamlit as st
+import tensorflow as tf
+from PIL import Image
 from requests_oauthlib import OAuth2Session
+from streamlit_lottie import st_lottie
+from streamlit_option_menu import option_menu
 
 
 # ---------------- CONFIG ----------------
@@ -36,7 +34,6 @@ SCOPES = ["openid", "email", "profile"]
 
 # ---------------- CALLBACK ----------------
 def google_callback():
-
     params = st.query_params
 
     if "code" not in params:
@@ -609,10 +606,7 @@ with st.sidebar:
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
-    # ==========================================================
     # AUTHENTICATION AREA
-    # ==========================================================
-
     # ---------------- Conversation Loader ----------------
 
     if "chat_titles" not in st.session_state:
@@ -800,9 +794,7 @@ with st.sidebar:
                     st.rerun()
                     
         st.markdown("---")
-        # ==========================
         # ADMIN DASHBOARD
-        # ==========================
         if (
             st.session_state.get("logged_in", False)
             and st.session_state.user == "oishyc89@gmail.com"
@@ -1128,7 +1120,6 @@ with st.sidebar:
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
-# --- ৭. মেইন চ্যাট ইন্টারফেস ---
 # --- ১. মেইন পেজ অ্যানিমেশন ---
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
@@ -1148,8 +1139,6 @@ with col2:
     except:
         pass
 
-# --- লোগো এবং টাইটেল (একদম মাঝখানে এবং ছোট) ---
-# --- লোগো এবং স্টাইলিশ টাইটেল ---
 # --- লোগো এবং বড় টাইটেল (একদম মাঝখানে) ---
 st.markdown(
     """
@@ -1191,14 +1180,12 @@ if file:
     # Confidence (%)
     confidence = float(pred[0][pred_index]) * 100
 
-    # Session
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
     st.session_state.predictions = pred[0]
     # Prediction History Save
     if st.session_state.get("logged_in", False):
     
-        
         conn = sqlite3.connect("skinai_wishy_v30.db")
         c = conn.cursor()
 
