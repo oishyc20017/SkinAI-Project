@@ -1230,7 +1230,14 @@ if file:
         ))
 
         conn.commit()
-        
+        c.execute("""
+        SELECT user_email, disease, confidence
+        FROM prediction_history
+        ORDER BY id DESC
+        LIMIT 5
+        """)
+
+        st.write(c.fetchall())
         conn.close()
 
         st.session_state.prediction_saved = True
