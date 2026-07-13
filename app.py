@@ -17,6 +17,10 @@ import time
 import secrets
 import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
+import os
+
+st.write("Current Working Directory:", os.getcwd())
+st.write("Database Path:", os.path.abspath(DB_PATH))
 
 # ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
