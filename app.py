@@ -551,6 +551,11 @@ if "confidence" not in st.session_state:
 
 if "predictions" not in st.session_state:
     st.session_state.predictions = []
+if "prediction_saved" not in st.session_state:
+    st.session_state.prediction_saved = False
+
+if "last_uploaded_file" not in st.session_state:
+    st.session_state.last_uploaded_file = None
 
 if "oauth_state" not in st.session_state:
     st.session_state.oauth_state = None
@@ -1175,50 +1180,27 @@ file = st.file_uploader(
 )
 
 if file:
-    # যখন ফাইল আপলোড হবে, তখনই কেবল প্রসেসিং শুরু হবে
-    img_res = Image.open(file).convert('RGB').resize((100, 75))
+
+    # নতুন ছবি হলে আবার save করার অনুমতি দাও
+    if st.session_state.last_uploaded_file != file.name:
+        st.session_state.prediction_saved = False
+        st.session_state.last_uploaded_file = file.name
+
+    img_res = Image.open(file).convert("RGB").resize((100, 75))
     x = np.asarray(img_res) / 255.0
     x = np.expand_dims(x, axis=0)
+
     pred = model.predict(x, verbose=0)
 
-    # Prediction
     pred_index = np.argmax(pred)
 
-    # Disease Name
     res_name = classes[pred_index]
 
-    # Confidence (%)
     confidence = float(pred[0][pred_index]) * 100
 
-    # Session
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
-    st.session_state.predictions = pred[0] 
-    # Prediction History Save
-    if st.session_state.get("logged_in", False):
-
-    
-        conn = sqlite3.connect("skinai_wishy_v30.db")
-        c = conn.cursor()
-
-        c.execute("""
-            INSERT INTO prediction_history
-            (
-                user_email,
-                disease,
-                confidence,
-                image_path
-            )
-            VALUES (?, ?, ?, ?)
-        """, (
-            st.session_state.user,
-            res_name,
-            confidence,
-            file.name      # যদি image path save করতে না চাও, এখানে "" দিতে পারো
-        ))
-
-        conn.commit()
-        conn.close()
+    st.session_state.predictions = pred[0]
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
 if st.session_state.last_res != "None":
