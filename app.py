@@ -812,8 +812,7 @@ with st.sidebar:
             import os
 
             db_path = "/mount/src/skinai-project/skinai_wishy_v30.db"
-            st.write("Download DB Path:", db_path)
-
+            
             with open(db_path, "rb") as f:
                 st.download_button(
                     "📥 Download Current Database",
@@ -1230,14 +1229,6 @@ if file:
         ))
 
         conn.commit()
-        c.execute("""
-        SELECT user_email, disease, confidence
-        FROM prediction_history
-        ORDER BY id DESC
-        LIMIT 5
-        """)
-
-        st.write(c.fetchall())
         conn.close()
 
         st.session_state.prediction_saved = True
