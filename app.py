@@ -841,54 +841,54 @@ with st.sidebar:
             LIMIT 10
             """)
 
-           users = c2.fetchall()
+            users = c2.fetchall()
 
-           st.table(users)
-           st.markdown("### 📅 Recent Bookings")
+            st.table(users)
+            st.markdown("### 📅 Recent Bookings")
 
-           c2.execute("""
-           SELECT patient_name,
-                  doctor_name,
-                  booking_date,
-                  status
-           FROM bookings
-           ORDER BY id DESC
-           LIMIT 10
-           """)
+            c2.execute("""
+            SELECT patient_name,
+                   doctor_name,
+                   booking_date,
+                   status
+            FROM bookings
+            ORDER BY id DESC
+            LIMIT 10
+            """)
 
-           bookings = c2.fetchall()
-           st.table(bookings)
-           st.markdown("### 🧬 Prediction History")
-           c2.execute("""
-           SELECT user_email,
-                  disease,
-                  confidence,
-                  created_at
-           FROM prediction_history
-           ORDER BY id DESC
-           LIMIT 10
-           """)
+            bookings = c2.fetchall()
+            st.table(bookings)
+            st.markdown("### 🧬 Prediction History")
+            c2.execute("""
+            SELECT user_email,
+                   disease,
+                   confidence,
+                   created_at
+            FROM prediction_history
+            ORDER BY id DESC
+            LIMIT 10
+            """)
 
-           predictions = c2.fetchall()
-           st.table(predictions)
+            predictions = c2.fetchall()
+            st.table(predictions)
         
-           st.markdown("### 👨‍⚕️ Doctors")
+            st.markdown("### 👨‍⚕️ Doctors")
         
-           c2.execute("""
-           SELECT
-           name,
-           specialty,
-           fee,
-           available_time,
-           hospital_name
-           FROM doctors
-           """)
+            c2.execute("""
+            SELECT
+            name,
+            specialty,
+            fee,
+            available_time,
+            hospital_name
+            FROM doctors
+            """)
 
-           doctor_list = c2.fetchall()
+            doctor_list = c2.fetchall()
 
-           st.table(doctor_list)
+            st.table(doctor_list)
        
-           conn2.close()
+            conn2.close()
         # ---------------- Logout ----------------
         if st.button(
             "🚪 Logout",
