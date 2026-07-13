@@ -801,6 +801,15 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
+            db_path = "/mount/src/skinai-project/skinai_wishy_v30.db"
+
+            with open(db_path, "rb") as f:
+                st.download_button(
+                    "📥 Download Current Database",
+                    data=f,
+                    file_name="skinai_wishy_v30_live.db",
+                    mime="application/octet-stream"
+                )
             
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
