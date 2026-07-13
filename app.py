@@ -17,6 +17,10 @@ import time
 import secrets
 import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
+import os
+
+st.write("Current Working Directory:", os.getcwd())
+st.write("Database Path:", os.path.abspath("skinai_wishy_v30.db"))
 
 
 # ---------------- CONFIG ----------------
