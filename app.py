@@ -1,21 +1,20 @@
-import streamlit as st
-import requests
-from streamlit_lottie import st_lottie
+import hashlib
+import os
+import random
+import secrets
+import sqlite3
 import time
+
+import gdown
+import google.generativeai as genai
+import numpy as np
+import requests
+import streamlit as st
 import tensorflow as tf
 from PIL import Image
-import numpy as np
-import os
-import gdown
-import sqlite3
-import hashlib
-import streamlit as st
-from streamlit_option_menu import option_menu
-import sqlite3
-import time
-import secrets
-import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
+from streamlit_lottie import st_lottie
+from streamlit_option_menu import option_menu
 
 
 # ---------------- CONFIG ----------------
@@ -35,7 +34,6 @@ SCOPES = ["openid", "email", "profile"]
 
 # ---------------- CALLBACK ----------------
 def google_callback():
-
     params = st.query_params
 
     if "code" not in params:
@@ -61,16 +59,14 @@ def google_callback():
         fullname = user["name"]
 
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
-        import os
-        st.write("Database Path:", os.path.abspath("skinai_wishy_v30.db"))
         c = conn.cursor()
-
+        
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
         data = c.fetchone()
 
         if data is None:
             username = email.split("@")[0]
-            random_password = secrets.token_hex(16)
+            random_password = make_hash(secrets.token_hex(16))
 
             c.execute("""
                 INSERT INTO users
@@ -89,7 +85,7 @@ def google_callback():
         st.session_state.logged_in = True
         st.session_state.user = email
         st.session_state.fullname = fullname
-
+    
         conn.close()
 
         st.query_params.clear()
@@ -99,6 +95,8 @@ def google_callback():
         st.rerun()
 
     except Exception as e:
+        if 'conn' in locals():
+            conn.close()
         st.error(e)
 
 # ---------------- LOGIN ----------------
@@ -116,23 +114,14 @@ def google_login():
     st.session_state.oauth_state = state
 
     return authorization_url
-    import streamlit.components.v1 as components
-
-    components.html(
-        f"""
-        <script>
-            window.top.location.href = "{authorization_url}";
-        </script>
-        """,
-        height=0,
-    )
-    def main():
-        google_callback()
+    
+def main():
+     google_callback()
 
 
-    # ---------------- RUN ----------------
-    if __name__ == "__main__":
-        main()
+# ---------------- RUN ----------------
+if __name__ == "__main__":
+     main()
 
 
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
@@ -160,16 +149,16 @@ div.stButton > button:first-child:hover {
 }
 
 /* সাইডবারের ভেতরের ইনপুট বক্স充পেসিল স্পেসিং */
-[data-testid="stSidebar"] .stTextInput,
+[data-testid="stSidebar"] .stTextInput, 
 [data-testid="stSidebar"] .stSelectbox {
     margin-bottom: 20px !important;
 }
 
 /* সাইডবারের শিরোনাম কালার */
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h1, 
+[data-testid="stSidebar"] h2, 
 [data-testid="stSidebar"] h3 {
-    color: #38bdf8 !important;
+    color: #38bdf8 !important; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: 600;
 }
@@ -291,94 +280,149 @@ div.stButton > button:first-child:hover {
                     padding: 7px 10px;
                     font-size: 14px;
                 }
-
+    
 
 </style>
 """, unsafe_allow_html=True)
-# --- ১. ডাটাবেস ও সিকিউরিটি ---
-conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-c = conn.cursor()
 
 # আপনার ডাটাবেস ফাংশনে এই পরিবর্তনটি করুন
 def init_db():
-    conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
-    c = conn.cursor()
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS users(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fullname TEXT NOT NULL,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        phone TEXT,
-        dob TEXT,
-        gender TEXT,
-        country TEXT,
-        password TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    # ---------- Conversations Table ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS conversations(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_email TEXT NOT NULL,
-        title TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    # ---------- Messages Table ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS messages(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        conversation_id INTEGER,
-        role TEXT,
-        message TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(conversation_id) REFERENCES conversations(id)
-    )
-    """)
+    try:
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        c = conn.cursor()
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fullname TEXT NOT NULL,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            phone TEXT,
+            dob TEXT,
+            gender TEXT,
+            country TEXT,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        # ---------- Conversations Table ----------
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS conversations(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_email TEXT NOT NULL,
+            title TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        # ---------- Messages Table ----------
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS messages(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id INTEGER,
+            role TEXT,
+            message TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(conversation_id) REFERENCES conversations(id)
+        )
+        """)
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS prediction_history(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_email TEXT NOT NULL,
+            disease TEXT,
+            confidence REAL,
+            image_path TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+    
+        # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
+        c.execute('''CREATE TABLE IF NOT EXISTS doctors
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
+                  
+        # একাধিক ডাক্তার যোগ করার তালিকা
+        doctors_list = [
+            ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM', 'Dhaka Medical Center'),
+            ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM', 'City Skin Hospital'),
+            ('Dr. Farhana Begum', 'Dermatologist', '1500 BDT', '10:00 AM - 12:00 PM', 'Apollo Skin Clinic'),
+            ('Dr. M. Rahman', 'Cosmetic Dermatologist', '1100 BDT', '2:00 PM - 4:00 PM', 'Square Hospital'),
+            ('Dr. Tasnim Kabir', 'Skin Specialist', '900 BDT', '6:00 PM - 8:00 PM', 'Popular Medical')
+        ]
+    
+        # একসাথে সব ডাটা ইনসার্ট করা
+        c.execute("SELECT COUNT(*) FROM doctors")
+        doctor_count = c.fetchone()[0]
 
-    # ডাক্তারদের টেবিল ড্রপ করে নতুন করে তৈরি করুন (যাতে পুরনো ভুল ডাটা মুছে যায়)
-    c.execute('''CREATE TABLE IF NOT EXISTS doctors
-                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  name TEXT, specialty TEXT, fee TEXT, available_time TEXT, hospital_name TEXT)''')
+        if doctor_count == 0:
+            c.executemany(
+                "INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)",
+                doctors_list
+            )
+        # ---------- Bookings Table ----------
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS bookings(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            booking_id TEXT UNIQUE,
+            patient_name TEXT NOT NULL,
+            user_email TEXT NOT NULL,
+            phone_number TEXT,
+            age INTEGER,
+            doctor_name TEXT NOT NULL,
+            specialty TEXT,
+            hospital_name TEXT,
+            booking_date TEXT,
+            booking_time TEXT,
+            symptoms TEXT,
+            payment_method TEXT,
+            status TEXT DEFAULT 'Pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_users_email
+        ON users(email)
+        """)
 
-    # একাধিক ডাক্তার যোগ করার তালিকা
-    doctors_list = [
-        ('Dr. Sabina Yasmin', 'Dermatologist', '1000 BDT', '4:00 PM - 6:00 PM', 'Dhaka Medical Center'),
-        ('Dr. Asif Ahmed', 'Skin & Laser Specialist', '1200 BDT', '7:00 PM - 9:00 PM', 'City Skin Hospital'),
-        ('Dr. Farhana Begum', 'Dermatologist', '1500 BDT', '10:00 AM - 12:00 PM', 'Apollo Skin Clinic'),
-        ('Dr. M. Rahman', 'Cosmetic Dermatologist', '1100 BDT', '2:00 PM - 4:00 PM', 'Square Hospital'),
-        ('Dr. Tasnim Kabir', 'Skin Specialist', '900 BDT', '6:00 PM - 8:00 PM', 'Popular Medical')
-    ]
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_conversations_user
+        ON conversations(user_email)
+        """)
 
-    # একসাথে সব ডাটা ইনসার্ট করা
-    c.executemany("INSERT INTO doctors (name, specialty, fee, available_time, hospital_name) VALUES (?, ?, ?, ?, ?)", doctors_list)
-    # ---------- Bookings Table ----------
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS bookings(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        booking_id TEXT UNIQUE,
-        patient_name TEXT NOT NULL,
-        user_email TEXT NOT NULL,
-        phone_number TEXT,
-        age INTEGER,
-        doctor_name TEXT NOT NULL,
-        specialty TEXT,
-        hospital_name TEXT,
-        booking_date TEXT,
-        booking_time TEXT,
-        symptoms TEXT,
-        payment_method TEXT,
-        status TEXT DEFAULT 'Pending',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_messages_conversation
+        ON messages(conversation_id)
+        """)
 
-    conn.commit()
-    conn.close()
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_prediction_user
+        ON prediction_history(user_email)
+        """)
+
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_booking_user
+        ON bookings(user_email)
+        """)
+       
+        conn.commit()
+
+    except Exception as e:
+        st.error(f"init_db error: {e}")
+
+    finally:
+        conn.close()
 
 init_db()
+
+def get_db():
+    conn = sqlite3.connect(
+        "skinai_wishy_v30.db",
+        check_same_thread=False
+    )
+
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+
+    return conn
 
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
@@ -526,23 +570,23 @@ with st.sidebar:
 
     st.markdown("<br>", unsafe_allow_html=True)
     # ... আগের বাটনগুলো (যেমন: New Chat) ...
-
+    
     st.markdown("---") # আপনার ডিভাইডার লাইন
-
+    
     # ২. সিকিউরিটি গেটওয়ে কার্ড
     st.markdown("""
     <div style="
         background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
-        padding: 12px;
-        border-radius: 10px;
-        border: 1px solid #4338ca;
-        text-align: center;
+        padding: 12px; 
+        border-radius: 10px; 
+        border: 1px solid #4338ca; 
+        text-align: center; 
         margin-bottom: 10px;">
         <h2 style="color: #38bdf8; margin: 0; font-size: 18px;">🔒 Secure Gateway</h2>
         <p style="color: #94a3b8; font-size: 11px; margin: 5px 0 0 0;">SHA-256 Encrypted Session</p>
     </div>
     """, unsafe_allow_html=True)
-
+        
     st.markdown("---")
     # --- লোগোর নিচের গ্যাপ কমানো এবং টেক্সট কার্ড ---
     st.markdown("""
@@ -559,19 +603,18 @@ with st.sidebar:
         </p>
     </div>
     """, unsafe_allow_html=True)
-
+    
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
-    # ==========================================================
     # AUTHENTICATION AREA
-    # ==========================================================
-
     # ---------------- Conversation Loader ----------------
 
     if "chat_titles" not in st.session_state:
         st.session_state.chat_titles = []
 
     # Load all conversations
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    c = conn.cursor()
     c.execute("""
     SELECT id, title
     FROM conversations
@@ -580,7 +623,7 @@ with st.sidebar:
     """, (st.session_state.user,))
 
     st.session_state.chat_titles = c.fetchall()
-
+    
     # Auto select latest conversation
     if (
         st.session_state.current_conversation_id is None
@@ -609,6 +652,8 @@ with st.sidebar:
             }
             for role, message in rows
         ]
+    conn.close()
+
     if st.session_state.get("logged_in", False):
 
         # ---------------- User Card ----------------
@@ -646,6 +691,9 @@ with st.sidebar:
         st.markdown("---")
 
         # ---------------- Recent Chat ----------------
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        c = conn.cursor()
+
         c.execute("""
         SELECT id, title
         FROM conversations
@@ -654,6 +702,8 @@ with st.sidebar:
         """, (st.session_state.user,))
 
         st.session_state.chat_titles = c.fetchall()
+
+        conn.close()
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.subheader("🕒 Recent Chats")
@@ -714,7 +764,7 @@ with st.sidebar:
                     },
                 },
             )
-
+                    
 
             if selected:
 
@@ -742,11 +792,9 @@ with st.sidebar:
                     ]
 
                     st.rerun()
-
+                    
         st.markdown("---")
-        # ==========================
         # ADMIN DASHBOARD
-        # ==========================
         if (
             st.session_state.get("logged_in", False)
             and st.session_state.user == "oishyc89@gmail.com"
@@ -754,34 +802,101 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
-            # Total Users
-            c.execute("SELECT COUNT(*) FROM users")
-            total_users = c.fetchone()[0]
 
-            # Total Conversations
-            c.execute("SELECT COUNT(*) FROM conversations")
-            total_conversations = c.fetchone()[0]
-
-            # Total Messages
-            c.execute("SELECT COUNT(*) FROM messages")
-            total_messages = c.fetchone()[0]
-
-            # Total Bookings
-            # Total Bookings
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
 
+            # Total Users
+            c2.execute("SELECT COUNT(*) FROM users")
+            total_users = c2.fetchone()[0]
+
+            # Total Conversations
+            c2.execute("SELECT COUNT(*) FROM conversations")
+            total_conversations = c2.fetchone()[0]
+
+            # Total Messages
+            c2.execute("SELECT COUNT(*) FROM messages")
+            total_messages = c2.fetchone()[0]
+
+            # Total Bookings
             c2.execute("SELECT COUNT(*) FROM bookings")
             total_bookings = c2.fetchone()[0]
+            c2.execute("SELECT COUNT(*) FROM prediction_history")
+            total_predictions = c2.fetchone()[0]
+            
+            c2.execute("SELECT COUNT(*) FROM doctors")
+            total_doctors = c2.fetchone()[0]
 
-            st.metric("📅 Bookings", total_bookings)
+            c2.execute("SELECT COUNT(*) FROM prediction_history")
+            total_predictions = c2.fetchone()[0]
 
-            conn2.close()
+                      
 
             st.metric("👤 Registered Users", total_users)
+            st.metric("👨‍⚕️ Doctors", total_doctors)
+            st.metric("📅 Bookings", total_bookings)
             st.metric("💬 Conversations", total_conversations)
             st.metric("🩺 Messages", total_messages)
+            st.metric("🧬 Predictions", total_predictions)
+            st.markdown("### 👥 Recent Users")
 
+            c2.execute("""
+            SELECT fullname, username, email, created_at
+            FROM users
+            ORDER BY id DESC
+            LIMIT 10
+            """)
+
+            users = c2.fetchall()
+
+            st.table(users)
+            st.markdown("### 📅 Recent Bookings")
+
+            c2.execute("""
+            SELECT patient_name,
+                   doctor_name,
+                   booking_date,
+                   status
+            FROM bookings
+            ORDER BY id DESC
+            LIMIT 10
+            """)
+
+            bookings = c2.fetchall()
+
+            st.table(bookings)
+            st.markdown("### 🧬 Prediction History")
+
+            c2.execute("""
+            SELECT user_email,
+                   disease,
+                   confidence,
+                   created_at
+            FROM prediction_history
+            ORDER BY id DESC
+            LIMIT 10
+            """)
+
+            predictions = c2.fetchall()
+
+            st.table(predictions)
+            st.markdown("### 👨‍⚕️ Doctors")
+
+            c2.execute("""
+            SELECT
+            name,
+            specialty,
+            fee,
+            available_time,
+            hospital_name
+            FROM doctors
+            """)
+
+            doctor_list = c2.fetchall()
+
+            st.table(doctor_list)
+           
+            conn2.close()
 
         # ---------------- Logout ----------------
         if st.button(
@@ -839,6 +954,8 @@ with st.sidebar:
                 use_container_width=True,
                 key="unique_login_submit"
             ):
+                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                c = conn.cursor()
 
                 c.execute("""
                     SELECT fullname, username, password
@@ -847,6 +964,7 @@ with st.sidebar:
                 """, (e,))
 
                 data = c.fetchone()
+                conn.close()
 
                 if data and check_hash(p, data[2]):
 
@@ -969,6 +1087,8 @@ with st.sidebar:
                 else:
 
                     try:
+                        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                        c = conn.cursor()
 
                         c.execute("""
                             INSERT INTO users
@@ -986,25 +1106,27 @@ with st.sidebar:
                         ))
 
                         conn.commit()
+                        c.execute("SELECT COUNT(*) FROM users")
+                        st.write("Users after register:", c.fetchone()[0])
+                        conn.close()
 
                         st.success("🎉 Account Created Successfully!")
                         st.info("You can now login.")
 
-                    except sqlite3.IntegrityError:
-                        st.error("Username or Email already exists.")
+                    except Exception as e:
+                        st.error(f"Database Error: {e}")
 
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
-# --- ৭. মেইন চ্যাট ইন্টারফেস ---
 # --- ১. মেইন পেজ অ্যানিমেশন ---
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
     try:
         import requests
         from streamlit_lottie import st_lottie
-
+        
         def load_my_anim(url):
             res = requests.get(url)
             return res.json() if res.status_code == 200 else None
@@ -1017,8 +1139,6 @@ with col2:
     except:
         pass
 
-# --- লোগো এবং টাইটেল (একদম মাঝখানে এবং ছোট) ---
-# --- লোগো এবং স্টাইলিশ টাইটেল ---
 # --- লোগো এবং বড় টাইটেল (একদম মাঝখানে) ---
 st.markdown(
     """
@@ -1060,10 +1180,33 @@ if file:
     # Confidence (%)
     confidence = float(pred[0][pred_index]) * 100
 
-    # Session
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
     st.session_state.predictions = pred[0]
+    # Prediction History Save
+    if st.session_state.get("logged_in", False):
+    
+        conn = sqlite3.connect("skinai_wishy_v30.db")
+        c = conn.cursor()
+
+        c.execute("""
+            INSERT INTO prediction_history
+            (
+                user_email,
+                disease,
+                confidence,
+                image_path
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            st.session_state.user,
+            res_name,
+            confidence,
+            file.name      # যদি image path save করতে না চাও, এখানে "" দিতে পারো
+        ))
+
+        conn.commit()
+        conn.close()
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
 if st.session_state.last_res != "None":
@@ -1127,11 +1270,11 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
-
+        
         st.markdown("### Book Your Appointment")
 
         # Form-এর বাইরে
@@ -1163,7 +1306,7 @@ def doctor_booking_popup():
                     "Age",
                     min_value=1,
                     max_value=120,
-                    value=18
+                    value=18 
                 )
             with col2:
                 gmail_address = st.text_input(
@@ -1182,7 +1325,7 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-
+            
             if not patient_name.strip():
                 st.error("Please enter Patient Name.")
 
@@ -1196,52 +1339,57 @@ def doctor_booking_popup():
                 st.error("Please enter a valid Gmail Address.")
 
             else:
+                try:
+                    conn = sqlite3.connect("skinai_wishy_v30.db")
+                    c = conn.cursor()
+ 
+                
 
-                import random
+                    booking_id = f"BK-{random.randint(100000,999999)}"
 
-                booking_id = f"BK-{random.randint(100000,999999)}"
+                    c.execute("""
+                    INSERT INTO bookings
+                    (
+                        booking_id,
+                        patient_name,
+                        user_email,
+                        phone_number,
+                        age,
+                        doctor_name,
+                        specialty,
+                        hospital_name,
+                        booking_date,
+                        booking_time,
+                        symptoms,
+                        payment_method,
+                        status
+                    )
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    """,(
+                        booking_id,
+                        patient_name,
+                        gmail_address,
+                        phone_number,
+                        age,
+                        selected_doctor[0],
+                        selected_doctor[1],
+                        selected_doctor[4],
+                        str(preferred_date),
+                        selected_doctor[3],
+                        symptoms,
+                        payment_method,
+                        "Confirmed"
+                    ))
 
-                c.execute("""
-                INSERT INTO bookings
-                (
-                    booking_id,
-                    patient_name,
-                    user_email,
-                    phone_number,
-                    age,
-                    doctor_name,
-                    specialty,
-                    hospital_name,
-                    booking_date,
-                    booking_time,
-                    symptoms,
-                    payment_method,
-                    status
-                )
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """,(
-                    booking_id,
-                    patient_name,
-                    gmail_address,
-                    phone_number,
-                    age,
-                    selected_doctor[0],
-                    selected_doctor[1],
-                    selected_doctor[4],
-                    str(preferred_date),
-                    selected_doctor[3],
-                    symptoms,
-                    payment_method,
-                    "Confirmed"
-                ))
+                    conn.commit()
+                    conn.close()
+                    
 
-                conn.commit()
-
-        # এরপর তোমার success/info/balloons কোডগুলো আগের মতো থাকবে
-
-            st.success("Reached after commit")
-            st.success("✅ Appointment Booked Successfully!")
-
+                    st.success("✅ Appointment Booked Successfully!")
+                    
+                except Exception as e:
+                    st.error(f"Database error: {e}")
+            
             st.info(f"""
             📌 Booking ID: {booking_id}
 
@@ -1259,12 +1407,12 @@ def doctor_booking_popup():
             """)
             st.info("Booking details have been sent to your provided email and phone number.")
             st.balloons()
-
+            
             # ২. ১০ সেকেন্ড ওয়েট এবং রিরান
             import time
             time.sleep(10)
             st.rerun()
-
+        
         conn.close()
     except Exception as e:
         st.error(f"Error: {e}")
@@ -1299,7 +1447,8 @@ prompt = st.chat_input("Ask me anything about your skin...")
 
 
 if prompt:
-
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    c = conn.cursor()
     st.session_state.messages.append({
         "role": "user",
         "content": prompt
@@ -1409,6 +1558,8 @@ if prompt:
             "assistant",
             reply
         ))
+        
         conn.commit()
-
+    conn.close()
     st.rerun()
+    
