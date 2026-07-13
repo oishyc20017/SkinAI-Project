@@ -1203,9 +1203,33 @@ if file:
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
     st.session_state.predictions = pred[0]
+    # Prediction History Save
+    if st.session_state.get("logged_in", False):
+
+        conn = sqlite3.connect("skinai_wishy_v30.db")
+        c = conn.cursor()
+
+        c.execute("""
+            INSERT INTO prediction_history
+            (
+                user_email,
+                disease,
+                confidence,
+                image_path
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            st.session_state.user,
+            res_name,
+            confidence,
+            file.name
+        ))
+
+        conn.commit()
+        conn.close()
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
-if st.session_state.last_res != "None":
+if st.session_state.last_res is not None:
     res_name = st.session_state.last_res
     info = disease_details.get(res_name)
     confidence = st.session_state.confidence
