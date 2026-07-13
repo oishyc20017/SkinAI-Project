@@ -419,7 +419,7 @@ def get_db():
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
 
-return conn
+    return conn
 
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
