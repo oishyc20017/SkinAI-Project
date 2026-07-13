@@ -1,21 +1,22 @@
-import hashlib
+import streamlit as st
+import requestsfrom streamlit_lottie 
+import st_lottie
+import time
+import tensorflow as tffrom PIL 
+import Image
+import numpy as np
 import os
 import random
-import secrets
+import gdown
+import sqlite3
+import hashlib
+import streamlit as stfrom streamlit_option_menu 
+import option_menu
 import sqlite3
 import time
-
-import gdown
-import google.generativeai as genai
-import numpy as np
-import requests
-import streamlit as st
-import tensorflow as tf
-from PIL import Image
-from requests_oauthlib import OAuth2Session
-from streamlit_lottie import st_lottie
-from streamlit_option_menu import option_menu
-
+import secrets
+import google.generativeai as genaifrom requests_oauthlib 
+import OAuth2Session
 
 # ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
@@ -794,7 +795,9 @@ with st.sidebar:
                     st.rerun()
                     
         st.markdown("---")
+        # ==========================
         # ADMIN DASHBOARD
+        # ==========================
         if (
             st.session_state.get("logged_in", False)
             and st.session_state.user == "oishyc89@gmail.com"
@@ -802,21 +805,7 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
-            import os
-
-            db_path = "skinai_wishy_v30.db"
-
-            if os.path.exists(db_path):
-                with open(db_path, "rb") as f:
-                    st.download_button(
-                        label="📥 Download Database",
-                        data=f,
-                        file_name="skinai_wishy_v30.db",
-                        mime="application/octet-stream"
-                    )
-            else:
-                st.error("Database file not found!")
-
+            
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
 
@@ -1286,7 +1275,7 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
