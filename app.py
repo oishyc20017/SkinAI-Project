@@ -1,12 +1,12 @@
 import streamlit as st
 import requests
-import random
 from streamlit_lottie import st_lottie
 import time
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import os
+import random
 import gdown
 import sqlite3
 import hashlib
@@ -63,7 +63,7 @@ def google_callback():
 
         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
-
+        
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
         data = c.fetchone()
 
@@ -385,26 +385,27 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_users_email
         ON users(email)
         """)
-        
+
         c.execute("""
         CREATE INDEX IF NOT EXISTS idx_conversations_user
         ON conversations(user_email)
         """)
-        
+
         c.execute("""
         CREATE INDEX IF NOT EXISTS idx_messages_conversation
         ON messages(conversation_id)
         """)
-        
+
         c.execute("""
         CREATE INDEX IF NOT EXISTS idx_prediction_user
         ON prediction_history(user_email)
         """)
+
         c.execute("""
         CREATE INDEX IF NOT EXISTS idx_booking_user
         ON bookings(user_email)
         """)
-    
+       
         conn.commit()
 
     except Exception as e:
@@ -414,6 +415,7 @@ def init_db():
         conn.close()
 
 init_db()
+
 def get_db():
     conn = sqlite3.connect(
         "skinai_wishy_v30.db",
@@ -552,11 +554,6 @@ if "confidence" not in st.session_state:
 
 if "predictions" not in st.session_state:
     st.session_state.predictions = []
-if "prediction_saved" not in st.session_state:
-    st.session_state.prediction_saved = False
-
-if "last_uploaded_file" not in st.session_state:
-    st.session_state.last_uploaded_file = None
 
 if "oauth_state" not in st.session_state:
     st.session_state.oauth_state = None
@@ -578,7 +575,7 @@ with st.sidebar:
     # ... আগের বাটনগুলো (যেমন: New Chat) ...
     
     st.markdown("---") # আপনার ডিভাইডার লাইন
-        
+    
     # ২. সিকিউরিটি গেটওয়ে কার্ড
     st.markdown("""
     <div style="
@@ -612,7 +609,10 @@ with st.sidebar:
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
-    
+    # ==========================================================
+    # AUTHENTICATION AREA
+    # ==========================================================
+
     # ---------------- Conversation Loader ----------------
 
     if "chat_titles" not in st.session_state:
@@ -659,6 +659,7 @@ with st.sidebar:
             for role, message in rows
         ]
     conn.close()
+
     if st.session_state.get("logged_in", False):
 
         # ---------------- User Card ----------------
@@ -690,8 +691,6 @@ with st.sidebar:
             st.session_state.last_res = None
             st.session_state.predictions = []
             st.session_state.confidence = 0.0
-            st.session_state.prediction_saved = False
-            st.session_state.last_uploaded_file = None
             st.session_state.uploader_key += 1
 
             st.rerun()
@@ -801,7 +800,9 @@ with st.sidebar:
                     st.rerun()
                     
         st.markdown("---")
+        # ==========================
         # ADMIN DASHBOARD
+        # ==========================
         if (
             st.session_state.get("logged_in", False)
             and st.session_state.user == "oishyc89@gmail.com"
@@ -809,21 +810,10 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
-            import os
 
-            db_path = "/mount/src/skinai-project/skinai_wishy_v30.db"
-            
-            with open(db_path, "rb") as f:
-                st.download_button(
-                    "📥 Download Current Database",
-                    data=f,
-                    file_name="skinai_wishy_v30_live.db",
-                    mime="application/octet-stream"
-                )
-            
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
-            
+
             # Total Users
             c2.execute("SELECT COUNT(*) FROM users")
             total_users = c2.fetchone()[0]
@@ -841,9 +831,14 @@ with st.sidebar:
             total_bookings = c2.fetchone()[0]
             c2.execute("SELECT COUNT(*) FROM prediction_history")
             total_predictions = c2.fetchone()[0]
-
+            
             c2.execute("SELECT COUNT(*) FROM doctors")
             total_doctors = c2.fetchone()[0]
+
+            c2.execute("SELECT COUNT(*) FROM prediction_history")
+            total_predictions = c2.fetchone()[0]
+
+                      
 
             st.metric("👤 Registered Users", total_users)
             st.metric("👨‍⚕️ Doctors", total_doctors)
@@ -852,7 +847,7 @@ with st.sidebar:
             st.metric("🩺 Messages", total_messages)
             st.metric("🧬 Predictions", total_predictions)
             st.markdown("### 👥 Recent Users")
-            
+
             c2.execute("""
             SELECT fullname, username, email, created_at
             FROM users
@@ -876,10 +871,10 @@ with st.sidebar:
             """)
 
             bookings = c2.fetchall()
-            
+
             st.table(bookings)
             st.markdown("### 🧬 Prediction History")
-            
+
             c2.execute("""
             SELECT user_email,
                    disease,
@@ -891,10 +886,10 @@ with st.sidebar:
             """)
 
             predictions = c2.fetchall()
-            
+
             st.table(predictions)
             st.markdown("### 👨‍⚕️ Doctors")
-        
+
             c2.execute("""
             SELECT
             name,
@@ -908,8 +903,9 @@ with st.sidebar:
             doctor_list = c2.fetchall()
 
             st.table(doctor_list)
-                   
+           
             conn2.close()
+
         # ---------------- Logout ----------------
         if st.button(
             "🚪 Logout",
@@ -968,7 +964,7 @@ with st.sidebar:
             ):
                 conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
                 c = conn.cursor()
-                
+
                 c.execute("""
                     SELECT fullname, username, password
                     FROM users
@@ -977,7 +973,7 @@ with st.sidebar:
 
                 data = c.fetchone()
                 conn.close()
-                
+
                 if data and check_hash(p, data[2]):
 
                     st.session_state.logged_in = True
@@ -1101,7 +1097,7 @@ with st.sidebar:
                     try:
                         conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
                         c = conn.cursor()
-                        
+
                         c.execute("""
                             INSERT INTO users
                             (fullname, username, email, phone, dob, gender, country, password)
@@ -1180,35 +1176,29 @@ file = st.file_uploader(
 )
 
 if file:
-
-    # নতুন ছবি হলে আবার save করার অনুমতি দাও
-    if st.session_state.last_uploaded_file != file.name:
-        st.session_state.prediction_saved = False
-        st.session_state.last_uploaded_file = file.name
-
-    img_res = Image.open(file).convert("RGB").resize((100, 75))
+    # যখন ফাইল আপলোড হবে, তখনই কেবল প্রসেসিং শুরু হবে
+    img_res = Image.open(file).convert('RGB').resize((100, 75))
     x = np.asarray(img_res) / 255.0
     x = np.expand_dims(x, axis=0)
-
     pred = model.predict(x, verbose=0)
 
+    # Prediction
     pred_index = np.argmax(pred)
 
+    # Disease Name
     res_name = classes[pred_index]
 
+    # Confidence (%)
     confidence = float(pred[0][pred_index]) * 100
 
+    # Session
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
     st.session_state.predictions = pred[0]
-    import os
-    st.write("Prediction DB Path:", os.path.abspath("skinai_wishy_v30.db"))
     # Prediction History Save
-    if (
-        st.session_state.get("logged_in", False)
-        and not st.session_state.prediction_saved
-    ):
-
+    if st.session_state.get("logged_in", False):
+    
+        
         conn = sqlite3.connect("skinai_wishy_v30.db")
         c = conn.cursor()
 
@@ -1225,15 +1215,14 @@ if file:
             st.session_state.user,
             res_name,
             confidence,
-            file.name
+            file.name      # যদি image path save করতে না চাও, এখানে "" দিতে পারো
         ))
 
         conn.commit()
         conn.close()
 
-        st.session_state.prediction_saved = True
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
-if st.session_state.last_res is not None:
+if st.session_state.last_res != "None":
     res_name = st.session_state.last_res
     info = disease_details.get(res_name)
     confidence = st.session_state.confidence
@@ -1294,7 +1283,7 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = sqlite3.connect('skinai_wishy_v30.db', check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
@@ -1330,7 +1319,7 @@ def doctor_booking_popup():
                     "Age",
                     min_value=1,
                     max_value=120,
-                    value=15
+                    value=18 
                 )
             with col2:
                 gmail_address = st.text_input(
@@ -1366,6 +1355,8 @@ def doctor_booking_popup():
                 try:
                     conn = sqlite3.connect("skinai_wishy_v30.db")
                     c = conn.cursor()
+ 
+                
 
                     booking_id = f"BK-{random.randint(100000,999999)}"
 
@@ -1406,8 +1397,9 @@ def doctor_booking_popup():
                     conn.commit()
                     conn.close()
                     
+
                     st.success("✅ Appointment Booked Successfully!")
-       
+                    
                 except Exception as e:
                     st.error(f"Database error: {e}")
             
@@ -1470,7 +1462,6 @@ prompt = st.chat_input("Ask me anything about your skin...")
 if prompt:
     conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
     c = conn.cursor()
-
     st.session_state.messages.append({
         "role": "user",
         "content": prompt
@@ -1584,3 +1575,4 @@ if prompt:
         conn.commit()
     conn.close()
     st.rerun()
+    
