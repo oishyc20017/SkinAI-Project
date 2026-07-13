@@ -689,6 +689,8 @@ with st.sidebar:
             st.session_state.last_res = None
             st.session_state.predictions = []
             st.session_state.confidence = 0.0
+            st.session_state.prediction_saved = False
+            st.session_state.last_uploaded_file = None
             st.session_state.uploader_key += 1
 
             st.rerun()
