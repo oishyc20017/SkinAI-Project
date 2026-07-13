@@ -380,6 +380,26 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_users_email
+        ON users(email)
+        """)
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_conversations_user
+        ON conversations(user_email)
+        """)
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_messages_conversation
+        ON messages(conversation_id)
+        """)
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_prediction_user
+        ON prediction_history(user_email)
+        """)
+        c.execute("""
+        CREATE INDEX IF NOT EXISTS idx_booking_user
+        ON bookings(user_email)
+        """)
     
         conn.commit()
 
@@ -390,6 +410,16 @@ def init_db():
         conn.close()
 
 init_db()
+def get_db():
+    conn = sqlite3.connect(
+        "skinai_wishy_v30.db",
+        check_same_thread=False
+    )
+
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+
+return conn
 
 def make_hash(p): return hashlib.sha256(str.encode(p)).hexdigest()
 def check_hash(p, h): return h if make_hash(p) == h else False
@@ -573,10 +603,7 @@ with st.sidebar:
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("---")
-    # ==========================================================
-    # AUTHENTICATION AREA
-    # ==========================================================
-
+    
     # ---------------- Conversation Loader ----------------
 
     if "chat_titles" not in st.session_state:
@@ -593,8 +620,7 @@ with st.sidebar:
     """, (st.session_state.user,))
 
     st.session_state.chat_titles = c.fetchall()
-    conn.close()
-
+    
     # Auto select latest conversation
     if (
         st.session_state.current_conversation_id is None
@@ -763,9 +789,7 @@ with st.sidebar:
                     st.rerun()
                     
         st.markdown("---")
-        # ==========================
         # ADMIN DASHBOARD
-        # ==========================
         if (
             st.session_state.get("logged_in", False)
             and st.session_state.user == "oishyc89@gmail.com"
@@ -773,35 +797,98 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
-            # Total Users
-            c.execute("SELECT COUNT(*) FROM users")
-            total_users = c.fetchone()[0]
-
-            # Total Conversations
-            c.execute("SELECT COUNT(*) FROM conversations")
-            total_conversations = c.fetchone()[0]
-
-            # Total Messages
-            c.execute("SELECT COUNT(*) FROM messages")
-            total_messages = c.fetchone()[0]
-
-            # Total Bookings
-            # Total Bookings
+            
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
+            # Total Users
+            c2.execute("SELECT COUNT(*) FROM users")
+            total_users = c2.fetchone()[0]
 
+            # Total Conversations
+            c2.execute("SELECT COUNT(*) FROM conversations")
+            total_conversations = c2.fetchone()[0]
+
+            # Total Messages
+            c2.execute("SELECT COUNT(*) FROM messages")
+            total_messages = c2.fetchone()[0]
+
+            # Total Bookings
             c2.execute("SELECT COUNT(*) FROM bookings")
             total_bookings = c2.fetchone()[0]
+            c2.execute("SELECT COUNT(*) FROM prediction_history")
+            total_predictions = c2.fetchone()[0]
 
-            st.metric("📅 Bookings", total_bookings)
+            c2.execute("SELECT COUNT(*) FROM doctors")
+            total_doctors = c2.fetchone()[0]
+
+            c2.execute("SELECT COUNT(*) FROM prediction_history")
+            total_predictions = c2.fetchone()[0]
 
             conn2.close()
 
             st.metric("👤 Registered Users", total_users)
+            st.metric("👨‍⚕️ Doctors", total_doctors)
+            st.metric("📅 Bookings", total_bookings)
             st.metric("💬 Conversations", total_conversations)
             st.metric("🩺 Messages", total_messages)
-           
+            st.metric("🧬 Predictions", total_predictions)
+            st.markdown("### 👥 Recent Users")
+            
+            c2.execute("""
+            SELECT fullname, username, email, created_at
+            FROM users
+            ORDER BY id DESC
+            LIMIT 10
+            """)
 
+           users = c2.fetchall()
+
+           st.table(users)
+           st.markdown("### 📅 Recent Bookings")
+
+           c2.execute("""
+           SELECT patient_name,
+                  doctor_name,
+                  booking_date,
+                  status
+           FROM bookings
+           ORDER BY id DESC
+           LIMIT 10
+           """)
+
+           bookings = c2.fetchall()
+           st.table(bookings)
+           st.markdown("### 🧬 Prediction History")
+           c2.execute("""
+           SELECT user_email,
+                  disease,
+                  confidence,
+                  created_at
+           FROM prediction_history
+           ORDER BY id DESC
+           LIMIT 10
+           """)
+
+           predictions = c2.fetchall()
+           st.table(predictions)
+        
+           st.markdown("### 👨‍⚕️ Doctors")
+        
+           c2.execute("""
+           SELECT
+           name,
+           specialty,
+           fee,
+           available_time,
+           hospital_name
+           FROM doctors
+           """)
+
+           doctor_list = c2.fetchall()
+
+           st.table(doctor_list)
+       
+           conn2.close()
         # ---------------- Logout ----------------
         if st.button(
             "🚪 Logout",
@@ -858,7 +945,9 @@ with st.sidebar:
                 use_container_width=True,
                 key="unique_login_submit"
             ):
-
+                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                c = conn.cursor()
+                
                 c.execute("""
                     SELECT fullname, username, password
                     FROM users
@@ -866,7 +955,8 @@ with st.sidebar:
                 """, (e,))
 
                 data = c.fetchone()
-
+                conn.close()
+                
                 if data and check_hash(p, data[2]):
 
                     st.session_state.logged_in = True
@@ -988,7 +1078,9 @@ with st.sidebar:
                 else:
 
                     try:
-
+                        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                        c = conn.cursor()
+                        
                         c.execute("""
                             INSERT INTO users
                             (fullname, username, email, phone, dob, gender, country, password)
@@ -1005,12 +1097,15 @@ with st.sidebar:
                         ))
 
                         conn.commit()
+                        c.execute("SELECT COUNT(*) FROM users")
+                        st.write("Users after register:", c.fetchone()[0])
+                        conn.close()
 
                         st.success("🎉 Account Created Successfully!")
                         st.info("You can now login.")
 
-                    except sqlite3.IntegrityError:
-                        st.error("Username or Email already exists.")
+                    except Exception as e:
+                        st.error(f"Database Error: {e}")
 
     with st.expander("❓ Help & Information"):
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
@@ -1083,6 +1178,31 @@ if file:
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
     st.session_state.predictions = pred[0] 
+    # Prediction History Save
+    if st.session_state.get("logged_in", False):
+
+    
+        conn = sqlite3.connect("skinai_wishy_v30.db")
+        c = conn.cursor()
+
+        c.execute("""
+            INSERT INTO prediction_history
+            (
+                user_email,
+                disease,
+                confidence,
+                image_path
+            )
+            VALUES (?, ?, ?, ?)
+        """, (
+            st.session_state.user,
+            res_name,
+            confidence,
+            file.name      # যদি image path save করতে না চাও, এখানে "" দিতে পারো
+        ))
+
+        conn.commit()
+        conn.close()
 
 # ডাটাবেস থেকে তথ্য লোড করার অংশ (ক্লিন লজিক)
 if st.session_state.last_res != "None":
@@ -1201,24 +1321,7 @@ def doctor_booking_popup():
             submit_button = st.form_submit_button("Confirm Appointment")
 
         if submit_button:
-            try:
-                conn = sqlite3.connect('skinai_wishy_v30.db')
-                c = conn.cursor()
-                # এখানে নিশ্চিত করুন যে কলামের নামগুলো ডাটাবেসের সাথে হুবহু মিলছে
-                c.execute("""
-                    INSERT INTO bookings (user_email, doctor_name, appointment_date, appointment_time, status)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (gmail_address, selected_doctor[0], str(preferred_date), selected_doctor[3], 'Pending'))
-                conn.commit()
-                conn.close()
-        
-                st.success("✅ Appointment Booked Successfully!")
-                st.balloons()
-                time.sleep(2)
-                st.rerun()
-            except Exception as e:
-                st.error(f"Database error: {e}")
-
+            
             if not patient_name.strip():
                 st.error("Please enter Patient Name.")
 
@@ -1232,51 +1335,52 @@ def doctor_booking_popup():
                 st.error("Please enter a valid Gmail Address.")
 
             else:
+                try:
+                    conn = sqlite3.connect("skinai_wishy_v30.db")
+                    c = conn.cursor()
 
-                import random
+                    booking_id = f"BK-{random.randint(100000,999999)}"
 
-                booking_id = f"BK-{random.randint(100000,999999)}"
+                    c.execute("""
+                    INSERT INTO bookings
+                    (
+                        booking_id,
+                        patient_name,
+                        user_email,
+                        phone_number,
+                        age,
+                        doctor_name,
+                        specialty,
+                        hospital_name,
+                        booking_date,
+                        booking_time,
+                        symptoms,
+                        payment_method,
+                        status
+                    )
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    """,(
+                        booking_id,
+                        patient_name,
+                        gmail_address,
+                        phone_number,
+                        age,
+                        selected_doctor[0],
+                        selected_doctor[1],
+                        selected_doctor[4],
+                        str(preferred_date),
+                        selected_doctor[3],
+                        symptoms,
+                        payment_method,
+                        "Confirmed"
+                    ))
 
-                c.execute("""
-                INSERT INTO bookings
-                (
-                    booking_id,
-                    patient_name,
-                    user_email,
-                    phone_number,
-                    age,
-                    doctor_name,
-                    specialty,
-                    hospital_name,
-                    booking_date,
-                    booking_time,
-                    symptoms,
-                    payment_method,
-                    status
-                )
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """,(
-                    booking_id,
-                    patient_name,
-                    gmail_address,
-                    phone_number,
-                    age,
-                    selected_doctor[0],
-                    selected_doctor[1],
-                    selected_doctor[4],
-                    str(preferred_date),
-                    selected_doctor[3],
-                    symptoms,
-                    payment_method,
-                    "Confirmed"
-                ))
-
-                conn.commit()
-
-        # এরপর তোমার success/info/balloons কোডগুলো আগের মতো থাকবে
-
-            st.success("Reached after commit")
-            st.success("✅ Appointment Booked Successfully!")
+                    conn.commit()
+                    conn.close()
+                    st.success("✅ Appointment Booked Successfully!")
+       
+                except Exception as e:
+                    st.error(f"Database error: {e}")
             
             st.info(f"""
             📌 Booking ID: {booking_id}
@@ -1335,6 +1439,8 @@ prompt = st.chat_input("Ask me anything about your skin...")
 
 
 if prompt:
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    c = conn.cursor()
 
     st.session_state.messages.append({
         "role": "user",
