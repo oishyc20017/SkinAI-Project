@@ -802,6 +802,20 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
+            import os
+
+            db_path = "skinai_wishy_v30.db"
+
+            if os.path.exists(db_path):
+                with open(db_path, "rb") as f:
+                    st.download_button(
+                        label="📥 Download Database",
+                        data=f,
+                        file_name="skinai_wishy_v30.db",
+                        mime="application/octet-stream"
+                    )
+            else:
+                st.error("Database file not found!")
 
             conn2 = sqlite3.connect("skinai_wishy_v30.db")
             c2 = conn2.cursor()
@@ -1121,20 +1135,7 @@ with st.sidebar:
         st.write("১. স্পষ্ট ছবি আপলোড করুন।")
         st.write("২. রিপোর্ট পাওয়ার পর প্রশ্ন করুন।")
         st.write("৩. হিস্ট্রি দেখতে অবশ্যই লগইন করুন।")
-        import os
-
-        db_path = "skinai_wishy_v30.db"
-
-        if os.path.exists(db_path):
-            with open(db_path, "rb") as f:
-                st.download_button(
-                    label="📥 Download Database",
-                    data=f,
-                    file_name="skinai_wishy_v30.db",
-                    mime="application/octet-stream"
-                )
-        else:
-            st.error("Database file not found!")
+        
 # --- ১. মেইন পেজ অ্যানিমেশন ---
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
