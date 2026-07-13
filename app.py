@@ -877,7 +877,7 @@ with st.sidebar:
                    created_at
             FROM prediction_history
             ORDER BY id DESC
-            LIMIT 30
+            LIMIT 10
             """)
 
             predictions = c2.fetchall()
