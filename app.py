@@ -1369,8 +1369,7 @@ def doctor_booking_popup():
                     c = conn.cursor()
 
                     booking_id = f"BK-{random.randint(100000,999999)}"
-                    st.error("Booking INSERT running")
-
+                    
                     c.execute("""
                     INSERT INTO bookings
                     (
@@ -1485,7 +1484,6 @@ if prompt:
         and st.session_state.current_conversation_id is None
     ):
 
-        st.error("Conversation INSERT running")
         c.execute("""
         INSERT INTO conversations(user_email, title)
         VALUES (?, ?)
