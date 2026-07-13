@@ -801,6 +801,8 @@ with st.sidebar:
 
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
+            import os
+
             db_path = "/mount/src/skinai-project/skinai_wishy_v30.db"
 
             with open(db_path, "rb") as f:
