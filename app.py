@@ -115,15 +115,8 @@ def google_login():
 
     return authorization_url
     
-def main():
-     google_callback()
-
-
-# ---------------- RUN ----------------
-if __name__ == "__main__":
-     main()
-
-
+    
+google_callback()
 # --- সাইডবার ও বাটন গোছানোর অ্যাডভান্সড সিএসএস ---
 st.markdown("""
 <style>
