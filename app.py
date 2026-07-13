@@ -812,6 +812,7 @@ with st.sidebar:
             import os
 
             db_path = "/mount/src/skinai-project/skinai_wishy_v30.db"
+            st.write("Download DB Path:", db_path)
 
             with open(db_path, "rb") as f:
                 st.download_button(
@@ -1201,6 +1202,8 @@ if file:
     st.session_state.last_res = res_name
     st.session_state.confidence = confidence
     st.session_state.predictions = pred[0]
+    import os
+    st.write("Prediction DB Path:", os.path.abspath("skinai_wishy_v30.db"))
     # Prediction History Save
     if (
         st.session_state.get("logged_in", False)
