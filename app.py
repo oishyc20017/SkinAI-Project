@@ -10,10 +10,8 @@ import os
 import gdown
 import sqlite3
 import hashlib
-import streamlit as st
 from streamlit_option_menu import option_menu
 import sqlite3
-import time
 import secrets
 import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
