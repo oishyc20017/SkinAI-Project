@@ -767,7 +767,7 @@ with st.sidebar:
                     chat_labels.append(title)
                     chat_map[title] = chat_id
 
-                selected = option_menu(
+            selected = option_menu(
                 menu_title=None,
                 options=chat_labels,
                 icons=["chat-left-text"] * len(chat_labels),
