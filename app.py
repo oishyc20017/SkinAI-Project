@@ -766,11 +766,12 @@ with st.sidebar:
 
                     chat_labels.append(title)
                     chat_map[title] = chat_id
+                
             selected = option_menu(
                 menu_title=None,
                 options=chat_labels,
                 icons=["chat-left-text"] * len(chat_labels),
-                default_index=None, # এখানে None দাও, এতে কোনো চ্যাট শুরুতে সিলেক্ট হবে না
+                default_index=0,
                 styles={
                     "container": {
                         "padding": "0!important",
@@ -793,9 +794,7 @@ with st.sidebar:
                         "color": "white",
                     },
                 },
-            )
-                
-                    
+            )        
 
             if selected:
 
