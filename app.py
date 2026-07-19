@@ -1442,18 +1442,10 @@ def doctor_booking_popup():
                     ))
 
                     conn.commit()
-                    # ১৪২৪ থেকে ১৪২৯ নম্বর লাইন পর্যন্ত এভাবে করো:
-                    c.execute("SELECT COUNT(*) FROM bookings")
-                    # st.write("Bookings =", c.fetchone()[0])  <-- এই লাইনটি মুছে দাও বা সামনে # দাও
-
-                    c.execute("SELECT * FROM bookings")
-                    # st.write(c.fetchall())                  <-- এই লাইনটিও মুছে দাও বা সামনে # দাও
                     conn.close()
                     
                     st.success("✅ Appointment Booked Successfully!")
        
-                except Exception as e:
-                    st.error(f"Database error: {e}")
             
             st.info(f"""
             📌 Booking ID: {booking_id}
@@ -1478,9 +1470,8 @@ def doctor_booking_popup():
             time.sleep(10)
             st.rerun()
         
-        conn.close()
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"Database error: {e}")
 
 # মেইন বডিতে এই অংশটি রাখো, অন্য কোনো বাটন ডিলিট করে দাও
 col1, col2, col3 = st.columns([3, 4, 3])
