@@ -292,7 +292,8 @@ div.stButton > button:first-child:hover {
 def init_db():
     
     try:
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        DB_PATH = r"C:\skinAI\skinai_wishy_v30"
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
         c = conn.cursor()
         c.execute("""
         CREATE TABLE IF NOT EXISTS users(
