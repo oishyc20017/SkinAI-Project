@@ -766,12 +766,44 @@ with st.sidebar:
 
                     chat_labels.append(title)
                     chat_map[title] = chat_id
-
+        if st.session_state.current_conversation_id is None:
+            # নতুন চ্যাট মোডে থাকলে মেনু দেখানোর দরকার নেই বা ডিফল্ট সিলেক্ট হবে না
             selected = option_menu(
                 menu_title=None,
                 options=chat_labels,
                 icons=["chat-left-text"] * len(chat_labels),
-                default_index=0, 
+                default_index=None, # এখানে None দাও, এতে কোনো চ্যাট শুরুতে সিলেক্ট হবে না
+                styles={
+                    "container": {
+                        "padding": "0!important",
+                        "background-color": "transparent",
+                    },
+                    "icon": {
+                        "color": "#60a5fa",
+                        "font-size": "13px",
+                    },
+                    "nav-link": {
+                        "font-size": "12px",
+                        "text-align": "left",
+                        "margin": "0px",
+                        "border-radius": "6px",
+                        "padding": "5px 7px",
+                        "--hover-color": "#2d2d2d",
+                    },
+                    "nav-link-selected": {
+                        "background-color": "#1f2937",
+                        "color": "white",
+                    },
+                },
+            )
+                }
+            )
+        else:
+            selected = option_menu(
+                menu_title=None,
+                options=chat_labels,
+                icons=["chat-left-text"] * len(chat_labels),
+                default_index=chat_labels.index(current_title) if current_title in chat_labels else 0,
                 styles={
                     "container": {
                         "padding": "0!important",
