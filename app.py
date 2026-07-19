@@ -827,6 +827,13 @@ with st.sidebar:
                     st.rerun()
                     
         st.markdown("---")
+        # এই অংশটুকু তোমার ড্যাশবোর্ড ফাংশনের ঠিক উপরে বসাও
+        @st.cache_data(ttl=0) 
+        def load_data():
+            conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+            df = pd.read_sql_query("SELECT * FROM bookings", conn)
+            conn.close()
+            return df
         # ADMIN DASHBOARD
         if (
             st.session_state.get("logged_in", False)
