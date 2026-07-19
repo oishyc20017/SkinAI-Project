@@ -15,7 +15,20 @@ import sqlite3
 import secrets
 import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
+import os
+import sqlite3
+import streamlit as st
 
+# --- ডেটাবেস পাথ সেটিংস (সবাই এক জায়গায় থাকল) ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "skinai_wishy_v30.db")
+
+# --- ডেটাবেস ফাংশনগুলো আপডেট করে দাও ---
+def get_db():
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
 
 # ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
