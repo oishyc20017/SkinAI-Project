@@ -59,7 +59,9 @@ def google_callback():
         email = user["email"]
         fullname = user["name"]
 
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        # ফাইলের পাথটি নির্দিষ্ট করে দাও
+        db_path = r"C:\skinAI\skinai_wishy_v30" 
+        conn = sqlite3.connect(db_path, check_same_thread=False)
         c = conn.cursor()
 
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
