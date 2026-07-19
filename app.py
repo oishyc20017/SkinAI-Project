@@ -701,7 +701,7 @@ with st.sidebar:
         st.markdown("---")
 
         # ---------------- Recent Chat ----------------
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
         c = conn.cursor()
 
         c.execute("""
@@ -814,17 +814,18 @@ with st.sidebar:
             st.subheader("📊 Admin Dashboard")
             import os
 
-            db_path = "/mount/src/skinai-project/skinai_wishy_v30.db"
-            
+            db_path = r"C:\skinAI\skinai_wishy_v30" # এখানে ফুল পাথ দাও
+
             with open(db_path, "rb") as f:
                 st.download_button(
                     "📥 Download Current Database",
                     data=f,
                     file_name="skinai_wishy_v30_live.db",
                     mime="application/octet-stream"
-                )
-            
-            conn2 = sqlite3.connect("skinai_wishy_v30.db")
+                 )
+
+            # কানেকশন লাইনটি পরিবর্তন করো:
+            conn2 = sqlite3.connect(db_path)
             c2 = conn2.cursor()
             
             # Total Users
@@ -969,7 +970,7 @@ with st.sidebar:
                 use_container_width=True,
                 key="unique_login_submit"
             ):
-                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
                 c = conn.cursor()
                 
                 c.execute("""
@@ -1102,7 +1103,7 @@ with st.sidebar:
                 else:
 
                     try:
-                        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
                         c = conn.cursor()
                         
                         c.execute("""
@@ -1211,7 +1212,7 @@ if file:
         and not st.session_state.prediction_saved
     ):
 
-        conn = sqlite3.connect("skinai_wishy_v30.db")
+        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
         c = conn.cursor()
 
         c.execute("""
@@ -1296,7 +1297,7 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
@@ -1366,7 +1367,7 @@ def doctor_booking_popup():
 
             else:
                 try:
-                    conn = sqlite3.connect("skinai_wishy_v30.db")
+                    conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
                     c = conn.cursor()
 
                     booking_id = f"BK-{random.randint(100000,999999)}"
@@ -1475,7 +1476,7 @@ prompt = st.chat_input("Ask me anything about your skin...")
 
 
 if prompt:
-    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
     c = conn.cursor()
 
     st.session_state.messages.append({
