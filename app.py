@@ -29,6 +29,19 @@ def get_db():
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
+    # --- ডাটাবেস টেবিলগুলো তৈরি করার জন্য ---
+    def init_db():
+        conn = get_db()
+        c = conn.cursor()
+        # এখানে তোমার টেবিল তৈরির সব কোড (CREATE TABLE ...) বসাও
+        # উদাহরণ:
+        c.execute("CREATE TABLE IF NOT EXISTS users (...)") 
+        # ... বাকি সব টেবিল ...
+        conn.commit()
+        conn.close()
+
+    # অ্যাপ লোড হওয়ার সময় একবার রান হবে
+    init_db()
 
 # ---------------- CONFIG ----------------
 genai.configure(api_key=st.secrets["API_KEY"])
