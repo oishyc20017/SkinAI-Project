@@ -132,13 +132,6 @@ def google_login():
     return authorization_url
     
 def main():
-    db_path = r"C:\skinAI\skinai_wishy_v30"
-    if os.path.exists(db_path):
-        st.success(f"ডেটাবেস ফাইলটি এখানে পাওয়া গেছে: {db_path}")
-        size = os.path.getsize(db_path)
-        st.info(f"ফাইলটির সাইজ: {size} bytes")
-    else:
-        st.error(f"ভুল! এই পাথে কোনো ফাইল নেই: {db_path}")
         
     google_callback()
 
@@ -837,13 +830,13 @@ with st.sidebar:
 
             db_path = r"C:\skinAI\skinai_wishy_v30" # এখানে ফুল পাথ দাও
 
-            with open(db_path, "rb") as f:
+            with open(DB_PATH, "rb") as f:
                 st.download_button(
                     "📥 Download Current Database",
                     data=f,
                     file_name="skinai_wishy_v30_live.db",
                     mime="application/octet-stream"
-                 )
+                )
 
             # কানেকশন লাইনটি পরিবর্তন করো:
             conn2 = sqlite3.connect(db_path)
