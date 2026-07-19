@@ -767,12 +767,30 @@ with st.sidebar:
                     chat_labels.append(title)
                     chat_map[title] = chat_id
 
-            selected = option_menu(
-                menu_title=None,
-                options=chat_labels,
-                icons=["chat-left-text"] * len(chat_labels),
-                default_index=-1,
-                styles={
+            # নিচের লজিকটি ব্যবহার করো
+            if len(chat_labels) > 0:
+    # বর্তমানে কোনো conversation সিলেক্ট করা থাকলে সেই আইডিটি খুঁজো
+                current_index = 0
+                if st.session_state.current_conversation_id:
+                    for i, (chat_id, title) in enumerate(st.session_state.chat_titles):
+                        if chat_id == st.session_state.current_conversation_id:
+                            current_index = i
+                            break
+    
+    # যদি নতুন চ্যাট হয় (ID None), তবে কাউকে সিলেক্ট করবে না
+                index_to_use = current_index if st.session_state.current_conversation_id else None
+
+                selected = option_menu(
+                    menu_title=None,
+                    options=chat_labels,
+                    icons=["chat-left-text"] * len(chat_labels),
+                    default_index=index_to_use if index_to_use is not None else 0,
+                )
+    
+    # শুধুমাত্র তখনই সিলেক্ট হবে যদি এটি আগের চ্যাট থেকে ভিন্ন হয়
+                if selected and st.session_state.current_conversation_id is None:
+         # এখানে কিছুই করবে না, যাতে নতুন চ্যাট ক্লিয়ার থাকে
+                     pass
                     "container": {
                         "padding": "0!important",
                         "background-color": "transparent",
