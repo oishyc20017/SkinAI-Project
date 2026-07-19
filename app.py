@@ -127,7 +127,7 @@ def main():
     else:
         st.error(f"ভুল! এই পাথে কোনো ফাইল নেই: {db_path}")
         
-     google_callback()
+    google_callback()
 
 
 # ---------------- RUN ----------------
