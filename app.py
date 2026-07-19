@@ -1094,11 +1094,16 @@ with st.sidebar:
 
             st.markdown("---")
 
-            # সঠিক ফরম্যাট:
-            if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
-                # ডাটাবেস কানেকশন বাটন প্রেস করার পর ভেতরে আসবে
+            # ১০৯৭ নম্বর লাইন থেকে এটি সরান:
+            if st.button(
+                "Create Account", 
+                use_container_width=True, 
+                key="unique_reg_submit"
+            ): # এই বন্ধনী বা ব্র্যাকেটের ভেতরে কিছু লিখবেন না
+    # এখানে বাটনটি ক্লিক করলে যা হবে, সেই কোডগুলো হবে
                 conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
                 c = conn.cursor()
+    # আপনার বাকি সব কুয়েরি (INSERT INTO, ইত্যাদি) এরপর নিচে এক ধাপ ইনডেন্ট দিয়ে লিখুন
     
 
                 if not agree:
@@ -1125,7 +1130,7 @@ with st.sidebar:
                 else:
 
                     try:
-                        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+                        conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
                         c = conn.cursor()
                         
                         c.execute("""
@@ -1234,7 +1239,7 @@ if file:
         and not st.session_state.prediction_saved
     ):
 
-        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+        conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
 
         c.execute("""
@@ -1319,7 +1324,7 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+        conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
@@ -1389,7 +1394,7 @@ def doctor_booking_popup():
 
             else:
                 try:
-                    conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+                    conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
                     c = conn.cursor()
 
                     booking_id = f"BK-{random.randint(100000,999999)}"
@@ -1499,7 +1504,7 @@ prompt = st.chat_input("Ask me anything about your skin...")
 
 
 if prompt:
-    conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+    conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
     c = conn.cursor()
 
     st.session_state.messages.append({
