@@ -654,9 +654,12 @@ with st.sidebar:
 
     st.session_state.chat_titles = c.fetchall()
     
-    # Auto select latest conversation
+    if "new_chat" not in st.session_state:
+        st.session_state.new_chat = False
+
     if (
-        st.session_state.current_conversation_id is None
+        not st.session_state.new_chat
+        and st.session_state.current_conversation_id is None
         and st.session_state.chat_titles
     ):
         st.session_state.current_conversation_id = (
