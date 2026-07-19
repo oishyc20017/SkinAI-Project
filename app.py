@@ -710,6 +710,7 @@ with st.sidebar:
 
             # শুধু Session Reset হবে
             st.session_state.current_conversation_id = None
+            st.session_state.new_chat = True
             st.session_state.messages = []
             st.session_state.last_res = None
             st.session_state.predictions = []
@@ -766,6 +767,8 @@ with st.sidebar:
 
                     chat_labels.append(title)
                     chat_map[title] = chat_id
+                if "new_chat" not in st.session_state:
+                st.session_state.new_chat = False
                 
             selected = option_menu(
                 menu_title=None,
@@ -796,7 +799,7 @@ with st.sidebar:
                 },
             )        
 
-            if selected:
+            if selected and not st.session_state.new_chat:
 
                 selected_id = chat_map[selected]
 
@@ -820,6 +823,7 @@ with st.sidebar:
                         }
                         for role, message in rows
                     ]
+                    st.session_state.new_chat = False
 
                     st.rerun()
                     
