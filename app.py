@@ -1452,6 +1452,8 @@ def doctor_booking_popup():
                     conn.close()
                     
                     st.success("✅ Appointment Booked Successfully!")
+                except Exception as e:
+                    st.error(f"Database error: {e}")
        
             
             st.info(f"""
