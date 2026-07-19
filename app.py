@@ -818,8 +818,6 @@ with st.sidebar:
                     """, (selected_id,))
 
                     rows = c.fetchall()
-                    st.write("Rows:", rows)
-                    st.write("Row Count:", len(rows))
 
                     st.session_state.messages = [
                         {
