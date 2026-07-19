@@ -847,7 +847,7 @@ with st.sidebar:
             if st.button("📥 Click here to get the full Database file"):
                 try:
         # ফাইলটি সরাসরি ফাইল সিস্টেম থেকে রিড করবে
-                    with open("skinai_wishy_v30.db", "rb") as f:
+                    with open(DB_PATH, "rb") as f:
                         st.download_button(
                             label="Confirm Download",
                             data=f,
