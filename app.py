@@ -444,11 +444,8 @@ def init_db():
 
 init_db()
 def get_db():
-    db_path = r"C:\skinAI\skinai_wishy_v30"
-    conn = sqlite3.connect(
-        db_path, 
-        check_same_thread=False
-    )
+    # পুরনো পাথটি মুছে ফেলে আমাদের গ্লোবাল ভেরিয়েবলটি ব্যবহার করো
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
