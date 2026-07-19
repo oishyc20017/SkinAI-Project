@@ -417,8 +417,9 @@ def init_db():
 
 init_db()
 def get_db():
+    db_path = r"C:\skinAI\skinai_wishy_v30"
     conn = sqlite3.connect(
-        "skinai_wishy_v30.db",
+        db_path, 
         check_same_thread=False
     )
 
