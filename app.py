@@ -835,14 +835,21 @@ with st.sidebar:
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
     
-            # পাথ বা হার্ডকোডেড ভেরিয়েবল ব্যবহার না করে সরাসরি DB_PATH ব্যবহার করো
-            with open(DB_PATH, "rb") as f:
-                st.download_button(
-                    "📥 Download Current Database",
-                    data=f,
-                    file_name="skinai_wishy_v30_live.db",
-                    mime="application/octet-stream"
-                )
+            # অ্যাডমিন বা ড্যাশবোর্ড সেকশনের শেষে বসান
+            st.subheader("Database Backup")
+
+            if st.button("📥 Click here to get the full Database file"):
+                try:
+        # ফাইলটি সরাসরি ফাইল সিস্টেম থেকে রিড করবে
+                    with open("skinai_wishy_v30.db", "rb") as f:
+                        st.download_button(
+                            label="Confirm Download",
+                            data=f,
+                            file_name="skinai_wishy_v30.db",
+                            mime="application/x-sqlite3"
+                        )
+                except FileNotFoundError:
+                    st.error("Error: Database file 'skinai_wishy_v30.db' not found!")
 
             # এখানেও DB_PATH ব্যবহার করো
             conn2 = sqlite3.connect(DB_PATH) 
