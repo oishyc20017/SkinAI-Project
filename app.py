@@ -17,7 +17,6 @@ import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
 import os
 import sqlite3
-import streamlit as st
 
 # --- ডেটাবেস পাথ সেটিংস (সবাই এক জায়গায় থাকল) ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -85,7 +84,7 @@ def google_callback():
 
         # --- এখানে পরিবর্তন করো ---
         # পুরনো লাইনটি মুছে ফেলে এই লাইনটি বসাও:
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = get_db()
         c = conn.cursor()
 
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
@@ -319,8 +318,7 @@ div.stButton > button:first-child:hover {
 def init_db():
     
     try:
-        DB_PATH = r"C:\skinAI\skinai_wishy_v30"
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = get_db()
         c = conn.cursor()
         c.execute("""
         CREATE TABLE IF NOT EXISTS users(
@@ -445,7 +443,7 @@ def init_db():
 init_db()
 def get_db():
     # পুরনো পাথটি মুছে ফেলে আমাদের গ্লোবাল ভেরিয়েবলটি ব্যবহার করো
-    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
 
@@ -645,7 +643,7 @@ with st.sidebar:
         st.session_state.chat_titles = []
 
     # Load all conversations
-    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    conn = get_db()
     c = conn.cursor()
     c.execute("""
     SELECT id, title
@@ -724,7 +722,7 @@ with st.sidebar:
         st.markdown("---")
 
         # ---------------- Recent Chat ----------------
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = get_db()
         c = conn.cursor()
 
         c.execute("""
@@ -830,7 +828,8 @@ with st.sidebar:
         # এই অংশটুকু তোমার ড্যাশবোর্ড ফাংশনের ঠিক উপরে বসাও
         @st.cache_data(ttl=0) 
         def load_data():
-            conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+            conn = get_db()
+            c = conn.cursor()
             df = pd.read_sql_query("SELECT * FROM bookings", conn)
             conn.close()
             return df
@@ -859,7 +858,7 @@ with st.sidebar:
                     st.error("Error: Database file 'skinai_wishy_v30.db' not found!")
 
             # এখানেও DB_PATH ব্যবহার করো
-            conn2 = sqlite3.connect(DB_PATH) 
+            conn2 = get_db() 
             c2 = conn2.cursor()
             
             # Total Users
@@ -1004,7 +1003,8 @@ with st.sidebar:
                 use_container_width=True,
                 key="unique_login_submit"
             ):
-                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                conn = get_db()
+                c = conn.cursor()
                 c = conn.cursor()
                 
                 c.execute("""
@@ -1114,7 +1114,7 @@ with st.sidebar:
                 key="unique_reg_submit"
             ): # এই বন্ধনী বা ব্র্যাকেটের ভেতরে কিছু লিখবেন না
     # এখানে বাটনটি ক্লিক করলে যা হবে, সেই কোডগুলো হবে
-                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                conn = get_db()
                 c = conn.cursor()
     # আপনার বাকি সব কুয়েরি (INSERT INTO, ইত্যাদি) এরপর নিচে এক ধাপ ইনডেন্ট দিয়ে লিখুন
     
@@ -1143,7 +1143,7 @@ with st.sidebar:
                 else:
 
                     try:
-                        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                        conn = get_db()
                         c = conn.cursor()
                         
                         c.execute("""
@@ -1252,7 +1252,7 @@ if file:
         and not st.session_state.prediction_saved
     ):
 
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = get_db()
         c = conn.cursor()
 
         c.execute("""
@@ -1338,7 +1338,7 @@ st.markdown("---")
 def doctor_booking_popup():
     try:
         # সঠিক কানেকশন লাইন
-        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+        conn = get_db()
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
@@ -1409,7 +1409,7 @@ def doctor_booking_popup():
 
             else:
                 try:
-                    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+                    conn = get_db()
                     c = conn.cursor()
 
                     booking_id = f"BK-{random.randint(100000,999999)}"
@@ -1512,7 +1512,7 @@ prompt = st.chat_input("Ask me anything about your skin...")
 
 
 if prompt:
-    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
+    conn = get_db()
     c = conn.cursor()
 
     st.session_state.messages.append({
