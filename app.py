@@ -800,7 +800,9 @@ with st.sidebar:
                         "color": "white",
                     },
                 },
-            )        
+            ) 
+            st.write("Selected:", selected)
+            st.write("Conversation ID:", chat_map[selected])
 
             if selected and not st.session_state.new_chat:
 
