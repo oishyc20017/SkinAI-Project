@@ -646,7 +646,7 @@ with st.sidebar:
         st.session_state.chat_titles = []
 
     # Load all conversations
-    conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
     c = conn.cursor()
     c.execute("""
     SELECT id, title
@@ -725,7 +725,7 @@ with st.sidebar:
         st.markdown("---")
 
         # ---------------- Recent Chat ----------------
-        conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
 
         c.execute("""
@@ -1130,7 +1130,7 @@ with st.sidebar:
                 else:
 
                     try:
-                        conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
+                        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
                         c = conn.cursor()
                         
                         c.execute("""
@@ -1239,7 +1239,7 @@ if file:
         and not st.session_state.prediction_saved
     ):
 
-        conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
 
         c.execute("""
@@ -1506,7 +1506,7 @@ prompt = st.chat_input("Ask me anything about your skin...")
 
 
 if prompt:
-    conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
     c = conn.cursor()
 
     st.session_state.messages.append({
