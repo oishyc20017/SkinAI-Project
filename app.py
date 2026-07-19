@@ -801,9 +801,7 @@ with st.sidebar:
                     },
                 },
             ) 
-            st.write("Selected:", selected)
-            st.write("Conversation ID:", chat_map[selected])
-
+            
             if selected and not st.session_state.new_chat:
 
                 selected_id = chat_map[selected]
@@ -820,6 +818,8 @@ with st.sidebar:
                     """, (selected_id,))
 
                     rows = c.fetchall()
+                    st.write("Rows:", rows)
+                    st.write("Row Count:", len(rows))
 
                     st.session_state.messages = [
                         {
