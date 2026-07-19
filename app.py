@@ -767,8 +767,8 @@ with st.sidebar:
 
                     chat_labels.append(title)
                     chat_map[title] = chat_id
-                if "new_chat" not in st.session_state:
-                st.session_state.new_chat = False
+            if "new_chat" not in st.session_state:
+            st.session_state.new_chat = False
                 
             selected = option_menu(
                 menu_title=None,
