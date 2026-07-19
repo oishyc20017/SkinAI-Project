@@ -1096,9 +1096,9 @@ with st.sidebar:
 
             # সঠিক ফরম্যাট:
             if st.button("Create Account", use_container_width=True, key="unique_reg_submit"):
-            # ডাটাবেস কানেকশন বাটন প্রেস করার পর ভেতরে আসবে
-            conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
-            c = conn.cursor()
+                # ডাটাবেস কানেকশন বাটন প্রেস করার পর ভেতরে আসবে
+                conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
+                c = conn.cursor()
     
 
                 if not agree:
