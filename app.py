@@ -804,6 +804,9 @@ with st.sidebar:
             
             if selected and not st.session_state.new_chat:
 
+                conn = get_db()
+                c = conn.cursor()
+
                 selected_id = chat_map[selected]
 
                 if selected_id != st.session_state.current_conversation_id:
@@ -811,13 +814,15 @@ with st.sidebar:
                     st.session_state.current_conversation_id = selected_id
 
                     c.execute("""
-                        SELECT role, message
-                        FROM messages
-                        WHERE conversation_id=?
-                        ORDER BY id
+                    SELECT role, message
+                    FROM messages
+                    WHERE conversation_id=?
+                    ORDER BY id
                     """, (selected_id,))
 
                     rows = c.fetchall()
+
+                    conn.close()
 
                     st.session_state.messages = [
                         {
@@ -826,8 +831,8 @@ with st.sidebar:
                         }
                         for role, message in rows
                     ]
-                    st.session_state.new_chat = False
 
+                    st.session_state.new_chat = False
                     st.rerun()
                     
         st.markdown("---")
@@ -1550,6 +1555,7 @@ if prompt:
         st.write(c.fetchall())
 
         st.session_state.current_conversation_id = c.lastrowid
+        st.session_state.new_chat = False
     # Login থাকলে user message save করো
     if st.session_state.get("logged_in", False):
         c.execute("""
