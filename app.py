@@ -991,7 +991,7 @@ with st.sidebar:
                 use_container_width=True,
                 key="unique_login_submit"
             ):
-                conn = sqlite3.connect(r"C:\skinAI\skinai_wishy_v30", check_same_thread=False)
+                conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
                 c = conn.cursor()
                 
                 c.execute("""
@@ -1095,6 +1095,8 @@ with st.sidebar:
             st.markdown("---")
 
             if st.button(
+                conn = sqlite3.connect(DB_PATH, check_same_thread=False) # এখানেও DB_PATH ব্যবহার করো
+                c = conn.cursor()
                 "Create Account",
                 use_container_width=True,
                 key="unique_reg_submit"
