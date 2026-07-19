@@ -1421,11 +1421,12 @@ def doctor_booking_popup():
                     ))
 
                     conn.commit()
+                    # ১৪২৪ থেকে ১৪২৯ নম্বর লাইন পর্যন্ত এভাবে করো:
                     c.execute("SELECT COUNT(*) FROM bookings")
-                    st.write("Bookings =", c.fetchone()[0])
+                    # st.write("Bookings =", c.fetchone()[0])  <-- এই লাইনটি মুছে দাও বা সামনে # দাও
 
                     c.execute("SELECT * FROM bookings")
-                    st.write(c.fetchall())
+                    # st.write(c.fetchall())                  <-- এই লাইনটিও মুছে দাও বা সামনে # দাও
                     conn.close()
                     
                     st.success("✅ Appointment Booked Successfully!")
