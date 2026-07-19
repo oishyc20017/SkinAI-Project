@@ -771,7 +771,7 @@ with st.sidebar:
                 menu_title=None,
                 options=chat_labels,
                 icons=["chat-left-text"] * len(chat_labels),
-                default_index=0,
+                default_index=1,
                 styles={
                     "container": {
                         "padding": "0!important",
