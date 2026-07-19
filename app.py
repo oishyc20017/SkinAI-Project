@@ -1324,10 +1324,12 @@ st.markdown("---")
 @st.dialog("🩺 Professional Doctor Consultation")
 def doctor_booking_popup():
     try:
-        conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
+        # সঠিক কানেকশন লাইন
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
         c.execute("SELECT name, specialty, fee, available_time, hospital_name FROM doctors")
         doctor_list = c.fetchall()
+        # ... বাকি সব কোড আগের মতোই থাকবে
         
         st.markdown("### Book Your Appointment")
 
@@ -1394,7 +1396,7 @@ def doctor_booking_popup():
 
             else:
                 try:
-                    conn = sqlite3.connect(DB_PATH = "skinai_wishy_v30.db", check_same_thread=False)
+                    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
                     c = conn.cursor()
 
                     booking_id = f"BK-{random.randint(100000,999999)}"
