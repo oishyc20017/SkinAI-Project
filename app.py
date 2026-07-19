@@ -766,16 +766,7 @@ with st.sidebar:
 
                     chat_labels.append(title)
                     chat_map[title] = chat_id
-                # ১. চ্যাট টাইটেল বের করার লজিক (option_menu এর ঠিক উপরে বসাও)
-                current_title = ""
-                if st.session_state.get("current_conversation_id"):
-                    for chat_id, title in st.session_state.chat_titles:
-                        if chat_id == st.session_state.current_conversation_id:
-                            current_title = title
-                            break
-        if st.session_state.current_conversation_id is None:
-            # নতুন চ্যাট মোডে থাকলে মেনু দেখানোর দরকার নেই বা ডিফল্ট সিলেক্ট হবে না
-            selected = option_menu(
+                
                 menu_title=None,
                 options=chat_labels,
                 icons=["chat-left-text"] * len(chat_labels),
@@ -804,36 +795,6 @@ with st.sidebar:
                 },
             )
                 
-        else:
-            safe_index = chat_labels.index(current_title) if current_title in chat_labels else 0
-            selected = option_menu(
-                menu_title=None,
-                options=chat_labels,
-                icons=["chat-left-text"] * len(chat_labels),
-                default_index=safe_index,
-                styles={
-                    "container": {
-                        "padding": "0!important",
-                        "background-color": "transparent",
-                    },
-                    "icon": {
-                        "color": "#60a5fa",
-                        "font-size": "13px",
-                    },
-                    "nav-link": {
-                        "font-size": "12px",
-                        "text-align": "left",
-                        "margin": "0px",
-                        "border-radius": "6px",
-                        "padding": "5px 7px",
-                        "--hover-color": "#2d2d2d",
-                    },
-                    "nav-link-selected": {
-                        "background-color": "#1f2937",
-                        "color": "white",
-                    },
-                },
-            )
                     
 
             if selected:
