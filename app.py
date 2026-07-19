@@ -85,7 +85,7 @@ def google_callback():
 
         # --- এখানে পরিবর্তন করো ---
         # পুরনো লাইনটি মুছে ফেলে এই লাইনটি বসাও:
-        conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
 
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
@@ -320,7 +320,7 @@ def init_db():
     
     try:
         DB_PATH = r"C:\skinAI\skinai_wishy_v30"
-        conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+        conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
         c = conn.cursor()
         c.execute("""
         CREATE TABLE IF NOT EXISTS users(
@@ -445,8 +445,7 @@ def init_db():
 init_db()
 def get_db():
     # পুরনো পাথটি মুছে ফেলে আমাদের গ্লোবাল ভেরিয়েবলটি ব্যবহার করো
-    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-
+    conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
 
@@ -991,7 +990,7 @@ with st.sidebar:
                 use_container_width=True,
                 key="unique_login_submit"
             ):
-                conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
+                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
                 c = conn.cursor()
                 
                 c.execute("""
@@ -1101,7 +1100,7 @@ with st.sidebar:
                 key="unique_reg_submit"
             ): # এই বন্ধনী বা ব্র্যাকেটের ভেতরে কিছু লিখবেন না
     # এখানে বাটনটি ক্লিক করলে যা হবে, সেই কোডগুলো হবে
-                conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
+                conn = sqlite3.connect("skinai_wishy_v30.db", check_same_thread=False)
                 c = conn.cursor()
     # আপনার বাকি সব কুয়েরি (INSERT INTO, ইত্যাদি) এরপর নিচে এক ধাপ ইনডেন্ট দিয়ে লিখুন
     
