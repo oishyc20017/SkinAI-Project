@@ -796,8 +796,7 @@ with st.sidebar:
                     },
                 },
             )
-                }
-            )
+                
         else:
             selected = option_menu(
                 menu_title=None,
