@@ -833,13 +833,10 @@ with st.sidebar:
             st.session_state.get("logged_in", False)
             and st.session_state.user == "oishyc89@gmail.com"
         ):
-
             st.markdown("---")
             st.subheader("📊 Admin Dashboard")
-            import os
-
-            db_path = r"C:\skinAI\skinai_wishy_v30" # এখানে ফুল পাথ দাও
-
+    
+            # পাথ বা হার্ডকোডেড ভেরিয়েবল ব্যবহার না করে সরাসরি DB_PATH ব্যবহার করো
             with open(DB_PATH, "rb") as f:
                 st.download_button(
                     "📥 Download Current Database",
@@ -848,8 +845,8 @@ with st.sidebar:
                     mime="application/octet-stream"
                 )
 
-            # কানেকশন লাইনটি পরিবর্তন করো:
-            conn2 = sqlite3.connect(db_path)
+            # এখানেও DB_PATH ব্যবহার করো
+            conn2 = sqlite3.connect(DB_PATH) 
             c2 = conn2.cursor()
             
             # Total Users
