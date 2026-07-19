@@ -47,9 +47,7 @@ SCOPES = ["openid", "email", "profile"]
 
 # ---------------- CALLBACK ----------------
 def google_callback():
-
     params = st.query_params
-
     if "code" not in params:
         return
 
@@ -72,13 +70,15 @@ def google_callback():
         email = user["email"]
         fullname = user["name"]
 
-        # ফাইলের পাথটি নির্দিষ্ট করে দাও
-        db_path = r"C:\skinAI\skinai_wishy_v30" 
-        conn = sqlite3.connect(db_path, check_same_thread=False)
+        # --- এখানে পরিবর্তন করো ---
+        # পুরনো লাইনটি মুছে ফেলে এই লাইনটি বসাও:
+        conn = sqlite3.connect(DB_PATH, check_same_thread=False) 
         c = conn.cursor()
 
         c.execute("SELECT fullname FROM users WHERE email=?", (email,))
         data = c.fetchone()
+        
+        # ... বাকি কোড আগের মতোই থাকবে ...
 
         if data is None:
             username = email.split("@")[0]
