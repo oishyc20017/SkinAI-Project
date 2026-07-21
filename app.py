@@ -17,10 +17,6 @@ import google.generativeai as genai
 from requests_oauthlib import OAuth2Session
 import os
 import sqlite3
-import os
-
-st.write("Running file:", os.path.abspath(__file__))
-st.write("DB Path:", DB_PATH)
 
 # --- ডেটাবেস পাথ সেটিংস (সবাই এক জায়গায় থাকল) ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
