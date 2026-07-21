@@ -21,9 +21,6 @@ import sqlite3
 # --- ডেটাবেস পাথ সেটিংস (সবাই এক জায়গায় থাকল) ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "skinai_wishy_v30.db")
-st.write("DB Path:", DB_PATH)
-st.write("DB Exists:", os.path.exists(DB_PATH))
-st.write("Working Directory:", os.getcwd())
 
 # --- ডেটাবেস ফাংশনগুলো আপডেট করে দাও ---
 def get_db():
